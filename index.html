@@ -897,7 +897,7 @@ async function analyzeCareerTracks() {
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 800,
-          messages: [{ role: 'user', content: `You are a military career counselor. Based on this service document, identify the veteran's branch, MOS/rating, and top 4 civilian career tracks.\n\nDocument:\n${combinedText.slice(0, 3000)}\n\nRespond with valid JSON only:\n{"branch":"army|navy|marines|airforce|spaceforce|coastguard","mos":"code","mos_title":"title","tracks":[{"title":"Civilian Job Title","gs":"GS-XXXX","match":95,"desc":"One sentence why this fits.","employers":"Key employers"}]}` }]
+          messages: [{ role: 'user', content: `You are a military career counselor. Based on this service document, identify the veteran's branch, MOS/rating, and top 4 civilian career tracks.\n\nDocument:\n${combinedText.slice(0, 12000)}\n\nRespond with valid JSON only:\n{"branch":"army|navy|marines|airforce|spaceforce|coastguard","mos":"code","mos_title":"title","tracks":[{"title":"Civilian Job Title","gs":"GS-XXXX","match":95,"desc":"One sentence why this fits.","employers":"Key employers"}]}` }]
         })
       });
       if (resp.ok) {
@@ -1184,7 +1184,7 @@ Target Location: ${state.location || 'Open / Flexible'}
 Target Career Track: ${track.title} (${track.gs})
 Additional Information / Achievements: ${state.additional || 'Extract awards, certifications, and notable achievements from documents'}
 
-${docText ? `SERVICE DOCUMENTS (extract any missing background fields from this):\n${docText.slice(0, isMaster ? 8000 : 4000)}` : ''}
+${docText ? `SERVICE DOCUMENTS (extract any missing background fields from this):\n${docText.slice(0, isMaster ? 80000 : 24000)}` : ''}
 ${docText ? 'NOTE: Use the service documents as the primary source for dates, positions, accomplishments, and metrics. Extract real details rather than using placeholders where possible.' : ''}
 
 ${rankMosInferredSkills}
@@ -1381,7 +1381,7 @@ async function extractText(file) {
 
     // Scanned PDF — use Claude Vision to extract text
     toast(`Scanning ${file.name} with AI vision...`, '');
-    const MAX_PAGES = 15;
+    const MAX_PAGES = 40;
     const pageCount = Math.min(pdf.numPages, MAX_PAGES);
     const BATCH = 5;
     let allText = '';
