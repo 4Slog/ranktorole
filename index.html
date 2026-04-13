@@ -1321,16 +1321,16 @@ function toast(msg, type='') {
 // ============================================================
 // AUTH
 // ============================================================
-let supabase = null;
+let sbClient = null;
 let currentUser = null;
 let authMode = 'signin';
 
 async function initAuth() {
   const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
   if (!cfg.supabaseUrl) { showAuthError('Configuration error. Please try again later.'); return; }
-  supabase = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
 
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   if (session) {
     currentUser = session.user;
     showApp();
@@ -1338,7 +1338,7 @@ async function initAuth() {
     showAuthGate();
   }
 
-  supabase.auth.onAuthStateChange((_event, session) => {
+  sbClient.auth.onAuthStateChange((_event, session) => {
     if (session) { currentUser = session.user; showApp(); }
     else { currentUser = null; showAuthGate(); }
   });
@@ -1361,7 +1361,7 @@ function showAuthGate() {
 }
 
 async function signInWithGoogle() {
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { error } = await sbClient.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin }
   });
@@ -1375,9 +1375,9 @@ async function authSubmit() {
   document.getElementById('authSubmitBtn').disabled = true;
   let error;
   if (authMode === 'signin') {
-    ({ error } = await supabase.auth.signInWithPassword({ email, password }));
+    ({ error } = await sbClient.auth.signInWithPassword({ email, password }));
   } else {
-    ({ error } = await supabase.auth.signUp({ email, password }));
+    ({ error } = await sbClient.auth.signUp({ email, password }));
     if (!error) { showAuthError('Check your email for a confirmation link.', true); document.getElementById('authSubmitBtn').disabled = false; return; }
   }
   document.getElementById('authSubmitBtn').disabled = false;
@@ -1402,7 +1402,7 @@ function showAuthError(msg, isSuccess = false) {
 }
 
 async function signOut() {
-  await supabase.auth.signOut();
+  await sbClient.auth.signOut();
 }
 
 // ============================================================
@@ -1411,7 +1411,7 @@ async function signOut() {
 async function saveResume() {
   const content = document.getElementById('resumeOutput').textContent.trim();
   if (!content || content.startsWith('Click')) { toast('Generate a resume first.', 'error'); return; }
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   const title = `${state.mos || 'Resume'} — ${state.selectedTrack?.title || 'General'} — ${state.activeTab === 'federal' ? 'Federal' : 'Private Sector'}`;
   const resp = await fetch('/api/resumes/save', {
     method: 'POST',
@@ -1423,7 +1423,7 @@ async function saveResume() {
 }
 
 async function loadSavedResumes() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   if (!session) return;
   const resp = await fetch('/api/resumes/list', { headers: { 'Authorization': 'Bearer ' + session.access_token } });
   if (!resp.ok) return;
@@ -1449,7 +1449,7 @@ function viewSavedResume(content) {
 }
 
 async function deleteResume(id) {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sbClient.auth.getSession();
   const resp = await fetch(`/api/resumes/delete?id=${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + session.access_token } });
   if (resp.ok) { toast('Deleted.', 'success'); loadSavedResumes(); }
   else toast('Delete failed.', 'error');
