@@ -1439,7 +1439,7 @@ async function loadSavedResumes() {
   if (!resumes.length) { el.innerHTML = '<div style="font-size:0.82rem;color:var(--text-light)">No saved resumes yet.</div>'; return; }
   el.innerHTML = resumes.map(r => `
     <div class="saved-resume-item">
-      <div class="saved-resume-title">${r.title}</div>
+      <input class="form-input saved-resume-name" id="rname-${r.id}" value="${r.title.replace(/"/g,'&quot;')}" style="font-size:0.85rem;font-weight:600;padding:0.3rem 0.5rem;margin-bottom:2px" onblur="renameResume('${r.id}')" onkeydown="if(event.key==='Enter')this.blur()">
       <div class="saved-resume-date">${new Date(r.created_at).toLocaleDateString()}</div>
       <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
         <button class="btn btn-outline btn-sm" onclick="viewSavedResume(${JSON.stringify(r.content).replace(/</g,'&lt;')})">View</button>
@@ -1453,6 +1453,17 @@ function viewSavedResume(content) {
   document.getElementById('resumeOutput').textContent = content;
   closeSettings();
   goStep(5);
+}
+
+async function renameResume(id) {
+  const title = document.getElementById('rname-' + id)?.value.trim();
+  if (!title) return;
+  const { data: { session } } = await sbClient.auth.getSession();
+  await fetch('/api/resumes/rename', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+    body: JSON.stringify({ id, title })
+  });
 }
 
 async function deleteResume(id) {
