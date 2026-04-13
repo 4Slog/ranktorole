@@ -1429,12 +1429,16 @@ async function saveResume() {
   else { const err = await resp.json().catch(() => ({})); toast(err.error || 'Save failed.', 'error'); }
 }
 
+let savedResumesCache = {};
+
 async function loadSavedResumes() {
   const { data: { session } } = await sbClient.auth.getSession();
   if (!session) return;
   const resp = await fetch('/api/resumes/list', { headers: { 'Authorization': 'Bearer ' + session.access_token } });
   if (!resp.ok) return;
   const resumes = await resp.json();
+  savedResumesCache = {};
+  resumes.forEach(r => savedResumesCache[r.id] = r.content);
   const el = document.getElementById('savedResumesList');
   if (!resumes.length) { el.innerHTML = '<div style="font-size:0.82rem;color:var(--text-light)">No saved resumes yet.</div>'; return; }
   el.innerHTML = resumes.map(r => `
@@ -1442,14 +1446,16 @@ async function loadSavedResumes() {
       <input class="form-input saved-resume-name" id="rname-${r.id}" value="${r.title.replace(/"/g,'&quot;')}" style="font-size:0.85rem;font-weight:600;padding:0.3rem 0.5rem;margin-bottom:2px" onblur="renameResume('${r.id}')" onkeydown="if(event.key==='Enter')this.blur()">
       <div class="saved-resume-date">${new Date(r.created_at).toLocaleDateString()}</div>
       <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
-        <button class="btn btn-outline btn-sm" onclick="viewSavedResume(${JSON.stringify(r.content).replace(/</g,'&lt;')})">View</button>
+        <button class="btn btn-outline btn-sm" onclick="viewSavedResume('${r.id}')">View</button>
         <button class="btn btn-outline btn-sm" style="color:var(--error)" onclick="deleteResume('${r.id}')">Delete</button>
       </div>
     </div>
   `).join('');
 }
 
-function viewSavedResume(content) {
+function viewSavedResume(id) {
+  const content = savedResumesCache[id];
+  if (!content) return;
   document.getElementById('resumeOutput').textContent = content;
   closeSettings();
   goStep(5);
