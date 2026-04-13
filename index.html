@@ -482,22 +482,9 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="drawer-body">
     <div class="drawer-section">
       <div class="drawer-section-label">API Keys</div>
-      <div class="key-row">
-        <div class="key-dot" id="dotClaude"></div>
-        <div class="key-label">Claude (Anthropic)</div>
+      <div style="font-size:0.82rem;color:var(--text-light);line-height:1.6">
+        Claude AI, O*NET, and USAJOBS integrations are managed server-side. No API keys required.
       </div>
-      <input class="form-input" id="keyClaudeInput" type="password" placeholder="sk-ant-..." style="margin-bottom:0.75rem;font-size:0.85rem">
-      <div class="key-row">
-        <div class="key-dot" id="dotOnet"></div>
-        <div class="key-label">O*NET Web Services</div>
-      </div>
-      <input class="form-input" id="keyOnetInput" type="password" placeholder="O*NET API key" style="margin-bottom:0.75rem;font-size:0.85rem">
-      <div class="key-row">
-        <div class="key-dot" id="dotUsajobs"></div>
-        <div class="key-label">USAJOBS</div>
-      </div>
-      <input class="form-input" id="keyUsajobsInput" type="password" placeholder="USAJOBS Authorization-Key" style="margin-bottom:1rem;font-size:0.85rem">
-      <button class="btn btn-primary btn-sm" onclick="saveSettings()" style="width:100%">Save API Keys</button>
     </div>
 
     <div class="drawer-section">
@@ -530,13 +517,6 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 // ============================================================
 // CONFIG & STATE
 // ============================================================
-const DEFAULTS = {
-  claude:   '',
-  onet:     'JFm6x-eZnf0-LtXUw-axyXh',
-  usajobs:  'zV8RTQ/Z2Pvo+eii/aInpwrJWejfOJagzwypBCo4zUA=',
-  email:    'sowu.paul@gmail.com'
-};
-
 let state = {
   branch: null,
   mos: '',
@@ -555,14 +535,6 @@ let state = {
   contact: {}
 };
 
-function getKeys() {
-  return {
-    claude:   localStorage.getItem('ranktorole_claude')   || DEFAULTS.claude,
-    onet:     localStorage.getItem('ranktorole_onet')     || DEFAULTS.onet,
-    usajobs:  localStorage.getItem('ranktorole_usajobs')  || DEFAULTS.usajobs,
-    email:    localStorage.getItem('ranktorole_email')    || DEFAULTS.email
-  };
-}
 
 // ============================================================
 // MOS DATABASE
@@ -750,7 +722,6 @@ const BRANCH_LABELS = {
 function init() {
   const stored = JSON.parse(localStorage.getItem('ranktorole_contact') || '{}');
   state.contact = stored;
-  updateKeyDots();
   renderStep(1);
 }
 
@@ -840,16 +811,13 @@ async function analyzeCareerTracks() {
   }
 
   // No MOS found — try O*NET search
-  const keys = getKeys();
   const mosInput = document.getElementById('mosInput').value.trim();
   if (!mosInput) { goStep(4); return; }
 
   document.getElementById('tracksLoading').classList.remove('hidden');
   try {
     const keyword = encodeURIComponent(mosInput);
-    const resp = await fetch(`https://services.onetcenter.org/ws/mnm/search?keyword=${keyword}&client=ranktorole`, {
-      headers: { 'Authorization': 'Basic ' + btoa(keys.onet + ':developer') }
-    });
+    const resp = await fetch(`/api/onet?keyword=${keyword}`);
     if (resp.ok) {
       const data = await resp.json();
       if (data.career && data.career.length > 0) {
@@ -911,9 +879,6 @@ function selectTrack(i) {
 // RESUME GENERATION (Claude API)
 // ============================================================
 async function generateResume(type) {
-  const keys = getKeys();
-  if (!keys.claude) { toast('Claude API key required. Open Settings.', 'error'); return; }
-
   state.rank      = document.getElementById('rankInput').value;
   state.years     = document.getElementById('yearsInput').value;
   state.clearance = document.getElementById('clearanceInput').value;
@@ -1045,14 +1010,9 @@ Generate the complete, ready-to-use resume now. Format it cleanly with clear sec
   showResumeTab(type);
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'x-api-key': keys.claude,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: isFederal ? 3000 : 2000,
@@ -1103,7 +1063,6 @@ function showResumeTab(type) {
 // USAJOBS SEARCH
 // ============================================================
 async function searchJobs() {
-  const keys = getKeys();
   const track = state.selectedTrack;
   if (!track) return;
 
@@ -1114,16 +1073,7 @@ async function searchJobs() {
   const loc = state.location ? encodeURIComponent(state.location) : '';
 
   try {
-    const resp = await fetch(
-      `https://data.usajobs.gov/api/search?Keyword=${keyword}&LocationName=${loc}&ResultsPerPage=6&SortField=OpenDate&SortDirection=Desc`,
-      {
-        headers: {
-          'Host': 'data.usajobs.gov',
-          'User-Agent': keys.email,
-          'Authorization-Key': keys.usajobs
-        }
-      }
-    );
+    const resp = await fetch(`/api/usajobs?keyword=${keyword}&location=${loc}`);
 
     if (!resp.ok) throw new Error('USAJOBS API returned ' + resp.status);
 
@@ -1241,10 +1191,6 @@ function dropFile(e) {
 // SETTINGS
 // ============================================================
 function openSettings() {
-  const keys = getKeys();
-  document.getElementById('keyClaudeInput').value  = keys.claude  || '';
-  document.getElementById('keyOnetInput').value    = keys.onet    || '';
-  document.getElementById('keyUsajobsInput').value = keys.usajobs || '';
   const c = state.contact;
   document.getElementById('contactName').value  = c.name  || '';
   document.getElementById('contactEmail').value = c.email || '';
@@ -1260,13 +1206,6 @@ function closeSettings() {
 }
 
 function saveSettings() {
-  const claude  = document.getElementById('keyClaudeInput').value.trim();
-  const onet    = document.getElementById('keyOnetInput').value.trim();
-  const usajobs = document.getElementById('keyUsajobsInput').value.trim();
-  if (claude)  localStorage.setItem('ranktorole_claude', claude);
-  if (onet)    localStorage.setItem('ranktorole_onet', onet);
-  if (usajobs) localStorage.setItem('ranktorole_usajobs', usajobs);
-  updateKeyDots();
   toast('Settings saved.', 'success');
   setTimeout(closeSettings, 800);
 }
@@ -1282,12 +1221,6 @@ function saveContact() {
   toast('Contact info saved.', 'success');
 }
 
-function updateKeyDots() {
-  const keys = getKeys();
-  document.getElementById('dotClaude').className  = 'key-dot ' + (keys.claude  ? 'ok' : 'missing');
-  document.getElementById('dotOnet').className    = 'key-dot ' + (keys.onet    ? 'ok' : 'missing');
-  document.getElementById('dotUsajobs').className = 'key-dot ' + (keys.usajobs ? 'ok' : 'missing');
-}
 
 // ============================================================
 // DEMO MODE (92A)
