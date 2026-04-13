@@ -540,6 +540,12 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   </div>
   <div class="drawer-body">
     <div class="drawer-section">
+      <div class="drawer-section-label">Account</div>
+      <div style="font-size:0.85rem;color:var(--text);margin-bottom:0.75rem" id="drawerUserEmail"></div>
+      <button class="btn btn-outline btn-sm" onclick="signOut()" style="color:var(--error);border-color:var(--error);width:100%">Sign Out</button>
+    </div>
+
+    <div class="drawer-section">
       <div class="drawer-section-label">API Keys</div>
       <div style="font-size:0.82rem;color:var(--text-light);line-height:1.6">
         Claude AI, O*NET, and USAJOBS integrations are managed server-side. No API keys required.
@@ -1255,6 +1261,7 @@ function dropFile(e) {
 // SETTINGS
 // ============================================================
 function openSettings() {
+  if (currentUser) document.getElementById('drawerUserEmail').textContent = currentUser.email;
   const c = state.contact;
   document.getElementById('contactName').value  = c.name  || '';
   document.getElementById('contactEmail').value = c.email || '';
