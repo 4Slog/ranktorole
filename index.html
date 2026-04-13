@@ -1117,7 +1117,7 @@ function showJobsFallback(title) {
   const q = encodeURIComponent(title + (state.location ? ' ' + state.location : ''));
   document.getElementById('jobsList').innerHTML = `
     <div class="jobs-fallback">
-      ℹ️ Live job search requires server-side proxy (CORS limitation for local file).
+      ℹ️ No live listings found for this track right now.
       <a href="https://www.usajobs.gov/search/?k=${q}" target="_blank" style="color:var(--navy-light);font-weight:600">
         Search "${title}" on USAJOBS directly →
       </a>
