@@ -113,6 +113,11 @@ textarea.form-input{resize:vertical;min-height:100px}
 .file-name{font-size:0.88rem;font-weight:600}
 .file-clear{background:none;border:none;color:var(--text-light);cursor:pointer;font-size:1rem;padding:0}
 .file-clear:hover{color:var(--error)}
+.doc-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;min-height:0}
+.doc-chip{background:#eef2f7;border:1px solid var(--border);border-radius:20px;padding:0.3rem 0.75rem;font-size:0.82rem;display:flex;align-items:center;gap:0.5rem}
+.doc-chip-name{font-weight:600;color:var(--navy);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-chip-remove{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:0.85rem;line-height:1;padding:0}
+.doc-chip-remove:hover{color:var(--error)}
 
 /* Resume output */
 .resume-type-btns{display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
@@ -440,15 +445,12 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="card-sub">Upload your DD-214, NCOERs, OERs, or any evaluation to extract additional detail. Or paste text directly. This step is optional — skip if not available.</div>
 
     <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondrop="dropFile(event)" ondragleave="dragLeave(event)">
-      <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" onchange="handleFile(this.files[0])">
+      <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" multiple onchange="handleFiles(this.files)">
       <div class="upload-icon">📄</div>
       <div style="font-weight:600;margin-bottom:0.25rem">Click to upload or drag & drop</div>
-      <div style="font-size:0.82rem">Supports .txt, .pdf, .doc, .docx · Max 5MB</div>
+      <div style="font-size:0.82rem">Supports .txt, .pdf, .doc, .docx · Multiple files · Max 5MB each</div>
     </div>
-    <div class="file-info hidden" id="fileInfo">
-      <span class="file-name" id="fileName"></span>
-      <button class="file-clear" onclick="clearFile()" title="Remove file">✕</button>
-    </div>
+    <div class="doc-chips" id="docChips"></div>
 
     <div style="margin:1.25rem 0;text-align:center;color:var(--text-light);font-size:0.85rem;font-weight:600">— OR —</div>
 
@@ -498,6 +500,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="generate-btn-row">
       <button class="btn btn-gold" onclick="generateResume('federal')" id="genFedBtn">⚡ Generate Federal Resume</button>
       <button class="btn btn-primary" onclick="generateResume('private')" id="genPrivBtn">⚡ Generate Private Sector Resume</button>
+      <button class="btn btn-outline" onclick="generateResume('master')" id="genMasterBtn">⚡ Generate Master Resume</button>
       <div class="loading-row hidden" id="resumeLoading">
         <div class="spinner"></div>
         <span id="resumeLoadingText">Generating resume...</span>
@@ -507,6 +510,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="resume-type-btns">
       <button class="resume-type-btn active" id="tabFed" onclick="showResumeTab('federal')">📋 Federal (USAJOBS — 2 page max)</button>
       <button class="resume-type-btn" id="tabPriv" onclick="showResumeTab('private')">💼 Private Sector</button>
+      <button class="resume-type-btn" id="tabMaster" onclick="showResumeTab('master')">📊 Master Resume</button>
     </div>
 
     <div class="resume-output" id="resumeOutput" contenteditable="true">Click "Generate" above to build your resume. You can edit this area directly after generation.</div>
@@ -602,9 +606,9 @@ let state = {
   education: "High School",
   location: '',
   additional: '',
-  documentText: '',
+  documents: [],
   selectedTrack: null,
-  resumes: { federal: '', private: '' },
+  resumes: { federal: '', private: '', master: '' },
   activeTab: 'federal',
   step: 1,
   contact: {}
@@ -876,14 +880,16 @@ function getDefaultTracks() {
 // CAREER TRACK ANALYSIS (O*NET + Static)
 // ============================================================
 async function analyzeCareerTracks() {
-  state.documentText = document.getElementById('pasteText').value;
+  const pasteText = document.getElementById('pasteText').value;
+  const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
+  const combinedText = [allDocs, pasteText].filter(Boolean).join('\n\n');
 
   if (state.mosData) { goStep(4); return; }
 
   const mosInput = document.getElementById('mosInput')?.value.trim() || '';
 
   // If we have a document but no MOS, use Claude to extract career tracks
-  if (!mosInput && state.documentText) {
+  if (!mosInput && combinedText) {
     document.getElementById('tracksLoading').classList.remove('hidden');
     try {
       const resp = await fetch('/api/chat', {
@@ -892,7 +898,7 @@ async function analyzeCareerTracks() {
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 800,
-          messages: [{ role: 'user', content: `You are a military career counselor. Based on this service document, identify the veteran's branch, MOS/rating, and top 4 civilian career tracks.\n\nDocument:\n${state.documentText.slice(0, 3000)}\n\nRespond with valid JSON only:\n{"branch":"army|navy|marines|airforce|spaceforce|coastguard","mos":"code","mos_title":"title","tracks":[{"title":"Civilian Job Title","gs":"GS-XXXX","match":95,"desc":"One sentence why this fits.","employers":"Key employers"}]}` }]
+          messages: [{ role: 'user', content: `You are a military career counselor. Based on this service document, identify the veteran's branch, MOS/rating, and top 4 civilian career tracks.\n\nDocument:\n${combinedText.slice(0, 3000)}\n\nRespond with valid JSON only:\n{"branch":"army|navy|marines|airforce|spaceforce|coastguard","mos":"code","mos_title":"title","tracks":[{"title":"Civilian Job Title","gs":"GS-XXXX","match":95,"desc":"One sentence why this fits.","employers":"Key employers"}]}` }]
         })
       });
       if (resp.ok) {
@@ -983,9 +989,12 @@ async function generateResume(type) {
   const contact = state.contact;
   const track = state.selectedTrack || { title: 'Federal Employment', gs: 'GS', desc: '' };
   const mos = state.mosData ? `${state.mos} — ${state.mosData.title}` : state.mos;
-  const docText = state.documentText || document.getElementById('pasteText').value;
+  const pasteText = document.getElementById('pasteText').value;
+  const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
+  const docText = [allDocs, pasteText].filter(Boolean).join('\n\n');
 
   const isFederal = type === 'federal';
+  const isMaster = type === 'master';
 
   const federalTemplate = `
 FEDERAL RESUME TEMPLATE (OPM 2-Page Limit — Effective Sept 27, 2025):
@@ -1074,7 +1083,96 @@ STRICT RULES:
 - No tables, text boxes, or graphics — ATS parsing fails on these
 - Fragment style bullets, not full sentences ("Led team of 8" not "I led a team of 8")`;
 
-  const prompt = `You are an expert military-to-civilian resume writer. Generate a complete, ready-to-submit ${isFederal ? 'federal USAJOBS' : 'private sector'} resume following the exact template and rules below.
+  const masterTemplate = `
+MASTER RESUME — Comprehensive Career Document (No Length Limit):
+
+PURPOSE: This is NOT a submission resume. It is a complete career inventory — every position, skill, achievement, and qualification captured in full detail. Use it as the source document to tailor other resumes.
+
+SECTION ORDER:
+1. CONTACT INFORMATION
+   [FULL NAME]
+   [City, State] | [Phone] | [Email] | [LinkedIn URL]
+   Veterans Preference: [5-Point or 10-Point] | Clearance: ${state.clearance}
+
+2. PROFESSIONAL SUMMARY (4-6 lines)
+   Comprehensive summary covering full scope of military career, leadership, technical expertise, and value proposition. Include all major functional areas.
+
+3. CORE COMPETENCIES & SKILLS
+   Organize into categories:
+   LEADERSHIP & MANAGEMENT: [skills]
+   TECHNICAL SKILLS: [skills]
+   ADMINISTRATIVE & OPERATIONAL: [skills]
+   SOFT SKILLS / PROFESSIONAL: [skills]
+   TOOLS & SYSTEMS: [any software, databases, platforms mentioned or implied by role]
+
+4. PROFESSIONAL EXPERIENCE (every position, full detail)
+   For EACH assignment/position — no omissions:
+   ─────────────────────────────────────────
+   [CIVILIAN JOB TITLE] | [Translated Unit Type] | [City, State]
+   [Month Year] – [Month Year] | 40 hours/week | Salary: $[estimate]
+   Supervisor: [Name if known, Phone — May Contact: Yes/No]
+
+   Role Summary: [2-3 sentence overview of position scope and responsibilities]
+   Key Accomplishments:
+   • [Specific achievement with metrics]
+   • [Specific achievement with metrics]
+   • [Specific achievement with metrics]
+   Skills Demonstrated: [comma-separated list of skills this role required]
+   ─────────────────────────────────────────
+
+5. EDUCATION
+   List all: degrees, coursework, military education (NCOES, OCS, BOLC, PME, etc.)
+   [Degree/Course] | [Institution/School] | [City, State] | [Year]
+
+6. MILITARY TRAINING & CERTIFICATIONS
+   List ALL: MOS qualification, additional skill identifiers, professional military education, civilian certs
+   • [Cert/Training] ([Year if known])
+
+7. AWARDS & COMMENDATIONS
+   List all military awards translated to civilian equivalents:
+   • [Award Name] — [Brief description of what it recognizes]
+
+8. SECURITY CLEARANCE
+   Level: ${state.clearance}
+   [Status: Active/Inactive/Eligible for reinstatement]
+
+9. PROFESSIONAL AFFILIATIONS / VOLUNTEER
+
+RULES:
+- NO length limit — capture everything
+- Translate all military jargon completely
+- Include ALL positions, no matter how brief
+- Document every skill explicitly stated AND every skill logically required for the role
+- Flag promotions and time-in-grade as leadership progression indicators`;
+
+  const rankMosInferredSkills = `
+CRITICAL — INFERRED SKILLS BY RANK/MOS (include these even if NOT in documents):
+Based on ${state.rank || 'the veteran'}'s rank and ${mos || 'MOS'}, the following skills are ASSUMED STANDARD for this level regardless of whether explicitly mentioned:
+
+NCO/Senior NCO/Officer level skills (if rank indicates E5+/O1+):
+- Microsoft Office Suite (Word, Excel, PowerPoint, Outlook) — briefings and reports are a daily function
+- Budget management and resource allocation — all senior military positions manage equipment/personnel budgets
+- Personnel counseling and performance evaluations — required by Army/DoD regulation at NCO+ level
+- Training program development and instruction — every NCO trains subordinates
+- Formal briefing and public speaking — required at all NCO and officer levels
+- Mentoring and coaching — embedded in military leadership doctrine
+- Cross-functional team coordination — all military operations are joint efforts
+- Regulatory compliance and policy enforcement — military is the most regulated workplace in the US
+- Risk assessment and hazard mitigation — required for all field operations
+- Emergency/crisis response — core military competency
+
+If 10+ years service, also include:
+- Strategic planning and long-range program management
+- Interagency coordination
+- Organizational change management
+- Large-scale event and logistics coordination
+
+If clearance is SECRET or above, also include:
+- Information security awareness and OPSEC
+- Handling of sensitive materials and controlled information
+- Need-to-know access control`;
+
+  const prompt = `You are an expert military-to-civilian resume writer. Generate a complete, ready-to-submit ${isMaster ? 'master career inventory' : isFederal ? 'federal USAJOBS' : 'private sector'} resume following the exact template and rules below.
 
 VETERAN BACKGROUND:
 Branch: ${state.branch ? state.branch.charAt(0).toUpperCase() + state.branch.slice(1) : 'Extract from document'}
@@ -1087,10 +1185,12 @@ Target Location: ${state.location || 'Open / Flexible'}
 Target Career Track: ${track.title} (${track.gs})
 Additional Information / Achievements: ${state.additional || 'None provided'}
 
-${docText ? `SERVICE DOCUMENTS (extract any missing background fields from this):\n${docText.slice(0, 3000)}` : ''}
-${docText ? 'NOTE: Use the service document as the primary source for dates, positions, accomplishments, and metrics. Extract real details rather than using placeholders where possible.' : ''}
+${docText ? `SERVICE DOCUMENTS (extract any missing background fields from this):\n${docText.slice(0, isMaster ? 8000 : 4000)}` : ''}
+${docText ? 'NOTE: Use the service documents as the primary source for dates, positions, accomplishments, and metrics. Extract real details rather than using placeholders where possible.' : ''}
 
-${isFederal ? federalTemplate : privateTemplate}
+${rankMosInferredSkills}
+
+${isMaster ? masterTemplate : isFederal ? federalTemplate : privateTemplate}
 
 UNIVERSAL RULES:
 - Use contact placeholders: [FULL NAME], [EMAIL], [PHONE], [CITY, STATE], [LINKEDIN]
@@ -1101,7 +1201,8 @@ UNIVERSAL RULES:
 
 Generate the complete, ready-to-use resume now. Format it cleanly with clear section headers using ALL CAPS. Output only the resume — no commentary, no preamble.`;
 
-  setResumeLoading(true, isFederal ? 'Generating federal resume...' : 'Generating private sector resume...');
+  const loadingText = isMaster ? 'Building master career inventory...' : isFederal ? 'Generating federal resume...' : 'Generating private sector resume...';
+  setResumeLoading(true, loadingText);
   showResumeTab(type);
 
   try {
@@ -1109,8 +1210,8 @@ Generate the complete, ready-to-use resume now. Format it cleanly with clear sec
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: isFederal ? 3000 : 2000,
+        model: isMaster ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001',
+        max_tokens: isMaster ? 8000 : isFederal ? 3000 : 2000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -1124,7 +1225,8 @@ Generate the complete, ready-to-use resume now. Format it cleanly with clear sec
     const text = data.content[0].text;
     state.resumes[type] = text;
     document.getElementById('resumeOutput').textContent = text;
-    toast(`${isFederal ? 'Federal' : 'Private sector'} resume generated!`, 'success');
+    const label = isMaster ? 'Master career inventory' : isFederal ? 'Federal' : 'Private sector';
+    toast(`${label} resume generated!`, 'success');
   } catch(e) {
     toast('Resume generation failed: ' + e.message, 'error');
     console.error(e);
@@ -1138,19 +1240,24 @@ function setResumeLoading(on, text='') {
   document.getElementById('resumeLoadingText').textContent = text;
   document.getElementById('genFedBtn').disabled = on;
   document.getElementById('genPrivBtn').disabled = on;
+  document.getElementById('genMasterBtn').disabled = on;
 }
 
 function showResumeTab(type) {
   state.activeTab = type;
   document.getElementById('tabFed').classList.toggle('active', type === 'federal');
   document.getElementById('tabPriv').classList.toggle('active', type === 'private');
+  document.getElementById('tabMaster').classList.toggle('active', type === 'master');
   const output = document.getElementById('resumeOutput');
   if (state.resumes[type]) {
     output.textContent = state.resumes[type];
   } else {
-    output.textContent = type === 'federal'
-      ? 'Click "Generate Federal Resume" to build your USAJOBS-format resume.'
-      : 'Click "Generate Private Sector Resume" to build your civilian resume.';
+    const placeholder = {
+      federal: 'Click "Generate Federal Resume" to build your USAJOBS-format resume.',
+      private: 'Click "Generate Private Sector Resume" to build your civilian resume.',
+      master: 'Click "Generate Master Resume" to build a comprehensive career inventory — all positions, all skills, all achievements. Use this as the source to tailor your other resumes.'
+    };
+    output.textContent = placeholder[type] || '';
   }
 }
 
@@ -1249,48 +1356,66 @@ function copyResume() {
 // ============================================================
 // FILE UPLOAD
 // ============================================================
-async function handleFile(file) {
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { toast('File too large (5MB max).','error'); return; }
-  document.getElementById('fileName').textContent = file.name;
-  document.getElementById('fileInfo').classList.remove('hidden');
-  document.getElementById('uploadZone').classList.add('hidden');
-  toast('Extracting text...', '');
-
+async function extractText(file) {
   const ext = file.name.split('.').pop().toLowerCase();
-  try {
+  if (ext === 'txt') return file.text();
+  if (ext === 'pdf') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
     let text = '';
-    if (ext === 'txt') {
-      text = await file.text();
-    } else if (ext === 'pdf') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-      const buf = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const content = await page.getTextContent();
-        text += content.items.map(s => s.str).join(' ') + '\n';
-      }
-    } else if (ext === 'docx' || ext === 'doc') {
-      const buf = await file.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer: buf });
-      text = result.value;
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(s => s.str).join(' ') + '\n';
     }
-    state.documentText = text;
-    document.getElementById('pasteText').value = text.slice(0, 5000);
-    toast('Text extracted successfully.', 'success');
-  } catch(e) {
-    toast('Could not parse file. Try copy-pasting the text instead.', 'error');
-    console.error(e);
+    return text;
   }
+  if (ext === 'docx' || ext === 'doc') {
+    const buf = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: buf });
+    return result.value;
+  }
+  throw new Error('Unsupported file type');
 }
 
-function clearFile() {
-  state.documentText = '';
-  document.getElementById('pasteText').value = '';
-  document.getElementById('fileInfo').classList.add('hidden');
-  document.getElementById('uploadZone').classList.remove('hidden');
+function renderDocChips() {
+  const chips = document.getElementById('docChips');
+  chips.innerHTML = state.documents.map((d, i) => `
+    <div class="doc-chip">
+      <span class="doc-chip-name" title="${d.name}">📄 ${d.name}</span>
+      <button class="doc-chip-remove" onclick="removeDoc(${i})" title="Remove">✕</button>
+    </div>
+  `).join('');
+}
+
+async function handleFiles(files) {
+  if (!files || !files.length) return;
+  const fileArr = Array.from(files);
+  let added = 0;
+  for (const file of fileArr) {
+    if (file.size > 5 * 1024 * 1024) { toast(`${file.name}: too large (5MB max)`, 'error'); continue; }
+    const alreadyLoaded = state.documents.some(d => d.name === file.name);
+    if (alreadyLoaded) continue;
+    try {
+      const text = await extractText(file);
+      state.documents.push({ name: file.name, text });
+      added++;
+    } catch(e) {
+      toast(`Could not parse ${file.name} — try copy-pasting instead.`, 'error');
+      console.error(e);
+    }
+  }
+  if (added) {
+    renderDocChips();
+    toast(`${added} file${added > 1 ? 's' : ''} loaded.`, 'success');
+  }
   document.getElementById('fileInput').value = '';
+}
+
+function removeDoc(index) {
+  state.documents.splice(index, 1);
+  renderDocChips();
 }
 
 function dragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag'); }
@@ -1298,8 +1423,7 @@ function dragLeave(e) { document.getElementById('uploadZone').classList.remove('
 function dropFile(e) {
   e.preventDefault();
   document.getElementById('uploadZone').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
+  if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
 }
 
 // ============================================================
