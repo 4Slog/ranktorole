@@ -1486,7 +1486,7 @@ function updateScanProgress() {
   bar.style.width = (total ? Math.round((done/total)*100) : 0) + '%';
   const scanning = done < total;
   if (scanning) {
-    summary.textContent = `Scanning ${done} of ${total} document${total>1?'s'}...`;
+    summary.textContent = `Scanning ${done} of ${total} document${total>1?'s':''}...`;
   } else {
     const totalPages = state.documents.reduce((a,d) => a + (d.pages||1), 0);
     summary.textContent = `${total} doc${total>1?'s':''} scanned · ${totalPages} page${totalPages>1?'s':''} · ready to analyze`;
