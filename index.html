@@ -332,7 +332,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-gold" id="analyzeBtn" onclick="goStep(2)">Continue → Confirm Info</button>
+      <button class="btn btn-gold" id="analyzeBtn" onclick="extractAndGoStep2()">Continue → Confirm Info</button>
       <span style="font-size:0.82rem;color:var(--text-light)">Upload is optional — you can skip</span>
     </div>
   </div>
@@ -1678,6 +1678,64 @@ function toast(msg, type='') {
     el.style.opacity='0'; el.style.transform='translateX(110%)'; el.style.transition='all 0.3s';
     setTimeout(() => el.remove(), 350);
   }, 3500);
+}
+
+// ============================================================
+// STEP 1 → STEP 2 AUTO-EXTRACTION
+// ============================================================
+async function extractAndGoStep2() {
+  if (!state.documents.length) { goStep(2); return; }
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  btn.textContent = 'Reading your documents...';
+  const docText = state.documents.slice().reverse().map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n').slice(0, 12000);
+  try {
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: `Extract fields from this military service document. Return ONLY valid JSON, nothing else.\n\nDocument:\n${docText}\n\nReturn exactly:\n{"branch":"army|navy|marines|airforce|spaceforce|coastguard|unknown","mos":"code e.g. 92A","rank":"pay grade e.g. E-7","years":20,"clearance":"None|Confidential|Secret|Top Secret|TS/SCI|unknown","education":"High School|Some College|Associate's|Bachelor's|Master's|Doctorate|unknown"}` }]
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      const raw = data.content[0].text;
+      const json = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+      prefillStep2(json);
+    }
+  } catch(e) { console.warn('Pre-fill failed, continuing:', e); }
+  btn.textContent = 'Continue → Confirm Info';
+  btn.disabled = false;
+  goStep(2);
+}
+
+function prefillStep2(d) {
+  if (d.branch && d.branch !== 'unknown') selectBranch(d.branch);
+  if (d.mos && d.mos !== 'unknown') {
+    const el = document.getElementById('mosInput');
+    if (el) { el.value = d.mos.toUpperCase(); detectMOS(d.mos); }
+  }
+  if (d.rank && d.rank !== 'unknown') {
+    const el = document.getElementById('rankInput');
+    if (el) {
+      const match = Array.from(el.options).find(o => o.value.startsWith(d.rank) || o.value.includes(d.rank));
+      if (match) el.value = match.value;
+    }
+  }
+  if (d.years && !isNaN(d.years)) {
+    const el = document.getElementById('yearsInput');
+    if (el) el.value = parseInt(d.years);
+  }
+  if (d.clearance && d.clearance !== 'unknown') {
+    const el = document.getElementById('clearanceInput');
+    if (el) { const match = Array.from(el.options).find(o => o.value === d.clearance); if (match) el.value = match.value; }
+  }
+  if (d.education && d.education !== 'unknown') {
+    const el = document.getElementById('educationInput');
+    if (el) { const match = Array.from(el.options).find(o => o.value === d.education); if (match) el.value = match.value; }
+  }
 }
 
 // ============================================================
