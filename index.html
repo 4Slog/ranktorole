@@ -1448,7 +1448,11 @@ EXTRACTION RULES:
 4. For metrics: always use the LARGEST documented figure (APS equipment = $3.2B not the sub-unit property book; use what's documented).
 5. civilianTitle: translate each military duty title to the closest civilian job title.
 6. federalTranslation: rewrite each accomplishment using OPM/USAJOBS keyword patterns.
-7. Extract ALL accomplishments — do not truncate or summarize any.
+7. TIERED DETAIL by assignment era:
+   • Post-2018 (recent): TOP 3 accomplishments — rawMilitary = ONE sentence (key action + biggest metric).
+   • 2013–2018: TOP 1 accomplishment only — rawMilitary = ONE sentence.
+   • Pre-2013: NO accomplishments — set accomplishments:[] — header fields only (dates, dutyTitle, civilianTitle, unit, location, payGrade). Pre-2013 service is captured in careerSummary, not expanded per-record.
+   Rationale: OPM guidance = full detail on most recent 5-7 years; older service → summary level.
 8. For missing fields use null (not empty string "").
 9. completenessScore 0-100 based on data completeness across all fields.
 10. coverageGaps: flag any date ranges not covered by any document.
@@ -1504,7 +1508,7 @@ ${docText.slice(0, 120000)}`;
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 6000,
+        max_tokens: 8000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
