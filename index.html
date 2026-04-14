@@ -293,9 +293,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="step-arrow">›</div>
   <div class="step-item" id="step-nav-2"><div class="step-num">2</div>Confirm Info</div>
   <div class="step-arrow">›</div>
-  <div class="step-item" id="step-nav-3"><div class="step-num">3</div>Career Tracks</div>
-  <div class="step-arrow">›</div>
-  <div class="step-item" id="step-nav-4"><div class="step-num">4</div>Resume</div>
+  <div class="step-item" id="step-nav-3"><div class="step-num">3</div>Build</div>
 </div>
 
 <div class="main">
@@ -303,7 +301,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <!-- STEP 1: UPLOAD (hero) -->
 <div id="step1">
   <div class="card">
-    <div class="card-eyebrow">Step 1 of 4</div>
+    <div class="card-eyebrow">Step 1 of 3</div>
     <div class="card-title">Upload Your Service Documents</div>
     <div class="card-sub">Upload your DD-214, evaluation reports (OER/NCOER/FITREP), award citations, or any service documents. We'll extract your background automatically. You can also skip and enter your info manually.</div>
 
@@ -341,7 +339,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <!-- STEP 2: CONFIRM INFO (branch + service details) -->
 <div id="step2" class="hidden">
   <div class="card">
-    <div class="card-eyebrow">Step 2 of 4</div>
+    <div class="card-eyebrow">Step 2 of 3</div>
     <div class="card-title">Confirm Your Service Information</div>
     <div class="card-sub">Select your branch and tell us about your military background. Fields may be pre-filled from your documents.</div>
 
@@ -470,37 +468,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
     <div class="btn-row">
       <button class="btn btn-outline btn-sm" onclick="goStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="analyzeCareerTracks()">Analyze My Career Tracks →</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Continue to Resume Builder →</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 3: CAREER TRACKS -->
+<!-- STEP 3: RESUME + CAREER INSIGHTS -->
 <div id="step3" class="hidden">
   <div class="card">
-    <div class="card-eyebrow">Step 3 of 4</div>
-    <div class="card-title">Your Civilian Career Tracks</div>
-    <div class="card-sub">Based on your occupational code and service history, here are your top civilian career matches. Select one to build your resume around.</div>
-
-    <div id="tracksLoading" class="loading-row hidden">
-      <div class="spinner"></div>
-      <span>Analyzing your O*NET occupational crosswalk...</span>
-    </div>
-
-    <div class="track-list" id="trackList"></div>
-    <div class="onet-credit">This site incorporates information from <a href="https://www.onetonline.org/" target="_blank">O*NET Web Services</a> by USDOL/ETA. O*NET® is a trademark of USDOL/ETA.</div>
-
-    <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="goStep(2)">← Back</button>
-      <button class="btn btn-primary" id="step3Next" onclick="goStep(4)" disabled>Build My Resume →</button>
-    </div>
-  </div>
-</div>
-
-<!-- STEP 4: RESUME -->
-<div id="step4" class="hidden">
-  <div class="card">
-    <div class="card-eyebrow">Step 4 of 4</div>
+    <div class="card-eyebrow">Step 3 of 3</div>
     <div class="card-title">Your Resume</div>
     <div class="card-sub">Generate your federal (USAJOBS), private sector, master resume, or LinkedIn profile. Click any section to edit directly.</div>
 
@@ -524,7 +500,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="resume-output" id="resumeOutput" contenteditable="true">Click a "Generate" button above to build your resume. You can edit this area directly after generation.</div>
 
     <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="goStep(3)">← Back</button>
+      <button class="btn btn-outline btn-sm" onclick="goStep(2)">← Back</button>
       <button class="btn btn-primary" onclick="exportPDF()">Print / Save PDF</button>
       <button class="btn btn-outline" onclick="exportText()">Download .txt</button>
       <button class="btn btn-outline" onclick="copyResume()">Copy to Clipboard</button>
@@ -532,11 +508,34 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
   </div>
 
-  <div class="card" id="jobsCard">
-    <div class="card-title">Matching Federal Job Openings</div>
-    <div class="card-sub">Live listings from USAJOBS matching your target career track.</div>
-    <div id="jobsLoading" class="loading-row hidden"><div class="spinner"></div><span>Searching USAJOBS...</span></div>
-    <div id="jobsList"></div>
+  <!-- CAREER INSIGHTS (collapsible, optional) -->
+  <div class="card" style="margin-top:1.25rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none" onclick="toggleInsights()">
+      <div>
+        <div class="card-title" style="margin-bottom:0.2rem">Career Insights</div>
+        <div style="font-size:0.83rem;color:var(--text-light)">Optional — explore career tracks, skill gaps, and live federal job listings</div>
+      </div>
+      <div id="insightsChevron" style="font-size:1.5rem;color:var(--text-light);padding-left:1rem;transition:transform 0.2s">›</div>
+    </div>
+
+    <div id="insightsBody" class="hidden" style="margin-top:1.25rem">
+      <button class="btn btn-outline" onclick="analyzeCareerTracks()" style="margin-bottom:1rem">Analyze My Career Tracks</button>
+
+      <div id="tracksLoading" class="loading-row hidden">
+        <div class="spinner"></div>
+        <span>Analyzing your O*NET occupational crosswalk...</span>
+      </div>
+
+      <div class="track-list" id="trackList"></div>
+      <div class="onet-credit" id="onetCredit" style="display:none">This site incorporates information from <a href="https://www.onetonline.org/" target="_blank">O*NET Web Services</a> by USDOL/ETA. O*NET® is a trademark of USDOL/ETA.</div>
+
+      <div id="jobsSection" style="display:none;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+        <div class="card-title" style="margin-bottom:0.25rem">Matching Federal Job Openings</div>
+        <div style="font-size:0.83rem;color:var(--text-light);margin-bottom:0.75rem">Live listings from USAJOBS for your selected track.</div>
+        <div id="jobsLoading" class="loading-row hidden"><div class="spinner"></div><span>Searching USAJOBS...</span></div>
+        <div id="jobsList"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -883,17 +882,11 @@ function init() {
 function goStep(n) {
   state.step = n;
   renderStep(n);
-  if (n === 3) {
-    setTimeout(() => {
-      renderTracks(state.mosData ? state.mosData.tracks : getDefaultTracks());
-    }, 100);
-  }
-  if (n === 4) searchJobs();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderStep(n) {
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= 3; i++) {
     const el = document.getElementById('step'+i);
     if (el) el.classList.toggle('hidden', i !== n);
     const nav = document.getElementById('step-nav-'+i);
@@ -903,6 +896,14 @@ function renderStep(n) {
       else if (i < n) { nav.classList.add('done','clickable'); nav.onclick = () => goStep(i); }
     }
   }
+}
+
+function toggleInsights() {
+  const body = document.getElementById('insightsBody');
+  const chevron = document.getElementById('insightsChevron');
+  const opening = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !opening);
+  chevron.style.transform = opening ? 'rotate(90deg)' : '';
 }
 
 // ============================================================
@@ -959,13 +960,17 @@ async function analyzeCareerTracks() {
   const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const combinedText = [allDocs, pasteText].filter(Boolean).join('\n\n');
 
-  if (state.mosData) { goStep(3); return; }
+  if (state.mosData) {
+    renderTracks(state.mosData.tracks);
+    document.getElementById('onetCredit').style.display = '';
+    return;
+  }
 
   const mosInput = document.getElementById('mosInput')?.value.trim() || '';
 
+  document.getElementById('tracksLoading').classList.remove('hidden');
+
   if (!mosInput && combinedText) {
-    goStep(3);
-    document.getElementById('tracksLoading').classList.remove('hidden');
     try {
       const resp = await fetch('/api/chat', {
         method: 'POST',
@@ -987,13 +992,17 @@ async function analyzeCareerTracks() {
     } catch(e) { console.error('Claude track extraction failed', e); }
     document.getElementById('tracksLoading').classList.add('hidden');
     renderTracks(state.mosData ? state.mosData.tracks : getDefaultTracks());
+    document.getElementById('onetCredit').style.display = '';
     return;
   }
 
-  if (!mosInput) { goStep(3); return; }
+  if (!mosInput) {
+    document.getElementById('tracksLoading').classList.add('hidden');
+    renderTracks(getDefaultTracks());
+    document.getElementById('onetCredit').style.display = '';
+    return;
+  }
 
-  goStep(3);
-  document.getElementById('tracksLoading').classList.remove('hidden');
   try {
     const keyword = encodeURIComponent(mosInput);
     const resp = await fetch(`/api/onet?keyword=${keyword}`);
@@ -1014,6 +1023,7 @@ async function analyzeCareerTracks() {
   } catch(e) { /* use static fallback */ }
   document.getElementById('tracksLoading').classList.add('hidden');
   renderTracks(state.mosData ? state.mosData.tracks : getDefaultTracks());
+  document.getElementById('onetCredit').style.display = '';
 }
 
 // ============================================================
@@ -1053,7 +1063,8 @@ function selectTrack(i) {
   state.selectedTrack = tracks[i];
   document.querySelectorAll('.track-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('track-'+i).classList.add('selected');
-  document.getElementById('step3Next').disabled = false;
+  document.getElementById('jobsSection').style.display = '';
+  searchJobs();
 }
 </script>
 
@@ -1872,7 +1883,7 @@ function viewSavedResume(id) {
   if (!content) return;
   document.getElementById('resumeOutput').textContent = content;
   closeSettings();
-  goStep(4);
+  goStep(3);
 }
 
 async function renameResume(id) {
