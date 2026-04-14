@@ -1073,7 +1073,7 @@ async function generateResume(type) {
   const track = state.selectedTrack || { title: 'Federal Employment', gs: 'GS', desc: '' };
   const mos = state.mosData ? `${state.mos} — ${state.mosData.title}` : state.mos;
   const pasteText = document.getElementById('pasteText').value;
-  const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
+  const allDocs = state.documents.slice().reverse().map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const docText = [allDocs, pasteText].filter(Boolean).join('\n\n');
   const isFederal = type === 'federal';
   const isMaster = type === 'master';
@@ -1197,7 +1197,7 @@ Target Location: ${state.location || 'Open / Flexible'}
 Target Career Track: ${track.title} (${track.gs})
 Additional Information: ${state.additional || 'Extract awards, certifications, and notable achievements from documents'}
 
-${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, isMaster ? 80000 : 24000)}` : ''}
+${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, isMaster ? 150000 : 24000)}` : ''}
 ${docText ? 'NOTE: Use the service documents as the primary source for dates, positions, accomplishments, and metrics. Extract real details rather than using placeholders where possible.' : ''}
 
 ${rankMosInferredSkills}
