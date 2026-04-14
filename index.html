@@ -228,28 +228,262 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .footer a{color:var(--navy-light);cursor:pointer;text-decoration:none;font-weight:500}
 .footer a:hover{text-decoration:underline}
 
+/* ============================================================
+   MOBILE (≤640px)
+   ============================================================ */
+@media(max-width:640px){
+  /* Layout */
+  .main{margin:1rem auto;padding:0 0.75rem}
+  .card{padding:1.25rem;border-radius:8px}
+  .card-title{font-size:1.1rem}
+
+  /* Header */
+  .header{padding:0.7rem 1rem}
+  .logo-text{font-size:1.1rem}
+  .logo-sub{display:none}
+  .settings-btn{padding:0.32rem 0.65rem;font-size:0.76rem}
+  .user-chip{font-size:0.74rem}
+
+  /* Progress nav */
+  .progress-nav{padding:0.45rem 1rem}
+  .step-item{font-size:0.73rem}
+  .step-num{width:18px;height:18px;font-size:0.62rem}
+  .step-arrow{margin:0 0.3rem;font-size:0.65rem}
+
+  /* Resume tabs — wrap and shrink */
+  .resume-type-btns{gap:0.35rem}
+  .resume-type-btn{padding:0.38rem 0.65rem;font-size:0.76rem;border-radius:6px}
+
+  /* Resume output */
+  .resume-output{min-height:320px;padding:1rem;font-size:0.84rem;line-height:1.65}
+
+  /* Button rows */
+  .btn-row{gap:0.5rem;margin-top:1rem}
+  .btn{padding:0.5rem 1rem;font-size:0.84rem}
+  .btn-sm{padding:0.34rem 0.7rem;font-size:0.78rem}
+
+  /* Settings drawer — full width on mobile */
+  .drawer{width:100%;right:-100%}
+  .drawer.open{right:0}
+
+  /* Modals */
+  .modal{padding:1.5rem;border-radius:10px}
+  .auth-card{padding:1.75rem 1.25rem;border-radius:10px}
+
+  /* Toast */
+  .toast-wrap{bottom:1rem;right:0.75rem;left:0.75rem}
+  .toast{max-width:100%;font-size:0.82rem}
+
+  /* Track cards */
+  .track-head{flex-direction:column;gap:0.35rem}
+  .track-series{align-self:flex-start}
+
+  /* Form */
+  .form-input{font-size:0.88rem}
+}
+
 /* Print */
 @media print{
-  .header,.progress-nav,.btn-row,.resume-type-btns,.loading-row,.job-section,.settings-btn,.drawer,.drawer-overlay,.toast-wrap,.footer{display:none!important}
+  .header,.progress-nav,.btn-row,.resume-type-btns,.loading-row,.job-section,.settings-btn,.drawer,.drawer-overlay,.toast-wrap,.footer,.job-ann-toggle,#jobAnnBody{display:none!important}
   .resume-output{border:none;padding:0;min-height:unset}
   body{background:white}
   .card{box-shadow:none;padding:0;border:none}
 }
 .hidden{display:none!important}
+
+/* Job announcement toggle */
+.job-ann-toggle{background:none;border:1.5px solid var(--border);color:var(--text-light);padding:0.38rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;font-family:inherit;transition:all 0.2s}
+.job-ann-toggle:hover{border-color:var(--navy);color:var(--navy)}
+
+/* ============================================================
+   LANDING PAGE
+   ============================================================ */
+#landingPage{min-height:100vh;background:#0d1f35;color:white;font-family:'Inter',system-ui,sans-serif}
+
+.lp-nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;background:rgba(0,0,0,0.25);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.08)}
+.lp-nav-logo{display:flex;align-items:center;gap:0.5rem}
+.lp-nav-star{font-size:1.4rem;color:var(--gold)}
+.lp-nav-name{font-size:1.15rem;font-weight:800;letter-spacing:0.3px}
+.lp-nav-actions{display:flex;gap:0.75rem;align-items:center}
+.lp-nav-signin{background:transparent;border:1.5px solid rgba(255,255,255,0.3);color:white;padding:0.42rem 1rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:600;font-family:inherit;transition:all 0.2s}
+.lp-nav-signin:hover{border-color:white;background:rgba(255,255,255,0.08)}
+.lp-nav-cta{background:var(--gold);color:var(--navy);padding:0.45rem 1.1rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:700;font-family:inherit;border:none;transition:all 0.2s}
+.lp-nav-cta:hover{background:#b8963f}
+
+.lp-hero{background:linear-gradient(160deg,#0d1f35 0%,#1a3a5c 60%,#0d2a45 100%);padding:5rem 2rem 4rem;text-align:center}
+.lp-hero-inner{max-width:760px;margin:0 auto}
+.lp-hero-eyebrow{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold);margin-bottom:1rem}
+.lp-hero-h1{font-size:3rem;font-weight:800;line-height:1.15;margin-bottom:1.25rem;letter-spacing:-0.5px}
+.lp-gold{color:var(--gold)}
+.lp-hero-sub{font-size:1.05rem;color:rgba(255,255,255,0.75);line-height:1.7;max-width:580px;margin:0 auto 2rem}
+.lp-hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+.lp-btn-primary{background:var(--gold);color:var(--navy);padding:0.75rem 1.75rem;border-radius:10px;font-size:0.95rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.lp-btn-primary:hover{background:#b8963f;transform:translateY(-1px);box-shadow:0 4px 16px rgba(201,168,76,0.35)}
+.lp-btn-outline{background:transparent;color:white;border:1.5px solid rgba(255,255,255,0.4);padding:0.75rem 1.5rem;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.lp-btn-outline:hover{border-color:white;background:rgba(255,255,255,0.08)}
+.lp-hero-note{font-size:0.78rem;color:rgba(255,255,255,0.4);margin-top:0.5rem}
+.lp-br{display:inline}
+
+.lp-features{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;max-width:1000px;margin:0 auto;padding:3.5rem 2rem}
+.lp-feature-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.5rem;text-align:center}
+.lp-feature-icon{font-size:2rem;margin-bottom:0.75rem}
+.lp-feature-title{font-weight:700;font-size:0.95rem;margin-bottom:0.5rem;color:white}
+.lp-feature-desc{font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.6}
+
+.lp-quote-section{background:rgba(201,168,76,0.08);border-top:1px solid rgba(201,168,76,0.2);border-bottom:1px solid rgba(201,168,76,0.2);padding:3rem 2rem;text-align:center}
+.lp-quote-card{max-width:640px;margin:0 auto}
+.lp-quote-stars{color:var(--gold);font-size:1.1rem;margin-bottom:1rem;letter-spacing:2px}
+.lp-quote-text{font-size:1.05rem;color:rgba(255,255,255,0.9);line-height:1.75;font-style:italic;margin-bottom:1rem}
+.lp-quote-attr{font-size:0.8rem;color:var(--gold);font-weight:600}
+
+.lp-types-section{padding:4rem 2rem;background:#0a1929}
+.lp-types-inner{max-width:800px;margin:0 auto}
+.lp-types-h2{text-align:center;font-size:1.65rem;font-weight:800;margin-bottom:2rem;color:white}
+.lp-types-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.lp-type-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:10px;padding:1.25rem}
+.lp-type-label{font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:0.5rem;padding:0.2rem 0.55rem;border-radius:5px;display:inline-block}
+.lp-type-fed{background:#1e3a5f;color:#7db3ff}
+.lp-type-priv{background:#1a3a1e;color:#6ee7a4}
+.lp-type-master{background:#3a2a10;color:#fbbf24}
+.lp-type-cover{background:#3a1a2a;color:#f9a8d4}
+.lp-type-desc{font-size:0.84rem;color:rgba(255,255,255,0.6);line-height:1.6;margin-top:0.4rem}
+
+.lp-footer{background:#070f1a;padding:1.5rem 2rem;display:flex;gap:1rem;align-items:center;justify-content:center;font-size:0.78rem;color:rgba(255,255,255,0.35);flex-wrap:wrap}
+.lp-footer a{color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:none}
+.lp-footer a:hover{color:white}
+
+/* Auth modal adjustments (now a modal, not fullscreen) */
+#authGate{background:rgba(0,0,0,0.65)}
+.auth-card{position:relative}
+
+@media(max-width:640px){
+  .lp-nav{padding:0.75rem 1rem}
+  .lp-nav-cta{display:none}
+  .lp-hero{padding:3.5rem 1.25rem 3rem}
+  .lp-hero-h1{font-size:2rem}
+  .lp-hero-sub{font-size:0.92rem}
+  .lp-br{display:none}
+  .lp-features{grid-template-columns:1fr 1fr;padding:2rem 1.25rem;gap:0.75rem}
+  .lp-types-grid{grid-template-columns:1fr}
+  .lp-types-section{padding:2.5rem 1.25rem}
+  .lp-quote-section{padding:2rem 1.25rem}
+}
 </style>
 </head>
 <body>
 
-<!-- AUTH GATE -->
-<div id="authGate" class="auth-gate">
+<!-- LANDING PAGE -->
+<div id="landingPage">
+
+  <!-- Landing nav -->
+  <div class="lp-nav">
+    <div class="lp-nav-logo">
+      <span class="lp-nav-star">★</span>
+      <span class="lp-nav-name">RankToRole</span>
+    </div>
+    <div class="lp-nav-actions">
+      <button class="lp-nav-signin" onclick="openAuthModal('signin')">Sign In</button>
+      <button class="lp-nav-cta" onclick="openAuthModal('signup')">Get Started — Free</button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="lp-hero">
+    <div class="lp-hero-inner">
+      <div class="lp-hero-eyebrow">Built by a veteran. For veterans.</div>
+      <h1 class="lp-hero-h1">Your service record is a<br class="lp-br"> <span class="lp-gold">resume goldmine.</span></h1>
+      <p class="lp-hero-sub">Upload your DD-214, NCOERs, or Talent Profile. Get a federal-grade USAJOBS resume, an ATS-optimized private sector resume, and a complete master career inventory — in minutes.</p>
+      <div class="lp-hero-btns">
+        <button class="lp-btn-primary" onclick="openAuthModal('signup')">Build My Resume — Free</button>
+        <button class="lp-btn-outline" onclick="openAuthModal('signin')">Sign In</button>
+      </div>
+      <p class="lp-hero-note">Free · No credit card · Works with any branch</p>
+    </div>
+  </div>
+
+  <!-- Feature cards -->
+  <div class="lp-features">
+    <div class="lp-feature-card">
+      <div class="lp-feature-icon">📄</div>
+      <div class="lp-feature-title">3 Resume Types</div>
+      <div class="lp-feature-desc">Federal USAJOBS, private sector ATS-optimized, and a master career inventory — all generated from the same documents.</div>
+    </div>
+    <div class="lp-feature-card">
+      <div class="lp-feature-icon">🤖</div>
+      <div class="lp-feature-title">AI-Powered Translation</div>
+      <div class="lp-feature-desc">Military jargon becomes civilian gold. NCOERs, DA 2166-8s, and Talent Profiles extracted and translated automatically — including scanned PDFs.</div>
+    </div>
+    <div class="lp-feature-card">
+      <div class="lp-feature-icon">🎯</div>
+      <div class="lp-feature-title">Tailored to the Job</div>
+      <div class="lp-feature-desc">Paste any USAJOBS announcement and every resume — including the cover letter — is rewritten to mirror its exact keywords and KSAs.</div>
+    </div>
+    <div class="lp-feature-card">
+      <div class="lp-feature-icon">🔍</div>
+      <div class="lp-feature-title">Career Track Matching</div>
+      <div class="lp-feature-desc">Your MOS crosswalks to federal GS series and civilian roles. See skill gaps, salary ranges, and live USAJOBS listings for your track.</div>
+    </div>
+  </div>
+
+  <!-- Quote -->
+  <div class="lp-quote-section">
+    <div class="lp-quote-card">
+      <div class="lp-quote-stars">★★★★★</div>
+      <blockquote class="lp-quote-text">"TAP gave me a generic resume. This gave me a career. Three duty stations, four deployments, 20 years of service — finally on paper the way it deserved to be."</blockquote>
+      <div class="lp-quote-attr">— SFC (Ret.) Paul Sowu, 92A · 20 Years Army · Founder</div>
+    </div>
+  </div>
+
+  <!-- Resume types breakdown -->
+  <div class="lp-types-section">
+    <div class="lp-types-inner">
+      <h2 class="lp-types-h2">Everything you need for transition</h2>
+      <div class="lp-types-grid">
+        <div class="lp-type-item">
+          <div class="lp-type-label lp-type-fed">Federal Resume</div>
+          <div class="lp-type-desc">USAJOBS-compliant. Hours/week, salary equivalents, supervisor contacts, KSA language. Everything OPM requires.</div>
+        </div>
+        <div class="lp-type-item">
+          <div class="lp-type-label lp-type-priv">Private Sector</div>
+          <div class="lp-type-desc">1–2 pages, ATS-optimized, metrics-first. Skills section front-loaded for keyword scanners.</div>
+        </div>
+        <div class="lp-type-item">
+          <div class="lp-type-label lp-type-master">Master Resume</div>
+          <div class="lp-type-desc">No length limit. Every duty station, every rating period, every award. Your complete career on record.</div>
+        </div>
+        <div class="lp-type-item">
+          <div class="lp-type-label lp-type-cover">Cover Letter</div>
+          <div class="lp-type-desc">Tight, 3-paragraph letter. Leads with your strongest metric. Tailored to the exact posting if you paste one.</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:2.5rem">
+        <button class="lp-btn-primary" onclick="openAuthModal('signup')">Get Started — It's Free</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Landing footer -->
+  <div class="lp-footer">
+    <span>© 2025 RankToRole</span>
+    <span>·</span>
+    <a onclick="openAuthModal('signin')">Sign In</a>
+    <span>·</span>
+    <a href="https://www.usajobs.gov/" target="_blank">USAJOBS</a>
+    <span>·</span>
+    <a href="https://www.onetonline.org/" target="_blank">O*NET OnLine</a>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authGate" onclick="if(event.target===this)closeAuthModal()">
   <div class="auth-card">
+    <button class="modal-close" onclick="closeAuthModal()" style="float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-light);line-height:1">✕</button>
     <div class="auth-logo">
       <div class="auth-logo-star">★</div>
       <div class="auth-logo-text">RankToRole</div>
       <div class="auth-logo-sub">Military → Civilian Resume Builder</div>
     </div>
-    <p class="auth-tagline">"Built by a veteran, for veterans — because TAP left us all with a generic resume."</p>
-    <div class="auth-title" id="authTitle" style="margin-top:1.25rem">Sign in to your account</div>
+    <div class="auth-title" id="authTitle">Sign in to your account</div>
     <button class="google-btn" onclick="signInWithGoogle()">
       <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-3.59-13.46-8.71l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       Continue with Google
@@ -455,9 +689,21 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Target Location <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-      <input class="form-input" id="locationInput" type="text" placeholder="e.g. Atlanta, GA or Remote">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Veterans Preference <span style="font-weight:400;color:var(--text-light)">(federal apps)</span></label>
+        <select class="form-input" id="veteransPreferenceInput">
+          <option value="">None / Not Applicable</option>
+          <option value="5-Point (Veteran)">5-Point — Veteran (honorable discharge)</option>
+          <option value="10-Point (Disability)">10-Point — Service-connected disability 10%+</option>
+          <option value="10-Point (Purple Heart)">10-Point — Purple Heart recipient</option>
+          <option value="10-Point (Derived)">10-Point — Derived (spouse/widow of disabled vet)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Target Location <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
+        <input class="form-input" id="locationInput" type="text" placeholder="e.g. Atlanta, GA or Remote">
+      </div>
     </div>
 
     <div class="form-group">
@@ -480,11 +726,25 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="card-title">Your Resume</div>
     <div class="card-sub">Generate your federal (USAJOBS), private sector, master resume, or LinkedIn profile. Click any section to edit directly.</div>
 
+    <!-- JOB ANNOUNCEMENT TAILORING (optional) -->
+    <div style="margin-bottom:0.75rem">
+      <button type="button" class="job-ann-toggle" onclick="toggleJobAnn()" id="jobAnnToggle">
+        <span id="jobAnnChevron" style="transition:transform 0.2s;display:inline-block;margin-right:0.25rem">›</span>
+        Tailor to a specific job posting
+        <span style="font-weight:400;color:var(--text-light);font-size:0.79rem;margin-left:0.35rem">(optional)</span>
+      </button>
+      <div id="jobAnnBody" class="hidden">
+        <textarea class="form-input" id="jobAnnouncementInput" style="min-height:90px;margin-top:0.5rem;font-size:0.84rem" placeholder="Paste a USAJOBS announcement or any job description. Your resume and cover letter will be tailored to match its keywords and KSAs." onchange="onJobAnnChange()"></textarea>
+        <div class="form-hint">Changing the announcement clears generated resumes so you can regenerate with it applied.</div>
+      </div>
+    </div>
+
     <div class="resume-type-btns">
       <button class="resume-type-btn active" id="tabFed" onclick="handleResumeTab('federal')">Federal Resume</button>
       <button class="resume-type-btn" id="tabPriv" onclick="handleResumeTab('private')">Private Sector</button>
       <button class="resume-type-btn" id="tabMaster" onclick="handleResumeTab('master')">Master Resume</button>
       <button class="resume-type-btn" id="tabLinkedIn" onclick="handleResumeTab('linkedin')">LinkedIn Profile</button>
+      <button class="resume-type-btn" id="tabCover" onclick="handleResumeTab('coverletter')">Cover Letter</button>
     </div>
     <div class="loading-row hidden" id="resumeLoading" style="margin-bottom:0.75rem">
       <div class="spinner"></div>
@@ -642,7 +902,8 @@ let state = {
   branch: null, mos: '', mosData: null, rank: '', years: '',
   clearance: 'None', education: 'High School', location: '',
   additional: '', documents: [], selectedTrack: null,
-  resumes: { federal: '', private: '', master: '', linkedin: '' },
+  veteransPreference: '', jobAnnouncement: '',
+  resumes: { federal: '', private: '', master: '', linkedin: '', coverletter: '' },
   activeTab: 'federal', step: 1, contact: {}
 };
 
@@ -864,9 +1125,17 @@ const BRANCH_LABELS = {
 // ============================================================
 // INIT
 // ============================================================
+function saveResumesToStorage() {
+  try { localStorage.setItem('ranktorole_resumes', JSON.stringify(state.resumes)); } catch(e) {}
+}
+
 function init() {
   const stored = JSON.parse(localStorage.getItem('ranktorole_contact') || '{}');
   state.contact = stored;
+  try {
+    const saved = JSON.parse(localStorage.getItem('ranktorole_resumes') || '{}');
+    Object.keys(state.resumes).forEach(k => { if (saved[k]) state.resumes[k] = saved[k]; });
+  } catch(e) {}
   renderStep(1);
 }
 
@@ -890,6 +1159,20 @@ function renderStep(n) {
       else if (i < n) { nav.classList.add('done','clickable'); nav.onclick = () => goStep(i); }
     }
   }
+  if (n === 3) {
+    // Restore tab visual states for any saved resumes
+    Object.entries(TAB_IDS).forEach(([type, id]) => {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.classList.remove('active','done');
+      if (type === state.activeTab) btn.classList.add('active');
+      else if (state.resumes[type]) btn.classList.add('done');
+    });
+    const output = document.getElementById('resumeOutput');
+    if (output && state.resumes[state.activeTab]) {
+      output.textContent = state.resumes[state.activeTab];
+    }
+  }
 }
 
 function toggleInsights() {
@@ -898,6 +1181,32 @@ function toggleInsights() {
   const opening = body.classList.contains('hidden');
   body.classList.toggle('hidden', !opening);
   chevron.style.transform = opening ? 'rotate(90deg)' : '';
+}
+
+function toggleJobAnn() {
+  const body = document.getElementById('jobAnnBody');
+  const chevron = document.getElementById('jobAnnChevron');
+  const opening = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !opening);
+  chevron.style.transform = opening ? 'rotate(90deg)' : '';
+}
+
+function onJobAnnChange() {
+  const val = document.getElementById('jobAnnouncementInput')?.value || '';
+  if (val === state.jobAnnouncement) return;
+  state.jobAnnouncement = val;
+  if (Object.values(state.resumes).some(v => v)) {
+    state.resumes = { federal: '', private: '', master: '', linkedin: '', coverletter: '' };
+    localStorage.removeItem('ranktorole_resumes');
+    const tabIds = { federal:'tabFed', private:'tabPriv', master:'tabMaster', linkedin:'tabLinkedIn', coverletter:'tabCover' };
+    Object.values(tabIds).forEach(id => {
+      const btn = document.getElementById(id); if (btn) btn.classList.remove('done','active');
+    });
+    const fedBtn = document.getElementById('tabFed'); if (fedBtn) fedBtn.classList.add('active');
+    state.activeTab = 'federal';
+    document.getElementById('resumeOutput').textContent = 'Job announcement updated. Click a tab to regenerate your resume with it applied.';
+    toast('Job announcement saved — click a tab to regenerate.', '');
+  }
 }
 
 // ============================================================
@@ -1067,12 +1376,14 @@ function selectTrack(i) {
 // RESUME GENERATION
 // ============================================================
 async function generateResume(type) {
-  state.rank      = document.getElementById('rankInput').value || '';
-  state.years     = document.getElementById('yearsInput').value || '';
-  state.clearance = document.getElementById('clearanceInput').value || '';
-  state.education = document.getElementById('educationInput').value || '';
-  state.location  = document.getElementById('locationInput').value || '';
-  state.additional = document.getElementById('additionalInput').value || '';
+  state.rank               = document.getElementById('rankInput').value || '';
+  state.years              = document.getElementById('yearsInput').value || '';
+  state.clearance          = document.getElementById('clearanceInput').value || '';
+  state.education          = document.getElementById('educationInput').value || '';
+  state.location           = document.getElementById('locationInput').value || '';
+  state.additional         = document.getElementById('additionalInput').value || '';
+  state.veteransPreference = document.getElementById('veteransPreferenceInput')?.value || '';
+  state.jobAnnouncement    = document.getElementById('jobAnnouncementInput')?.value || '';
 
   const contact = state.contact;
   const track = state.selectedTrack || { title: 'Federal Employment', gs: 'GS', desc: '' };
@@ -1088,7 +1399,7 @@ FEDERAL RESUME (USAJOBS FORMAT):
 
 SECTIONS (in this order):
 1. CONTACT: [NAME] | [CITY, STATE] | [PHONE] | [EMAIL]
-   Veterans Preference: [5-Point or 10-Point] | Clearance: ${state.clearance || 'See documents'}
+   Veterans Preference: ${state.veteransPreference || 'None'} | Clearance: ${state.clearance || 'See documents'}
 2. PROFESSIONAL SUMMARY (3-4 lines) — keyword-rich, targeting ${track.title} (${track.gs})
 3. PROFESSIONAL EXPERIENCE (reverse chronological, largest section)
    Each entry format:
@@ -1198,7 +1509,7 @@ UNIVERSAL RULES (apply to all resume types, in priority order):
 9. LANGUAGE: Expand all military acronyms on first use (e.g., "NCOER (Non-Commissioned Officer Evaluation Report)"). Translate all jargon to civilian equivalents. Translate awards: MSM = top-5% performance award; ARCOM = commendation award; AAM = achievement award; MUC/PUC = unit excellence award; BSM = valor or meritorious service medal. Translate NCOER ratings: "Most Qualified" = top performer (top 5–10%); "Highly Qualified" = above average performer. Unknown metrics → [~estimate range]. No classified or operationally sensitive information.
 10. DEPLOYMENTS: Identify combat/contingency deployments by operation name, theater, and duration. Frame as high-stakes logistics operations under hostile conditions with zero margin for error.
 11. OUTPUT: Resume content only — no preamble, explanation, or closing commentary.
-
+${state.jobAnnouncement ? `\nTARGET JOB ANNOUNCEMENT (mirror its exact keywords, requirements, and KSAs throughout the resume):\n${state.jobAnnouncement.slice(0, 3000)}` : ''}
 Generate the complete resume now. Use ALL CAPS section headers.`;
 
   const loadingText = isMaster ? 'Building master career inventory...' : isFederal ? 'Generating federal resume...' : 'Generating private sector resume...';
@@ -1223,6 +1534,7 @@ Generate the complete resume now. Use ALL CAPS section headers.`;
     const text = data.content[0].text;
     state.resumes[type] = text;
     document.getElementById('resumeOutput').textContent = text;
+    saveResumesToStorage();
     const label = isMaster ? 'Master career inventory' : isFederal ? 'Federal' : 'Private sector';
     toast(`${label} resume generated!`, 'success');
     if (!reviewPromptShown) { reviewPromptShown = true; setTimeout(openReviewPrompt, 2500); }
@@ -1234,10 +1546,13 @@ Generate the complete resume now. Use ALL CAPS section headers.`;
   }
 }
 
+const TAB_IDS = { federal:'tabFed', private:'tabPriv', master:'tabMaster', linkedin:'tabLinkedIn', coverletter:'tabCover' };
+const TAB_LABELS = { federal:'Federal Resume', private:'Private Sector', master:'Master Resume', linkedin:'LinkedIn Profile', coverletter:'Cover Letter' };
+
 function setResumeLoading(on, text='') {
   document.getElementById('resumeLoading').classList.toggle('hidden', !on);
   document.getElementById('resumeLoadingText').textContent = text;
-  ['tabFed','tabPriv','tabMaster','tabLinkedIn'].forEach(id => {
+  Object.values(TAB_IDS).forEach(id => {
     const el = document.getElementById(id);
     if (el) el.disabled = on;
   });
@@ -1247,6 +1562,8 @@ function handleResumeTab(type) {
   showResumeTab(type);
   if (type === 'linkedin') {
     if (!state.resumes.linkedin) generateLinkedIn();
+  } else if (type === 'coverletter') {
+    if (!state.resumes.coverletter) generateCoverLetter();
   } else {
     if (!state.resumes[type]) generateResume(type);
   }
@@ -1254,8 +1571,8 @@ function handleResumeTab(type) {
 
 function showResumeTab(type) {
   state.activeTab = type;
-  ['federal','private','master','linkedin'].forEach(t => {
-    const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+  Object.entries(TAB_IDS).forEach(([t, id]) => {
+    const btn = document.getElementById(id);
     if (!btn) return;
     btn.classList.toggle('active', t === type);
     btn.classList.toggle('done', !!state.resumes[t] && t !== type);
@@ -1264,8 +1581,7 @@ function showResumeTab(type) {
   if (state.resumes[type]) {
     output.textContent = state.resumes[type];
   } else {
-    const labels = { federal: 'Federal Resume', private: 'Private Sector', master: 'Master Resume', linkedin: 'LinkedIn Profile' };
-    output.textContent = `Click "${labels[type] || type}" above to generate.`;
+    output.textContent = `Click "${TAB_LABELS[type] || type}" above to generate.`;
   }
 }
 
@@ -1333,6 +1649,7 @@ Option 3: [role + impact headline]
 5. Click Add profile section → Skills → add each skill listed above
 6. Connect with veterans in your target field using the headline as an icebreaker
 
+${state.jobAnnouncement ? `\nTARGET JOB ANNOUNCEMENT (tailor the profile and bullets to match its keywords):\n${state.jobAnnouncement.slice(0, 2000)}\n` : ''}
 Output only the content above — no preamble.` }]
       })
     });
@@ -1341,9 +1658,116 @@ Output only the content above — no preamble.` }]
     const text = data.content[0].text;
     state.resumes.linkedin = text;
     document.getElementById('resumeOutput').textContent = text;
+    saveResumesToStorage();
     toast('LinkedIn profile generated!', 'success');
   } catch(e) {
     toast('LinkedIn generation failed: ' + e.message, 'error');
+  } finally {
+    setResumeLoading(false);
+  }
+}
+
+// ============================================================
+// COVER LETTER GENERATION
+// ============================================================
+async function generateCoverLetter() {
+  showResumeTab('coverletter');
+  if (state.resumes.coverletter) return;
+
+  state.rank               = document.getElementById('rankInput').value || '';
+  state.years              = document.getElementById('yearsInput').value || '';
+  state.clearance          = document.getElementById('clearanceInput').value || '';
+  state.veteransPreference = document.getElementById('veteransPreferenceInput')?.value || '';
+  state.jobAnnouncement    = document.getElementById('jobAnnouncementInput')?.value || '';
+
+  const track = state.selectedTrack || { title: 'Federal Employment', gs: 'GS' };
+  const mos = state.mosData ? `${state.mos} — ${state.mosData.title}` : state.mos;
+  const pasteText = document.getElementById('pasteText').value;
+  const allDocs = state.documents.slice().reverse().map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
+  const docText = [allDocs, pasteText].filter(Boolean).join('\n\n');
+  const contact = state.contact;
+  const contactName  = contact.name  || '[YOUR FULL NAME]';
+  const contactEmail = contact.email || '[YOUR EMAIL]';
+  const contactPhone = contact.phone || '[YOUR PHONE]';
+  const contactCity  = contact.city  || '[YOUR CITY, STATE]';
+
+  const jobSection = state.jobAnnouncement
+    ? `TARGET JOB ANNOUNCEMENT (tailor the letter to this specific posting — mirror its keywords, requirements, and agency mission):\n${state.jobAnnouncement.slice(0, 2500)}`
+    : `Target Career Track: ${track.title} (${track.gs})`;
+
+  const prompt = `You are an expert cover letter writer for military veterans transitioning to civilian careers.
+
+VETERAN BACKGROUND:
+Branch: ${state.branch ? state.branch.charAt(0).toUpperCase() + state.branch.slice(1) : 'Extract from document'}
+Occupational Code: ${mos || 'Extract from document'}
+Rank at Separation: ${state.rank || 'Extract from document'}
+Years of Service: ${state.years || 'Extract from document'}
+Security Clearance: ${state.clearance || 'Extract from document'}
+Veterans Preference: ${state.veteransPreference || 'N/A'}
+
+CONTACT INFORMATION:
+Name: ${contactName}
+Email: ${contactEmail}
+Phone: ${contactPhone}
+Location: ${contactCity}
+
+${jobSection}
+
+${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, 30000)}` : ''}
+
+LANGUAGE RULES:
+- Expand all military acronyms on first use. Translate all jargon to civilian equivalents.
+- Awards: MSM = top-5% performance award; ARCOM = commendation; AAM = achievement; MUC/PUC = unit excellence.
+- No classified or operationally sensitive information.
+- Do NOT start with "I am writing to apply for..."
+
+FORMAT:
+[Today's date — use current date]
+
+Hiring Manager
+[Agency/Company Name${state.jobAnnouncement ? ' — extract from announcement' : ''}]
+[City, State]
+
+Dear Hiring Manager,
+
+[Opening — 2-3 sentences. Lead with strongest metric or accomplishment. State the role. No clichés.]
+
+[Body paragraph 1 — 3-4 sentences. 2-3 specific accomplishments with quantified metrics directly relevant to this role, translated to civilian language.]
+
+[Body paragraph 2 — 2-3 sentences. Agency/organization mission alignment. What you uniquely bring as a veteran.]
+
+[Closing — 2 sentences. Call to action. Thank them.]
+
+Sincerely,
+${contactName}
+${contactPhone} | ${contactEmail}
+
+RULES:
+- 3-4 paragraphs total, under 400 words
+- If a job announcement was provided, mirror its exact language and requirements
+- Output only the cover letter — no preamble or commentary`;
+
+  setResumeLoading(true, 'Writing cover letter...');
+  try {
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    const data = await resp.json();
+    const text = data.content[0].text;
+    state.resumes.coverletter = text;
+    document.getElementById('resumeOutput').textContent = text;
+    saveResumesToStorage();
+    toast('Cover letter generated!', 'success');
+    if (!reviewPromptShown) { reviewPromptShown = true; setTimeout(openReviewPrompt, 2500); }
+  } catch(e) {
+    toast('Cover letter generation failed: ' + e.message, 'error');
   } finally {
     setResumeLoading(false);
   }
@@ -1752,11 +2176,15 @@ let authMode = 'signin';
 
 async function initAuth() {
   const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
-  if (!cfg.supabaseUrl) { showAuthError('Configuration error. Please try again later.'); return; }
+  if (!cfg.supabaseUrl) {
+    showAuthError('Configuration error. Please try again later.');
+    openAuthModal('signin');
+    return;
+  }
   sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   const { data: { session } } = await sbClient.auth.getSession();
   if (session) { currentUser = session.user; showApp(); }
-  else showAuthGate();
+  else showAuthGate(); // shows landing page
   sbClient.auth.onAuthStateChange((_event, session) => {
     if (session) { currentUser = session.user; showApp(); }
     else { currentUser = null; showAuthGate(); }
@@ -1764,7 +2192,8 @@ async function initAuth() {
 }
 
 function showApp() {
-  document.getElementById('authGate').classList.add('hidden');
+  closeAuthModal();
+  document.getElementById('landingPage').classList.add('hidden');
   document.getElementById('appWrapper').classList.remove('hidden');
   document.getElementById('userChip').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
@@ -1774,9 +2203,25 @@ function showApp() {
 }
 
 function showAuthGate() {
-  document.getElementById('authGate').classList.remove('hidden');
+  closeAuthModal();
+  document.getElementById('landingPage').classList.remove('hidden');
   document.getElementById('appWrapper').classList.add('hidden');
   document.getElementById('userChip').classList.add('hidden');
+}
+
+function openAuthModal(mode) {
+  authMode = mode || 'signin';
+  const isSignup = authMode === 'signup';
+  document.getElementById('authTitle').textContent = isSignup ? 'Create your free account' : 'Sign in to your account';
+  document.getElementById('authSubmitBtn').textContent = isSignup ? 'Sign Up' : 'Sign In';
+  document.getElementById('authToggleText').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
+  document.getElementById('authToggleLink').textContent = isSignup ? ' Sign in' : ' Sign up';
+  document.getElementById('authError').classList.add('hidden');
+  document.getElementById('authGate').classList.add('open');
+}
+
+function closeAuthModal() {
+  document.getElementById('authGate').classList.remove('open');
 }
 
 async function signInWithGoogle() {
@@ -1801,13 +2246,7 @@ async function authSubmit() {
 }
 
 function toggleAuthMode() {
-  authMode = authMode === 'signin' ? 'signup' : 'signin';
-  const isSignup = authMode === 'signup';
-  document.getElementById('authTitle').textContent = isSignup ? 'Create your account' : 'Sign in to your account';
-  document.getElementById('authSubmitBtn').textContent = isSignup ? 'Sign Up' : 'Sign In';
-  document.getElementById('authToggleText').textContent = isSignup ? 'Already have an account?' : "Don't have an account?";
-  document.getElementById('authToggleLink').textContent = isSignup ? ' Sign in' : ' Sign up';
-  document.getElementById('authError').classList.add('hidden');
+  openAuthModal(authMode === 'signin' ? 'signup' : 'signin');
 }
 
 function showAuthError(msg, isSuccess = false) {
@@ -1826,7 +2265,7 @@ async function saveResume() {
   const content = document.getElementById('resumeOutput').textContent.trim();
   if (!content || content.startsWith('Click')) { toast('Generate a resume first.', 'error'); return; }
   const { data: { session } } = await sbClient.auth.getSession();
-  const title = `${state.mos || 'Resume'} — ${state.selectedTrack?.title || 'General'} — ${state.activeTab === 'federal' ? 'Federal' : state.activeTab === 'linkedin' ? 'LinkedIn' : state.activeTab === 'master' ? 'Master' : 'Private Sector'}`;
+  const title = `${state.mos || 'Resume'} — ${state.selectedTrack?.title || 'General'} — ${TAB_LABELS[state.activeTab] || state.activeTab}`;
   const resp = await fetch('/api/resumes/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
