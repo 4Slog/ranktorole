@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RankToRole — Military to Civilian Resume Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
@@ -12,220 +15,241 @@
   --navy: #1a3a5c;
   --gold: #c9a84c;
   --navy-light: #2a5080;
+  --navy-dark: #122840;
   --bg: #f0f4f8;
   --card: #ffffff;
-  --text: #2d3748;
-  --text-light: #718096;
+  --text: #1a202c;
+  --text-light: #64748b;
   --border: #e2e8f0;
-  --success: #276749;
-  --error: #c53030;
-  --radius: 8px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
+  --success: #166534;
+  --error: #b91c1c;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.header{background:var(--navy);color:white;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,0.25)}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+.header{background:var(--navy-dark);color:white;padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
 .header-left{display:flex;align-items:center;gap:0.75rem}
-.logo-star{font-size:1.8rem;color:var(--gold)}
-.logo-text{font-size:1.5rem;font-weight:800;letter-spacing:1px}
-.logo-sub{font-size:0.75rem;color:rgba(255,255,255,0.65);margin-top:1px}
+.logo-star{font-size:1.6rem;color:var(--gold)}
+.logo-text{font-size:1.4rem;font-weight:800;letter-spacing:0.5px}
+.logo-sub{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:1px}
 .header-actions{display:flex;gap:0.75rem;align-items:center}
-.settings-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:white;padding:0.45rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:0.85rem}
-.settings-btn:hover{background:rgba(255,255,255,0.2)}
-
-/* Progress */
-.progress-nav{background:var(--navy-light);padding:0.6rem 2rem;display:flex;align-items:center;gap:0;overflow-x:auto}
-.step-item{display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.45);font-size:0.82rem;white-space:nowrap;cursor:default}
+.settings-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.4rem 0.9rem;border-radius:var(--radius);cursor:pointer;font-size:0.82rem;font-family:inherit}
+.settings-btn:hover{background:rgba(255,255,255,0.15)}
+.progress-nav{background:var(--navy);padding:0.55rem 2rem;display:flex;align-items:center;gap:0;overflow-x:auto}
+.step-item{display:flex;align-items:center;gap:0.4rem;color:rgba(255,255,255,0.4);font-size:0.8rem;white-space:nowrap;cursor:default;font-weight:500}
 .step-item.clickable{cursor:pointer}
 .step-item.clickable:hover{color:rgba(255,255,255,0.75)}
 .step-item.active{color:var(--gold);font-weight:700}
-.step-item.done{color:rgba(255,255,255,0.75)}
-.step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700}
+.step-item.done{color:rgba(255,255,255,0.7)}
+.step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;flex-shrink:0}
 .step-item.active .step-num{background:var(--gold);color:var(--navy)}
-.step-item.done .step-num{background:#48bb78;color:white}
-.step-arrow{color:rgba(255,255,255,0.25);margin:0 0.5rem;font-size:0.75rem}
-
-/* Layout */
-.main{max-width:860px;margin:2rem auto;padding:0 1rem}
-.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem;margin-bottom:1.5rem}
-.card-title{font-size:1.25rem;font-weight:800;color:var(--navy);margin-bottom:0.35rem}
-.card-sub{color:var(--text-light);font-size:0.9rem;margin-bottom:1.75rem}
+.step-item.done .step-num{background:#22c55e;color:white}
+.step-arrow{color:rgba(255,255,255,0.2);margin:0 0.5rem;font-size:0.72rem}
+.main{max-width:880px;margin:2rem auto;padding:0 1rem}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:2rem;margin-bottom:1.5rem;border:1px solid rgba(0,0,0,0.04)}
+.card-eyebrow{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:0.4rem}
+.card-title{font-size:1.3rem;font-weight:800;color:var(--navy);margin-bottom:0.3rem}
+.card-sub{color:var(--text-light);font-size:0.88rem;margin-bottom:1.75rem;line-height:1.6}
 
 /* Branch grid */
 .branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 @media(max-width:600px){.branch-grid{grid-template-columns:repeat(2,1fr)}}
-.branch-card{border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.2s}
-.branch-card:hover{border-color:var(--navy-light);background:#f7fafc}
-.branch-card.selected{border-color:var(--gold);background:#fef9ec}
-.branch-icon{font-size:2.2rem;margin-bottom:0.5rem}
-.branch-name{font-weight:700;color:var(--navy);font-size:0.9rem}
-.branch-mos{font-size:0.72rem;color:var(--text-light);margin-top:0.2rem}
+.branch-card{border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all 0.2s;background:white}
+.branch-card:hover{border-color:var(--navy-light);background:#f8fafc;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.branch-card.selected{border-color:var(--gold);background:#fefce8;box-shadow:0 0 0 3px rgba(201,168,76,0.15)}
+.branch-logo{width:52px;height:52px;object-fit:contain;margin:0 auto 0.6rem;display:block}
+.branch-name{font-weight:700;color:var(--navy);font-size:0.88rem}
+.branch-mos{font-size:0.7rem;color:var(--text-light);margin-top:0.15rem}
+
+/* Upload hero */
+.upload-hero{border:2.5px dashed var(--border);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:all 0.2s;color:var(--text-light);background:#fafbfc}
+.upload-hero:hover,.upload-hero.drag{border-color:var(--navy);background:#f0f4f8;color:var(--navy)}
+.upload-hero input{display:none}
+.upload-icon{font-size:2.2rem;margin-bottom:0.65rem}
+.upload-title{font-weight:700;font-size:1rem;color:var(--text);margin-bottom:0.25rem}
+.upload-sub{font-size:0.82rem}
+.privacy-notice{display:flex;align-items:flex-start;gap:0.6rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.75rem 1rem;font-size:0.8rem;color:#166534;margin-top:1rem;line-height:1.5}
+.doc-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;min-height:0}
+.doc-chip{border-radius:20px;padding:0.3rem 0.75rem;font-size:0.8rem;display:flex;align-items:center;gap:0.5rem;font-weight:500}
+.doc-chip.scanning{background:#fef9c3;border:1px solid #fde047;color:#713f12}
+.doc-chip.done{background:#dcfce7;border:1px solid #86efac;color:#166534}
+.doc-chip.error{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b}
+.doc-chip.idle{background:#eef2f7;border:1px solid var(--border);color:var(--text)}
+.doc-chip-name{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-chip-remove{background:none;border:none;cursor:pointer;color:inherit;opacity:0.6;font-size:0.85rem;line-height:1;padding:0;flex-shrink:0}
+.doc-chip-remove:hover{opacity:1}
+.scan-progress{margin-top:1rem}
+.scan-bar-wrap{background:var(--border);border-radius:20px;height:6px;overflow:hidden;margin-bottom:0.4rem}
+.scan-bar-fill{height:100%;background:var(--navy);border-radius:20px;transition:width 0.3s}
+.scan-summary{font-size:0.8rem;color:var(--text-light);font-weight:500}
 
 /* Form */
-.form-group{margin-bottom:1.25rem}
-.form-label{display:block;font-size:0.88rem;font-weight:600;color:var(--text);margin-bottom:0.4rem}
-.form-input{width:100%;padding:0.6rem 0.85rem;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.93rem;color:var(--text);transition:border 0.2s;background:white;font-family:inherit}
-.form-input:focus{outline:none;border-color:var(--navy)}
+.form-group{margin-bottom:1.2rem}
+.form-label{display:block;font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.4rem}
+.form-input{width:100%;padding:0.58rem 0.85rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;color:var(--text);transition:border 0.2s;background:white;font-family:inherit}
+.form-input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(26,58,92,0.08)}
 textarea.form-input{resize:vertical;min-height:100px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 @media(max-width:580px){.form-row{grid-template-columns:1fr}}
-.form-hint{font-size:0.77rem;color:var(--text-light);margin-top:0.3rem}
-.mos-detected{background:#ebf8f0;border:1px solid #68d391;border-radius:var(--radius);padding:0.65rem 1rem;font-size:0.88rem;color:#276749;margin-top:0.5rem;display:none}
+.form-hint{font-size:0.76rem;color:var(--text-light);margin-top:0.3rem}
+.mos-detected{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:0.65rem 1rem;font-size:0.87rem;color:#166534;margin-top:0.5rem;display:none}
 
 /* Buttons */
-.btn{padding:0.6rem 1.4rem;border-radius:var(--radius);font-size:0.92rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;font-family:inherit}
+.btn{padding:0.58rem 1.35rem;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;font-family:inherit;line-height:1.4}
 .btn-primary{background:var(--navy);color:white}
-.btn-primary:hover{background:var(--navy-light)}
-.btn-primary:disabled{background:#a0aec0;cursor:not-allowed}
+.btn-primary:hover:not(:disabled){background:var(--navy-light)}
+.btn-primary:disabled{background:#94a3b8;cursor:not-allowed}
 .btn-gold{background:var(--gold);color:var(--navy)}
-.btn-gold:hover{background:#b8963f}
-.btn-outline{background:transparent;border:2px solid var(--navy);color:var(--navy)}
+.btn-gold:hover:not(:disabled){background:#b8963f}
+.btn-gold:disabled{opacity:0.5;cursor:not-allowed}
+.btn-outline{background:transparent;border:1.5px solid var(--navy);color:var(--navy)}
 .btn-outline:hover{background:var(--navy);color:white}
-.btn-sm{padding:0.38rem 0.9rem;font-size:0.83rem}
-.btn-danger{background:#fc8181;color:white}
-.btn-danger:hover{background:#f56565}
+.btn-sm{padding:0.38rem 0.85rem;font-size:0.82rem}
+.btn-danger{background:#ef4444;color:white}
+.btn-danger:hover{background:#dc2626}
 .btn-row{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-top:1.5rem}
 
 /* Track cards */
 .track-list{display:grid;gap:1rem}
-.track-card{border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all 0.2s}
-.track-card:hover{border-color:var(--navy-light)}
-.track-card.selected{border-color:var(--gold);background:#fef9ec}
-.track-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.track-card{border:2px solid var(--border);border-radius:var(--radius);padding:1.35rem;cursor:pointer;transition:all 0.2s;background:white}
+.track-card:hover{border-color:var(--navy-light);box-shadow:0 2px 12px rgba(0,0,0,0.06)}
+.track-card.selected{border-color:var(--gold);background:#fefce8;box-shadow:0 0 0 3px rgba(201,168,76,0.15)}
+.track-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:0.4rem}
 .track-title{font-weight:700;color:var(--navy);font-size:1rem}
-.track-series{background:var(--navy);color:white;padding:0.18rem 0.55rem;border-radius:4px;font-size:0.72rem;font-weight:700;white-space:nowrap;flex-shrink:0}
-.track-desc{color:var(--text-light);font-size:0.87rem;margin-top:0.45rem}
-.track-employers{font-size:0.8rem;color:var(--text-light);margin-top:0.4rem}
+.track-series{background:var(--navy);color:white;padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:700;white-space:nowrap;flex-shrink:0}
+.track-desc{color:var(--text-light);font-size:0.85rem;margin-bottom:0.4rem}
+.track-employers{font-size:0.8rem;color:var(--text-light)}
 .track-employers span{font-weight:600;color:var(--text)}
-.match-row{display:flex;align-items:center;gap:0.75rem;margin-top:0.75rem}
-.match-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.track-meta{display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;align-items:center}
+.match-row{display:flex;align-items:center;gap:0.65rem}
+.match-bar{width:90px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .match-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 0.5s}
-.match-pct{font-size:0.78rem;font-weight:700;color:var(--text-light);min-width:32px}
-
-/* Upload */
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;color:var(--text-light)}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--navy);background:#f7fafc;color:var(--navy)}
-.upload-zone input{display:none}
-.upload-icon{font-size:2rem;margin-bottom:0.5rem}
-.file-info{background:#f7fafc;border:1px solid var(--border);border-radius:var(--radius);padding:0.65rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-top:0.75rem}
-.file-name{font-size:0.88rem;font-weight:600}
-.file-clear{background:none;border:none;color:var(--text-light);cursor:pointer;font-size:1rem;padding:0}
-.file-clear:hover{color:var(--error)}
-.doc-chips{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;min-height:0}
-.doc-chip{background:#eef2f7;border:1px solid var(--border);border-radius:20px;padding:0.3rem 0.75rem;font-size:0.82rem;display:flex;align-items:center;gap:0.5rem}
-.doc-chip-name{font-weight:600;color:var(--navy);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.doc-chip-remove{background:none;border:none;cursor:pointer;color:var(--text-light);font-size:0.85rem;line-height:1;padding:0}
-.doc-chip-remove:hover{color:var(--error)}
+.match-pct{font-size:0.76rem;font-weight:700;color:var(--text-light)}
+.salary-badge{background:#eff6ff;color:#1e40af;padding:0.18rem 0.55rem;border-radius:5px;font-size:0.76rem;font-weight:600}
+.gap-tags{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.5rem}
+.gap-tag{background:#fef3c7;color:#92400e;padding:0.15rem 0.55rem;border-radius:5px;font-size:0.73rem;font-weight:500}
 
 /* Resume output */
-.resume-type-btns{display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap}
-.resume-type-btn{padding:0.55rem 1.25rem;border-radius:var(--radius);font-size:0.9rem;font-weight:600;cursor:pointer;border:2px solid var(--border);background:white;color:var(--text-light);transition:all 0.2s;font-family:inherit}
+.resume-type-btns{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.resume-type-btn{padding:0.5rem 1.1rem;border-radius:8px;font-size:0.86rem;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--text-light);transition:all 0.2s;font-family:inherit}
 .resume-type-btn.active{border-color:var(--navy);color:var(--navy);background:#eef2f7}
-.resume-output{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:2rem;min-height:500px;font-family:'Georgia',serif;font-size:0.92rem;line-height:1.75;white-space:pre-wrap;outline:none;color:var(--text)}
+.resume-output{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:2rem;min-height:500px;font-family:'Georgia',serif;font-size:0.9rem;line-height:1.8;white-space:pre-wrap;outline:none;color:var(--text)}
 .resume-output:focus{border-color:var(--navy)}
 .generate-btn-row{display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
 
 /* Job listings */
-.job-section{margin-top:1.5rem}
-.job-section-title{font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:0.75rem}
-.job-list{display:grid;gap:0.75rem}
-.job-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem;transition:border 0.2s}
+.job-card{border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem;transition:border 0.2s;background:white;margin-bottom:0.75rem}
 .job-card:hover{border-color:var(--navy-light)}
-.job-title{font-weight:700;color:var(--navy);font-size:0.93rem}
-.job-agency{color:var(--text-light);font-size:0.83rem;margin-top:0.15rem}
-.job-meta{display:flex;gap:0.75rem;margin-top:0.5rem;flex-wrap:wrap}
-.job-tag{background:#eef2f7;color:var(--text);padding:0.15rem 0.55rem;border-radius:3px;font-size:0.78rem}
-.job-link{font-size:0.82rem;color:var(--navy-light);text-decoration:none;font-weight:600;margin-top:0.5rem;display:inline-block}
+.job-title{font-weight:700;color:var(--navy);font-size:0.92rem}
+.job-agency{color:var(--text-light);font-size:0.82rem;margin-top:0.1rem}
+.job-meta{display:flex;gap:0.65rem;margin-top:0.5rem;flex-wrap:wrap}
+.job-tag{background:#eef2f7;color:var(--text);padding:0.15rem 0.5rem;border-radius:4px;font-size:0.76rem}
+.job-link{font-size:0.81rem;color:var(--navy-light);text-decoration:none;font-weight:600;margin-top:0.5rem;display:inline-block}
 .job-link:hover{text-decoration:underline}
-.jobs-fallback{background:#fef9ec;border:1px solid var(--gold);border-radius:var(--radius);padding:1rem;font-size:0.88rem;color:#744210;margin-top:0.75rem}
+.jobs-fallback{background:#fefce8;border:1px solid var(--gold);border-radius:var(--radius);padding:1rem;font-size:0.87rem;color:#713f12;margin-top:0.75rem}
 
 /* Settings drawer */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;opacity:0;pointer-events:none;transition:opacity 0.3s}
 .drawer-overlay.open{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:white;z-index:101;transition:right 0.3s;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.18)}
+.drawer{position:fixed;top:0;right:-430px;width:410px;height:100vh;background:white;z-index:101;transition:right 0.3s;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.18)}
 .drawer.open{right:0}
-.drawer-header{background:var(--navy);color:white;padding:1.25rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
-.drawer-title{font-size:1.05rem;font-weight:700}
-.drawer-close{background:none;border:none;color:white;font-size:1.4rem;cursor:pointer;line-height:1;padding:0.2rem}
+.drawer-header{background:var(--navy-dark);color:white;padding:1.2rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
+.drawer-title{font-size:1rem;font-weight:700}
+.drawer-close{background:none;border:none;color:white;font-size:1.3rem;cursor:pointer;line-height:1;padding:0.2rem}
 .drawer-body{padding:1.5rem}
 .drawer-section{margin-bottom:2rem}
-.drawer-section-label{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:0.75rem}
-.key-row{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem}
-.key-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.key-dot.ok{background:#48bb78}
-.key-dot.missing{background:#fc8181}
-.key-label{font-size:0.83rem;font-weight:600;color:var(--text)}
+.drawer-section-label{font-size:0.71rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:0.75rem}
 
 /* Loading */
-.loading-row{display:flex;align-items:center;gap:0.75rem;color:var(--text-light);font-size:0.88rem;padding:0.5rem 0}
+.loading-row{display:flex;align-items:center;gap:0.75rem;color:var(--text-light);font-size:0.87rem;padding:0.5rem 0}
 .spinner{width:18px;height:18px;border:2.5px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin 0.75s linear infinite;flex-shrink:0}
+.spinner-sm{width:13px;height:13px;border-width:2px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* Toast */
 .toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;display:flex;flex-direction:column;gap:0.6rem}
-.toast{background:var(--navy);color:white;padding:0.7rem 1.1rem;border-radius:var(--radius);font-size:0.88rem;box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;max-width:320px}
+.toast{background:var(--navy);color:white;padding:0.7rem 1.1rem;border-radius:var(--radius);font-size:0.87rem;box-shadow:0 4px 12px rgba(0,0,0,0.2);animation:slideIn 0.3s ease;max-width:320px}
 .toast.error{background:var(--error)}
 .toast.success{background:var(--success)}
 @keyframes slideIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
 
-
 /* Skill tags */
-.skill-tags{display:flex;flex-wrap:wrap;gap:0.45rem;margin-top:0.5rem}
-.skill-tag{background:#eef2f7;color:var(--navy);padding:0.22rem 0.65rem;border-radius:20px;font-size:0.8rem;font-weight:500}
+.skill-tags{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.5rem}
+.skill-tag{background:#eef2f7;color:var(--navy);padding:0.2rem 0.6rem;border-radius:20px;font-size:0.78rem;font-weight:500}
 
-/* Section steps */
-.section-num{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:0.5rem}
-
-/* Credit */
-.onet-credit{font-size:0.72rem;color:var(--text-light);text-align:right;margin-top:0.5rem}
+.onet-credit{font-size:0.7rem;color:var(--text-light);text-align:right;margin-top:0.5rem}
 .onet-credit a{color:var(--navy-light)}
+
+/* Tagline */
+.auth-tagline{font-size:0.85rem;color:rgba(255,255,255,0.7);text-align:center;font-style:italic;margin-top:0.35rem;line-height:1.5}
+
+/* Auth Gate */
+.auth-gate{position:fixed;inset:0;background:linear-gradient(150deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem}
+.auth-card{background:white;border-radius:14px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,0.45)}
+.auth-logo{text-align:center;margin-bottom:1.75rem}
+.auth-logo-star{font-size:2.2rem;color:var(--gold)}
+.auth-logo-text{font-size:1.75rem;font-weight:800;color:var(--navy);letter-spacing:0.5px}
+.auth-logo-sub{font-size:0.78rem;color:var(--text-light);margin-top:2px}
+.auth-title{font-size:1rem;font-weight:700;color:var(--navy);text-align:center;margin-bottom:1.25rem}
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:0.75rem;background:white;border:1.5px solid var(--border);color:var(--text);padding:0.65rem 1rem;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;margin-bottom:1rem;transition:background 0.15s;font-family:inherit}
+.google-btn:hover{background:var(--bg)}
+.auth-divider{text-align:center;color:var(--text-light);font-size:0.8rem;margin:0.75rem 0;position:relative}
+.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
+.auth-divider::before{left:0}.auth-divider::after{right:0}
+.auth-error{font-size:0.82rem;margin-top:0.6rem;text-align:center;padding:0.5rem;border-radius:8px;background:var(--bg)}
+.auth-toggle{text-align:center;font-size:0.83rem;color:var(--text-light);margin-top:1rem}
+.auth-toggle a{color:var(--navy-light);cursor:pointer;font-weight:600;text-decoration:underline}
+.user-chip{display:flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.8);font-size:0.8rem}
+.logout-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.32rem 0.65rem;border-radius:8px;cursor:pointer;font-size:0.76rem;font-family:inherit}
+.logout-btn:hover{background:rgba(255,255,255,0.18)}
+.saved-resume-item{border:1px solid var(--border);border-radius:8px;padding:0.75rem;margin-bottom:0.5rem}
+.saved-resume-title{font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:2px}
+.saved-resume-date{font-size:0.74rem;color:var(--text-light)}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2rem}
+
+/* About / Review Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:150;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal{background:white;border-radius:14px;padding:2rem;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,0.35)}
+.modal-title{font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:0.25rem}
+.modal-sub{font-size:0.85rem;color:var(--text-light);margin-bottom:1.25rem;line-height:1.6}
+.modal-close{float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-light);line-height:1;margin-top:-0.15rem}
+.star-row{display:flex;gap:0.35rem;margin-bottom:1rem}
+.star-btn{font-size:1.7rem;background:none;border:none;cursor:pointer;line-height:1;color:#d1d5db;transition:color 0.15s}
+.star-btn.lit{color:#f59e0b}
+.review-item{border:1px solid var(--border);border-radius:8px;padding:0.85rem;margin-bottom:0.6rem}
+.review-stars{color:#f59e0b;font-size:0.9rem;margin-bottom:0.25rem}
+.review-text{font-size:0.85rem;color:var(--text);line-height:1.5}
+.review-name{font-size:0.76rem;color:var(--text-light);margin-top:0.3rem}
+
+/* Footer */
+.footer{text-align:center;padding:1.5rem 1rem 2.5rem;font-size:0.8rem;color:var(--text-light)}
+.footer a{color:var(--navy-light);cursor:pointer;text-decoration:none;font-weight:500}
+.footer a:hover{text-decoration:underline}
 
 /* Print */
 @media print{
-  .header,.progress-nav,.btn-row,.generate-btn-row,.resume-type-btns,.job-section,.settings-btn,.drawer,.drawer-overlay,.toast-wrap{display:none!important}
+  .header,.progress-nav,.btn-row,.generate-btn-row,.resume-type-btns,.job-section,.settings-btn,.drawer,.drawer-overlay,.toast-wrap,.footer{display:none!important}
   .resume-output{border:none;padding:0;min-height:unset}
   body{background:white}
-  .card{box-shadow:none;padding:0}
+  .card{box-shadow:none;padding:0;border:none}
 }
-
 .hidden{display:none!important}
-
-/* Auth Gate */
-.auth-gate{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem}
-.auth-card{background:white;border-radius:12px;padding:2.5rem 2rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
-.auth-logo{text-align:center;margin-bottom:1.75rem}
-.auth-logo-star{font-size:2.5rem;color:var(--gold)}
-.auth-logo-text{font-size:1.8rem;font-weight:800;color:var(--navy);letter-spacing:1px}
-.auth-logo-sub{font-size:0.8rem;color:var(--text-light);margin-top:2px}
-.auth-title{font-size:1.05rem;font-weight:700;color:var(--navy);text-align:center;margin-bottom:1.25rem}
-.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:0.75rem;background:white;border:1px solid var(--border);color:var(--text);padding:0.7rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:0.9rem;font-weight:600;margin-bottom:1rem;transition:background 0.15s}
-.google-btn:hover{background:var(--bg)}
-.auth-divider{text-align:center;color:var(--text-light);font-size:0.82rem;margin:0.75rem 0;position:relative}
-.auth-divider::before,.auth-divider::after{content:'';position:absolute;top:50%;width:42%;height:1px;background:var(--border)}
-.auth-divider::before{left:0}.auth-divider::after{right:0}
-.auth-error{font-size:0.82rem;margin-top:0.6rem;text-align:center;padding:0.5rem;border-radius:var(--radius);background:var(--bg)}
-.auth-toggle{text-align:center;font-size:0.84rem;color:var(--text-light);margin-top:1rem}
-.auth-toggle a{color:var(--navy-light);cursor:pointer;font-weight:600;text-decoration:underline}
-.user-chip{display:flex;align-items:center;gap:0.5rem;color:rgba(255,255,255,0.85);font-size:0.82rem}
-.logout-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:white;padding:0.35rem 0.7rem;border-radius:var(--radius);cursor:pointer;font-size:0.78rem}
-.logout-btn:hover{background:rgba(255,255,255,0.2)}
-.saved-resume-item{border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem;margin-bottom:0.5rem}
-.saved-resume-title{font-size:0.85rem;font-weight:600;color:var(--navy);margin-bottom:2px}
-.saved-resume-date{font-size:0.76rem;color:var(--text-light)}
-select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2rem}
 </style>
 </head>
 <body>
 
 <!-- AUTH GATE -->
-<div id="authGate">
+<div id="authGate" class="auth-gate">
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-star">★</div>
       <div class="auth-logo-text">RankToRole</div>
       <div class="auth-logo-sub">Military → Civilian Resume Builder</div>
     </div>
-    <div class="auth-title" id="authTitle">Sign in to your account</div>
+    <p class="auth-tagline">"Built by a veteran, for veterans — because TAP left us all with a generic resume."</p>
+    <div class="auth-title" id="authTitle" style="margin-top:1.25rem">Sign in to your account</div>
     <button class="google-btn" onclick="signInWithGoogle()">
       <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.08 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-3.59-13.46-8.71l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
       Continue with Google
@@ -233,7 +257,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="auth-divider">or</div>
     <input class="form-input" id="loginEmail" type="email" placeholder="Email address" style="margin-bottom:0.6rem;font-size:0.9rem">
     <input class="form-input" id="loginPassword" type="password" placeholder="Password" style="margin-bottom:0.75rem;font-size:0.9rem" onkeydown="if(event.key==='Enter')authSubmit()">
-    <button class="btn btn-primary" style="width:100%;font-size:0.95rem" onclick="authSubmit()" id="authSubmitBtn">Sign In</button>
+    <button class="btn btn-primary" style="width:100%;font-size:0.92rem" onclick="authSubmit()" id="authSubmitBtn">Sign In</button>
     <div class="auth-error hidden" id="authError"></div>
     <div class="auth-toggle">
       <span id="authToggleText">Don't have an account?</span>
@@ -263,95 +287,116 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   </div>
 </div>
 
-<!-- PROGRESS -->
+<!-- PROGRESS NAV -->
 <div class="progress-nav" id="progressNav">
-  <div class="step-item active" id="step-nav-1">
-    <div class="step-num">1</div>Branch
-  </div>
+  <div class="step-item active" id="step-nav-1"><div class="step-num">1</div>Upload</div>
   <div class="step-arrow">›</div>
-  <div class="step-item" id="step-nav-2">
-    <div class="step-num">2</div>Service Info
-  </div>
+  <div class="step-item" id="step-nav-2"><div class="step-num">2</div>Confirm Info</div>
   <div class="step-arrow">›</div>
-  <div class="step-item" id="step-nav-3">
-    <div class="step-num">3</div>Documents
-  </div>
+  <div class="step-item" id="step-nav-3"><div class="step-num">3</div>Career Tracks</div>
   <div class="step-arrow">›</div>
-  <div class="step-item" id="step-nav-4">
-    <div class="step-num">4</div>Career Tracks
-  </div>
-  <div class="step-arrow">›</div>
-  <div class="step-item" id="step-nav-5">
-    <div class="step-num">5</div>Resume
-  </div>
+  <div class="step-item" id="step-nav-4"><div class="step-num">4</div>Resume</div>
 </div>
 
 <div class="main">
 
-<!-- STEP 1: BRANCH -->
+<!-- STEP 1: UPLOAD (hero) -->
 <div id="step1">
   <div class="card">
-    <div class="section-num">Step 1 of 5</div>
-    <div class="card-title">Select Your Branch of Service</div>
-    <div class="card-sub">Choose the branch you served in — we'll tailor the MOS/AFSC/Rating lookup accordingly.</div>
-    <div class="branch-grid">
-      <div class="branch-card" id="branch-army" onclick="selectBranch('army')">
-        <div class="branch-icon">🪖</div>
-        <div class="branch-name">Army</div>
-        <div class="branch-mos">MOS Code</div>
-      </div>
-      <div class="branch-card" id="branch-navy" onclick="selectBranch('navy')">
-        <div class="branch-icon">⚓</div>
-        <div class="branch-name">Navy</div>
-        <div class="branch-mos">Rating</div>
-      </div>
-      <div class="branch-card" id="branch-marines" onclick="selectBranch('marines')">
-        <div class="branch-icon">🦅</div>
-        <div class="branch-name">Marine Corps</div>
-        <div class="branch-mos">MOS Code</div>
-      </div>
-      <div class="branch-card" id="branch-airforce" onclick="selectBranch('airforce')">
-        <div class="branch-icon">✈️</div>
-        <div class="branch-name">Air Force</div>
-        <div class="branch-mos">AFSC</div>
-      </div>
-      <div class="branch-card" id="branch-spaceforce" onclick="selectBranch('spaceforce')">
-        <div class="branch-icon">🛸</div>
-        <div class="branch-name">Space Force</div>
-        <div class="branch-mos">SFSC</div>
-      </div>
-      <div class="branch-card" id="branch-coastguard" onclick="selectBranch('coastguard')">
-        <div class="branch-icon">🚢</div>
-        <div class="branch-name">Coast Guard</div>
-        <div class="branch-mos">Rating</div>
-      </div>
+    <div class="card-eyebrow">Step 1 of 4</div>
+    <div class="card-title">Upload Your Service Documents</div>
+    <div class="card-sub">Upload your DD-214, evaluation reports (OER/NCOER/FITREP), award citations, or any service documents. We'll extract your background automatically. You can also skip and enter your info manually.</div>
+
+    <div class="upload-hero" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondrop="dropFile(event)" ondragleave="dragLeave(event)">
+      <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" multiple onchange="handleFiles(this.files)">
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Click to upload or drag &amp; drop</div>
+      <div class="upload-sub">DD-214, OER/NCOER/FITREP, award citations · PDF, DOCX, TXT · Max 5MB each</div>
     </div>
+
+    <div class="privacy-notice">
+      <span>🔒</span>
+      <span>Your documents are processed in your browser and never stored on our servers. Only the resume you choose to save is stored.</span>
+    </div>
+
+    <div id="scanProgress" class="scan-progress hidden">
+      <div class="scan-bar-wrap"><div class="scan-bar-fill" id="scanBarFill" style="width:0%"></div></div>
+      <div class="scan-summary" id="scanSummary"></div>
+    </div>
+    <div class="doc-chips" id="docChips"></div>
+
+    <div style="margin:1.5rem 0;text-align:center;color:var(--text-light);font-size:0.83rem;font-weight:600">— OR PASTE DOCUMENT TEXT —</div>
+    <div class="form-group">
+      <label class="form-label">Paste Document Text</label>
+      <textarea class="form-input" id="pasteText" style="min-height:120px" placeholder="Paste text from your DD-214, evaluation reports, award citations, or performance reviews here..."></textarea>
+    </div>
+
     <div class="btn-row">
-      <button class="btn btn-primary" id="step1Next" onclick="goStep(2)" disabled>Continue →</button>
-    </div>
-    <div style="text-align:center;margin-top:1rem;font-size:0.85rem;color:var(--text-light)">
-      Have a DD-214 or evaluation report? <a onclick="goStep(3)" style="color:var(--navy-light);cursor:pointer;font-weight:600">Upload it to auto-fill →</a>
+      <button class="btn btn-gold" id="analyzeBtn" onclick="goStep(2)">Continue → Confirm Info</button>
+      <span style="font-size:0.82rem;color:var(--text-light)">Upload is optional — you can skip</span>
     </div>
   </div>
 </div>
 
-<!-- STEP 2: SERVICE INFO -->
+<!-- STEP 2: CONFIRM INFO (branch + service details) -->
 <div id="step2" class="hidden">
   <div class="card">
-    <div class="section-num">Step 2 of 5</div>
-    <div class="card-title">Your Service Information</div>
-    <div class="card-sub">Tell us about your military background. The more detail you provide, the stronger your resume.</div>
+    <div class="card-eyebrow">Step 2 of 4</div>
+    <div class="card-title">Confirm Your Service Information</div>
+    <div class="card-sub">Select your branch and tell us about your military background. Fields may be pre-filled from your documents.</div>
 
     <div class="form-group">
-      <label class="form-label" id="mosLabel">MOS Code</label>
-      <input class="form-input" id="mosInput" type="text" placeholder="e.g. 92A" oninput="detectMOS(this.value)" style="text-transform:uppercase">
+      <label class="form-label">Branch of Service</label>
+      <div class="branch-grid">
+        <div class="branch-card" id="branch-army" onclick="selectBranch('army')">
+          <img class="branch-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Mark_of_the_United_States_Army.svg?width=120" alt="Army" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none;font-size:2rem">🪖</span>
+          <div class="branch-name">Army</div>
+          <div class="branch-mos">MOS Code</div>
+        </div>
+        <div class="branch-card" id="branch-navy" onclick="selectBranch('navy')">
+          <img class="branch-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Seal_of_the_United_States_Department_of_the_Navy.svg?width=120" alt="Navy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none;font-size:2rem">⚓</span>
+          <div class="branch-name">Navy</div>
+          <div class="branch-mos">Rating</div>
+        </div>
+        <div class="branch-card" id="branch-marines" onclick="selectBranch('marines')">
+          <img class="branch-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/USMC_logo.svg?width=120" alt="Marines" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none;font-size:2rem">🦅</span>
+          <div class="branch-name">Marine Corps</div>
+          <div class="branch-mos">MOS Code</div>
+        </div>
+        <div class="branch-card" id="branch-airforce" onclick="selectBranch('airforce')">
+          <img class="branch-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Seal_of_the_Department_of_the_Air_Force.svg?width=120" alt="Air Force" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none;font-size:2rem">✈️</span>
+          <div class="branch-name">Air Force</div>
+          <div class="branch-mos">AFSC</div>
+        </div>
+        <div class="branch-card" id="branch-spaceforce" onclick="selectBranch('spaceforce')">
+          <img class="branch-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/United_States_Space_Force_seal.svg?width=120" alt="Space Force" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none;font-size:2rem">🛸</span>
+          <div class="branch-name">Space Force</div>
+          <div class="branch-mos">SFSC</div>
+        </div>
+        <div class="branch-card" id="branch-coastguard" onclick="selectBranch('coastguard')">
+          <img class="branch-logo" src="https://commons.wikimedia.org/wiki/Special:FilePath/Seal_of_the_United_States_Coast_Guard.svg?width=120" alt="Coast Guard" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none;font-size:2rem">🚢</span>
+          <div class="branch-name">Coast Guard</div>
+          <div class="branch-mos">Rating</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" id="mosLabel">Occupational Code (MOS/AFSC/Rating/NEC)</label>
+      <input class="form-input" id="mosInput" type="text" placeholder="e.g. 92A, 25B, 3D1, LS, HM" oninput="detectMOS(this.value)" style="text-transform:uppercase">
       <div class="mos-detected" id="mosDetected"></div>
-      <div class="form-hint">Enter your primary MOS, AFSC, or Rating. We'll identify your civilian-equivalent skills.</div>
+      <div class="form-hint">Enter your primary occupational code. We'll identify your civilian-equivalent skills.</div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Rank at Separation</label>
+        <label class="form-label">Rank at Separation/Retirement</label>
         <select class="form-input" id="rankInput">
           <option value="">Select rank...</option>
           <optgroup label="Enlisted">
@@ -366,11 +411,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
             <option>E-9 (SGM/CSM/MCPO/SgtMaj/CMSgt)</option>
           </optgroup>
           <optgroup label="Warrant Officer">
-            <option>W-1 (WO1)</option>
-            <option>W-2 (CW2)</option>
-            <option>W-3 (CW3)</option>
-            <option>W-4 (CW4)</option>
-            <option>W-5 (CW5)</option>
+            <option>W-1 (WO1)</option><option>W-2 (CW2)</option><option>W-3 (CW3)</option><option>W-4 (CW4)</option><option>W-5 (CW5)</option>
           </optgroup>
           <optgroup label="Officer">
             <option>O-1 (2LT/ENS/2ndLt/2Lt)</option>
@@ -385,7 +426,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
       <div class="form-group">
         <label class="form-label">Years of Service</label>
-        <input class="form-input" id="yearsInput" type="number" min="1" max="40" placeholder="e.g. 10">
+        <input class="form-input" id="yearsInput" type="number" min="1" max="40" placeholder="e.g. 20">
       </div>
     </div>
 
@@ -429,47 +470,17 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
     <div class="btn-row">
       <button class="btn btn-outline btn-sm" onclick="goStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
+      <button class="btn btn-primary" onclick="analyzeCareerTracks()">Analyze My Career Tracks →</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 3: DOCUMENTS -->
+<!-- STEP 3: CAREER TRACKS -->
 <div id="step3" class="hidden">
   <div class="card">
-    <div class="section-num">Step 3 of 5 — Optional</div>
-    <div class="card-title">Upload Service Documents</div>
-    <div class="card-sub">Upload your DD-214, NCOERs, OERs, or any evaluation to extract additional detail. Or paste text directly. This step is optional — skip if not available.</div>
-
-    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondrop="dropFile(event)" ondragleave="dragLeave(event)">
-      <input type="file" id="fileInput" accept=".txt,.pdf,.doc,.docx" multiple onchange="handleFiles(this.files)">
-      <div class="upload-icon">📄</div>
-      <div style="font-weight:600;margin-bottom:0.25rem">Click to upload or drag & drop</div>
-      <div style="font-size:0.82rem">Supports .txt, .pdf, .doc, .docx · Multiple files · Max 5MB each</div>
-    </div>
-    <div class="doc-chips" id="docChips"></div>
-
-    <div style="margin:1.25rem 0;text-align:center;color:var(--text-light);font-size:0.85rem;font-weight:600">— OR —</div>
-
-    <div class="form-group">
-      <label class="form-label">Paste Document Text</label>
-      <textarea class="form-input" id="pasteText" style="min-height:140px" placeholder="Paste text from your DD-214, evaluation reports, award citations, or performance reviews here..."></textarea>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="goStep(2)">← Back</button>
-      <button class="btn btn-primary" onclick="analyzeCareerTracks()">Analyze My Career Tracks →</button>
-      <button class="btn btn-outline btn-sm" onclick="goStep(4)" style="margin-left:auto">Skip this step</button>
-    </div>
-  </div>
-</div>
-
-<!-- STEP 4: CAREER TRACKS -->
-<div id="step4" class="hidden">
-  <div class="card">
-    <div class="section-num">Step 4 of 5</div>
+    <div class="card-eyebrow">Step 3 of 4</div>
     <div class="card-title">Your Civilian Career Tracks</div>
-    <div class="card-sub">Based on your MOS and service history, here are your top civilian career matches. Select one to build your resume around.</div>
+    <div class="card-sub">Based on your occupational code and service history, here are your top civilian career matches. Select one to build your resume around.</div>
 
     <div id="tracksLoading" class="loading-row hidden">
       <div class="spinner"></div>
@@ -477,27 +488,26 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
 
     <div class="track-list" id="trackList"></div>
-
     <div class="onet-credit">This site incorporates information from <a href="https://www.onetonline.org/" target="_blank">O*NET Web Services</a> by USDOL/ETA. O*NET® is a trademark of USDOL/ETA.</div>
 
     <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="goStep(3)">← Back</button>
-      <button class="btn btn-primary" id="step4Next" onclick="goStep(5)" disabled>Build My Resume →</button>
+      <button class="btn btn-outline btn-sm" onclick="goStep(2)">← Back</button>
+      <button class="btn btn-primary" id="step3Next" onclick="goStep(4)" disabled>Build My Resume →</button>
     </div>
   </div>
 </div>
 
-<!-- STEP 5: RESUME -->
-<div id="step5" class="hidden">
+<!-- STEP 4: RESUME -->
+<div id="step4" class="hidden">
   <div class="card">
-    <div class="section-num">Step 5 of 5</div>
+    <div class="card-eyebrow">Step 4 of 4</div>
     <div class="card-title">Your Resume</div>
-    <div class="card-sub">Generate both a federal (USAJOBS) and private sector resume. Click to edit any section directly.</div>
+    <div class="card-sub">Generate your federal (USAJOBS), private sector, master resume, or LinkedIn profile. Click any section to edit directly.</div>
 
     <div class="generate-btn-row">
-      <button class="btn btn-gold" onclick="generateResume('federal')" id="genFedBtn">⚡ Generate Federal Resume</button>
-      <button class="btn btn-primary" onclick="generateResume('private')" id="genPrivBtn">⚡ Generate Private Sector Resume</button>
-      <button class="btn btn-outline" onclick="generateResume('master')" id="genMasterBtn">⚡ Generate Master Resume</button>
+      <button class="btn btn-gold" onclick="generateResume('federal')" id="genFedBtn">Generate Federal Resume</button>
+      <button class="btn btn-primary" onclick="generateResume('private')" id="genPrivBtn">Generate Private Sector</button>
+      <button class="btn btn-outline" onclick="generateResume('master')" id="genMasterBtn">Generate Master Resume</button>
       <div class="loading-row hidden" id="resumeLoading">
         <div class="spinner"></div>
         <span id="resumeLoadingText">Generating resume...</span>
@@ -505,35 +515,38 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
 
     <div class="resume-type-btns">
-      <button class="resume-type-btn active" id="tabFed" onclick="showResumeTab('federal')">📋 Federal (USAJOBS — 2 page max)</button>
-      <button class="resume-type-btn" id="tabPriv" onclick="showResumeTab('private')">💼 Private Sector</button>
-      <button class="resume-type-btn" id="tabMaster" onclick="showResumeTab('master')">📊 Master Resume</button>
+      <button class="resume-type-btn active" id="tabFed" onclick="showResumeTab('federal')">Federal (USAJOBS)</button>
+      <button class="resume-type-btn" id="tabPriv" onclick="showResumeTab('private')">Private Sector</button>
+      <button class="resume-type-btn" id="tabMaster" onclick="showResumeTab('master')">Master Resume</button>
+      <button class="resume-type-btn" id="tabLinkedIn" onclick="generateLinkedIn()">LinkedIn Profile</button>
     </div>
 
-    <div class="resume-output" id="resumeOutput" contenteditable="true">Click "Generate" above to build your resume. You can edit this area directly after generation.</div>
+    <div class="resume-output" id="resumeOutput" contenteditable="true">Click a "Generate" button above to build your resume. You can edit this area directly after generation.</div>
 
     <div class="btn-row">
-      <button class="btn btn-outline btn-sm" onclick="goStep(4)">← Back</button>
-      <button class="btn btn-primary" onclick="exportPDF()">🖨 Print / Save PDF</button>
-      <button class="btn btn-outline" onclick="exportText()">⬇ Download .txt</button>
-      <button class="btn btn-outline" onclick="copyResume()">📋 Copy to Clipboard</button>
-      <button class="btn btn-outline" onclick="saveResume()" style="border-color:var(--gold);color:var(--navy)">💾 Save Resume</button>
+      <button class="btn btn-outline btn-sm" onclick="goStep(3)">← Back</button>
+      <button class="btn btn-primary" onclick="exportPDF()">Print / Save PDF</button>
+      <button class="btn btn-outline" onclick="exportText()">Download .txt</button>
+      <button class="btn btn-outline" onclick="copyResume()">Copy to Clipboard</button>
+      <button class="btn btn-outline" onclick="saveResume()" style="border-color:var(--gold);color:var(--navy)">Save Resume</button>
     </div>
   </div>
 
-  <!-- Job Listings -->
   <div class="card" id="jobsCard">
     <div class="card-title">Matching Federal Job Openings</div>
     <div class="card-sub">Live listings from USAJOBS matching your target career track.</div>
-    <div id="jobsLoading" class="loading-row hidden">
-      <div class="spinner"></div>
-      <span>Searching USAJOBS...</span>
-    </div>
+    <div id="jobsLoading" class="loading-row hidden"><div class="spinner"></div><span>Searching USAJOBS...</span></div>
     <div id="jobsList"></div>
   </div>
 </div>
 
 </div><!-- /main -->
+
+<div class="footer">
+  <a onclick="openAbout()">About the Builder</a> &nbsp;·&nbsp;
+  <a href="https://www.onetonline.org/" target="_blank">O*NET OnLine</a> &nbsp;·&nbsp;
+  <a href="https://www.usajobs.gov/" target="_blank">USAJOBS</a>
+</div>
 
 </div><!-- /appWrapper -->
 
@@ -541,7 +554,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeSettings()"></div>
 <div class="drawer" id="settingsDrawer">
   <div class="drawer-header">
-    <div class="drawer-title">⚙ Settings</div>
+    <div class="drawer-title">Settings</div>
     <button class="drawer-close" onclick="closeSettings()">✕</button>
   </div>
   <div class="drawer-body">
@@ -550,19 +563,14 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div style="font-size:0.85rem;color:var(--text);margin-bottom:0.75rem" id="drawerUserEmail"></div>
       <button class="btn btn-outline btn-sm" onclick="signOut()" style="color:var(--error);border-color:var(--error);width:100%">Sign Out</button>
     </div>
-
     <div class="drawer-section">
       <div class="drawer-section-label">API Keys</div>
-      <div style="font-size:0.82rem;color:var(--text-light);line-height:1.6">
-        Claude AI, O*NET, and USAJOBS integrations are managed server-side. No API keys required.
-      </div>
+      <div style="font-size:0.82rem;color:var(--text-light);line-height:1.6">Claude AI, O*NET, and USAJOBS integrations are managed server-side. No API keys required.</div>
     </div>
-
     <div class="drawer-section">
       <div class="drawer-section-label">Saved Resumes</div>
       <div id="savedResumesList"><div style="font-size:0.82rem;color:var(--text-light)">No saved resumes yet.</div></div>
     </div>
-
     <div class="drawer-section">
       <div class="drawer-section-label">Contact Info (saved for resume)</div>
       <div class="form-group">
@@ -573,15 +581,59 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </div>
       <button class="btn btn-outline btn-sm" onclick="saveContact()" style="width:100%">Save Contact Info</button>
     </div>
+  </div>
+</div>
 
-    <div class="drawer-section">
-      <div class="drawer-section-label">About</div>
-      <div style="font-size:0.82rem;color:var(--text-light);line-height:1.6">
-        RankToRole uses Claude AI for resume generation, O*NET for occupational crosswalk data, and USAJOBS for live federal job listings.<br><br>
-        Your account and saved resumes are stored securely. Resume content is processed via server-side AI — no data is sold or shared.<br><br>
-        <a href="https://www.onetonline.org/" target="_blank" style="color:var(--navy-light)">O*NET OnLine</a> ·
-        <a href="https://www.usajobs.gov/" target="_blank" style="color:var(--navy-light)">USAJOBS</a>
+<!-- ABOUT MODAL -->
+<div class="modal-overlay" id="aboutOverlay" onclick="if(event.target===this)closeAbout()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAbout()">✕</button>
+    <div class="modal-title">About the Builder</div>
+    <div class="modal-sub">The story behind RankToRole</div>
+    <p style="font-size:0.9rem;line-height:1.7;color:var(--text);margin-bottom:1rem">
+      Built by <strong>SFC (Ret.) Paul Sowu</strong> — 20 years Army, 92A Automated Logistical Specialist. I went through this transition. TAP gave me a generic resume. I built the tool I wish I had.
+    </p>
+    <p style="font-size:0.88rem;line-height:1.7;color:var(--text-light);margin-bottom:1.5rem">
+      Paul is also the founder of <strong>Laugh &amp; Learn Hub</strong>, where he blends humor and education to help people grow.
+    </p>
+    <div id="reviewsSection">
+      <div style="font-weight:700;color:var(--navy);font-size:0.92rem;margin-bottom:0.75rem">What veterans are saying</div>
+      <div id="reviewsList"><div class="loading-row"><div class="spinner"></div><span>Loading reviews...</span></div></div>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:1.25rem;padding-top:1.25rem">
+      <div style="font-weight:700;color:var(--navy);font-size:0.92rem;margin-bottom:0.75rem">Leave a review</div>
+      <div class="star-row" id="starRow">
+        <button class="star-btn" onclick="setRating(1)">★</button>
+        <button class="star-btn" onclick="setRating(2)">★</button>
+        <button class="star-btn" onclick="setRating(3)">★</button>
+        <button class="star-btn" onclick="setRating(4)">★</button>
+        <button class="star-btn" onclick="setRating(5)">★</button>
       </div>
+      <textarea class="form-input" id="reviewText" style="min-height:70px;margin-bottom:0.75rem" placeholder="Share your experience (optional)..."></textarea>
+      <input class="form-input" id="reviewName" type="text" placeholder="Display name (optional)" style="margin-bottom:0.75rem;font-size:0.88rem">
+      <button class="btn btn-primary btn-sm" onclick="submitReview()">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW PROMPT MODAL (shown after resume generation) -->
+<div class="modal-overlay" id="reviewPromptOverlay" onclick="if(event.target===this)closeReviewPrompt()">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeReviewPrompt()">✕</button>
+    <div class="modal-title">How's your resume looking?</div>
+    <div class="modal-sub">Your feedback helps other veterans find the right path.</div>
+    <div class="star-row" id="promptStarRow">
+      <button class="star-btn" onclick="setPromptRating(1)">★</button>
+      <button class="star-btn" onclick="setPromptRating(2)">★</button>
+      <button class="star-btn" onclick="setPromptRating(3)">★</button>
+      <button class="star-btn" onclick="setPromptRating(4)">★</button>
+      <button class="star-btn" onclick="setPromptRating(5)">★</button>
+    </div>
+    <textarea class="form-input" id="promptReviewText" style="min-height:70px;margin-bottom:0.75rem" placeholder="Optional: share your experience..."></textarea>
+    <input class="form-input" id="promptReviewName" type="text" placeholder="Display name (optional)" style="margin-bottom:0.75rem;font-size:0.88rem">
+    <div style="display:flex;gap:0.75rem">
+      <button class="btn btn-primary btn-sm" onclick="submitPromptReview()">Submit</button>
+      <button class="btn btn-outline btn-sm" onclick="closeReviewPrompt()">Skip</button>
     </div>
   </div>
 </div>
@@ -594,23 +646,45 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 // CONFIG & STATE
 // ============================================================
 let state = {
-  branch: null,
-  mos: '',
-  mosData: null,
-  rank: '',
-  years: '',
-  clearance: 'None',
-  education: "High School",
-  location: '',
-  additional: '',
-  documents: [],
-  selectedTrack: null,
-  resumes: { federal: '', private: '', master: '' },
-  activeTab: 'federal',
-  step: 1,
-  contact: {}
+  branch: null, mos: '', mosData: null, rank: '', years: '',
+  clearance: 'None', education: 'High School', location: '',
+  additional: '', documents: [], selectedTrack: null,
+  resumes: { federal: '', private: '', master: '', linkedin: '' },
+  activeTab: 'federal', step: 1, contact: {}
 };
 
+let scanState = {};
+let scanTotal = 0;
+let scanDone = 0;
+let reviewRating = 0;
+let promptReviewRating = 0;
+let reviewPromptShown = false;
+
+// ============================================================
+// SALARY & SKILL GAP DATA
+// ============================================================
+const GS_SALARY = {
+  'GS-2210':'$88k–$136k','GS-0132':'$78k–$118k','GS-0346':'$65k–$101k',
+  'GS-0201':'$61k–$98k','GS-0083':'$59k–$96k','GS-0080':'$59k–$96k',
+  'GS-1811':'$78k–$118k','GS-2010':'$47k–$75k','GS-2001':'$47k–$75k',
+  'GS-0640':'$51k–$82k','GS-0620':'$55k–$88k','GS-1712':'$61k–$98k',
+  'GS-0560':'$78k–$118k','GS-0343':'$78k–$118k','GS-1102':'$74k–$114k',
+  'GS-0089':'$55k–$91k','GS-0018':'$55k–$91k','GS-2101':'$61k–$98k',
+  'GS-0391':'$65k–$101k','GS-0854':'$91k–$137k','GS-1670':'$61k–$98k',
+  'GS-1801':'$61k–$98k','GS-0301':'$51k–$82k','GS-2181':'$74k–$114k',
+  'GS-0647':'$46k–$74k','GS-1103':'$74k–$114k'
+};
+
+const SKILL_GAP = {
+  'GS-2210':['Cloud certifications (AWS/Azure/GCP)','Scripting language (Python/PowerShell)','ITIL Foundation'],
+  'GS-0132':['Analytical software (Palantir, ArcGIS)','Academic/formal report writing','Foreign language (preferred)'],
+  'GS-0346':['ERP systems (SAP, Oracle)','Lean Six Sigma certification','Vendor contract management'],
+  'GS-0201':['HRIS platforms (Workday, PeopleSoft)','Labor relations/arbitration','Classification & staffing regulations'],
+  'GS-0083':['State/local law enforcement academy','Arrest & control techniques (civilian cert)','Criminal law coursework'],
+  'GS-1811':['Criminal investigative techniques','Interview/interrogation certification','Legal testimony experience'],
+  'GS-0640':['State EMT/Paramedic license','Clinical hours in civilian setting','ACLS/PALS certification'],
+  'GS-2210-cyber':['CEH or OSCP certification','Cloud security (AWS Security Specialty)','DevSecOps practices']
+};
 
 // ============================================================
 // MOS DATABASE
@@ -654,10 +728,10 @@ const MOS_DB = {
     ]},
     '92A': { title:'Automated Logistical Specialist', skills:['supply chain management','inventory control','property accountability','SARSS operations','PBUSE','warehouse management','requisition processing','logistics planning','property book','materiel management'], tracks:[
       {title:'Logistics Management Specialist',gs:'GS-0346',match:96,desc:'Your SARSS/PBUSE expertise and supply chain management experience maps directly to this role. Highest-demand GS track for 92A veterans.',employers:'Army Materiel Command, DLA, TRANSCOM, GSA, DHS'},
-      {title:'Supply Technician / Supply Chain Analyst',gs:'GS-2001/2010',match:90,desc:'Inventory management and supply operations experience is directly transferable to federal supply programs.',employers:'DLA, VA, GSA, DOD supply depots'},
+      {title:'Supply Technician / Supply Chain Analyst',gs:'GS-2001',match:90,desc:'Inventory management and supply operations experience is directly transferable to federal supply programs.',employers:'DLA, VA, GSA, DOD supply depots'},
       {title:'Property & Procurement Specialist',gs:'GS-1103',match:83,desc:'Property accountability and equipment management expertise supports federal property and contracting roles.',employers:'GSA, Army, DOD, NASA, any federal agency with significant property'},
       {title:'Operations Research Analyst',gs:'GS-0343',match:72,desc:'Quantitative supply chain analysis skills apply to program and operations analysis positions.',employers:'OSD, Army Staff, consulting firms (Booz Allen, SAIC, Leidos)'},
-      {title:'Warehouse & Distribution Manager (Private)',gs:'N/A — Private Sector',match:82,desc:'Major logistics companies aggressively recruit veterans with 92A-equivalent experience.',employers:'Amazon, FedEx, UPS, Walmart, Target, Home Depot, Maersk'}
+      {title:'Warehouse & Distribution Manager (Private)',gs:'N/A',match:82,desc:'Major logistics companies aggressively recruit veterans with 92A-equivalent experience.',employers:'Amazon, FedEx, UPS, Walmart, Target, Home Depot, Maersk'}
     ]},
     '92Y': { title:'Unit Supply Specialist', skills:['supply operations','property accountability','inventory management','hand receipts','PBUSE','equipment accountability','supply room management'], tracks:[
       {title:'Supply Technician',gs:'GS-2010',match:94,desc:'Direct crosswalk — unit supply operations maps nearly perfectly to federal supply technician roles.',employers:'DLA, Army, VA, GSA'},
@@ -791,7 +865,9 @@ const BRANCH_LABELS = {
   army: 'MOS', navy: 'Rating', marines: 'MOS',
   airforce: 'AFSC', spaceforce: 'SFSC', coastguard: 'Rating'
 };
+</script>
 
+<script>
 // ============================================================
 // INIT
 // ============================================================
@@ -805,29 +881,26 @@ function init() {
 // STEP NAVIGATION
 // ============================================================
 function goStep(n) {
-  if (n === 2 && !state.branch && !state.documentText) { toast('Please select a branch first, or upload a document to skip.','error'); return; }
   state.step = n;
   renderStep(n);
-  if (n === 4) {
+  if (n === 3) {
     setTimeout(() => {
       renderTracks(state.mosData ? state.mosData.tracks : getDefaultTracks());
     }, 100);
   }
-  if (n === 5) {
-    searchJobs();
-  }
+  if (n === 4) searchJobs();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderStep(n) {
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 4; i++) {
     const el = document.getElementById('step'+i);
     if (el) el.classList.toggle('hidden', i !== n);
     const nav = document.getElementById('step-nav-'+i);
     if (nav) {
-      nav.classList.remove('active','done');
+      nav.classList.remove('active','done','clickable');
       if (i === n) nav.classList.add('active');
-      else if (i < n) nav.classList.add('done');
+      else if (i < n) { nav.classList.add('done','clickable'); nav.onclick = () => goStep(i); }
     }
   }
 }
@@ -839,11 +912,16 @@ function selectBranch(branch) {
   state.branch = branch;
   document.querySelectorAll('.branch-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('branch-'+branch).classList.add('selected');
-  document.getElementById('step1Next').disabled = false;
   const label = document.getElementById('mosLabel');
-  if (label) label.textContent = BRANCH_LABELS[branch] + ' Code';
+  if (label) label.textContent = 'Occupational Code (' + BRANCH_LABELS[branch] + '/MOS/AFSC/Rating/NEC)';
   const input = document.getElementById('mosInput');
-  if (input) input.placeholder = branch === 'navy' || branch === 'coastguard' ? 'e.g. LS, IT, HM' : branch === 'airforce' ? 'e.g. 3D1, 6F0' : branch === 'spaceforce' ? 'e.g. 1C6' : 'e.g. 92A, 25B';
+  if (input) {
+    input.placeholder = branch === 'navy' || branch === 'coastguard' ? 'e.g. LS, IT, HM, MA'
+      : branch === 'airforce' ? 'e.g. 3D1, 6F0, 1N, 4N0'
+      : branch === 'spaceforce' ? 'e.g. 1C6'
+      : branch === 'marines' ? 'e.g. 0311, 0651, 3051'
+      : 'e.g. 92A, 25B, 35F, 31B';
+  }
 }
 
 // ============================================================
@@ -874,21 +952,19 @@ function getDefaultTracks() {
 }
 
 // ============================================================
-// CAREER TRACK ANALYSIS (O*NET + Static)
+// CAREER TRACK ANALYSIS
 // ============================================================
 async function analyzeCareerTracks() {
   const pasteText = document.getElementById('pasteText').value;
   const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const combinedText = [allDocs, pasteText].filter(Boolean).join('\n\n');
 
-  // If documents were uploaded, reset mosData so Claude re-analyzes with full content
-  if (combinedText && state.mosData) { goStep(4); return; }
-  if (!combinedText && state.mosData) { goStep(4); return; }
+  if (state.mosData) { goStep(3); return; }
 
   const mosInput = document.getElementById('mosInput')?.value.trim() || '';
 
-  // If we have a document but no MOS, use Claude to extract career tracks
   if (!mosInput && combinedText) {
+    goStep(3);
     document.getElementById('tracksLoading').classList.remove('hidden');
     try {
       const resp = await fetch('/api/chat', {
@@ -910,12 +986,13 @@ async function analyzeCareerTracks() {
       }
     } catch(e) { console.error('Claude track extraction failed', e); }
     document.getElementById('tracksLoading').classList.add('hidden');
-    goStep(4);
+    renderTracks(state.mosData ? state.mosData.tracks : getDefaultTracks());
     return;
   }
 
-  if (!mosInput) { goStep(4); return; }
+  if (!mosInput) { goStep(3); return; }
 
+  goStep(3);
   document.getElementById('tracksLoading').classList.remove('hidden');
   try {
     const keyword = encodeURIComponent(mosInput);
@@ -924,11 +1001,9 @@ async function analyzeCareerTracks() {
       const data = await resp.json();
       if (data.career && data.career.length > 0) {
         state.mosData = {
-          title: mosInput,
-          skills: [],
+          title: mosInput, skills: [],
           tracks: data.career.slice(0,5).map((c,i) => ({
-            title: c.title,
-            gs: 'See O*NET',
+            title: c.title, gs: 'See O*NET',
             match: Math.max(95 - (i * 8), 60),
             desc: c.tags ? c.tags.join(', ') : 'Identified via O*NET occupational crosswalk.',
             employers: 'Federal agencies and private sector employers'
@@ -938,7 +1013,7 @@ async function analyzeCareerTracks() {
     }
   } catch(e) { /* use static fallback */ }
   document.getElementById('tracksLoading').classList.add('hidden');
-  goStep(4);
+  renderTracks(state.mosData ? state.mosData.tracks : getDefaultTracks());
 }
 
 // ============================================================
@@ -947,10 +1022,13 @@ async function analyzeCareerTracks() {
 function renderTracks(tracks) {
   const el = document.getElementById('trackList');
   if (!tracks || !tracks.length) {
-    el.innerHTML = '<div style="color:var(--text-light);font-size:0.9rem">No career tracks found. Check your MOS code or try entering it in the service info step.</div>';
+    el.innerHTML = '<div style="color:var(--text-light);font-size:0.9rem">No career tracks found. Check your occupational code or try entering it in the service info step.</div>';
     return;
   }
-  el.innerHTML = tracks.map((t,i) => `
+  el.innerHTML = tracks.map((t,i) => {
+    const salary = GS_SALARY[t.gs] || '';
+    const gaps = SKILL_GAP[t.gs] || [];
+    return `
     <div class="track-card" id="track-${i}" onclick="selectTrack(${i})">
       <div class="track-head">
         <div class="track-title">${t.title}</div>
@@ -958,12 +1036,16 @@ function renderTracks(tracks) {
       </div>
       <div class="track-desc">${t.desc}</div>
       <div class="track-employers"><span>Common employers:</span> ${t.employers}</div>
-      <div class="match-row">
-        <div class="match-bar"><div class="match-fill" style="width:${t.match}%"></div></div>
-        <div class="match-pct">${t.match}% match</div>
+      <div class="track-meta">
+        <div class="match-row">
+          <div class="match-bar"><div class="match-fill" style="width:${t.match}%"></div></div>
+          <div class="match-pct">${t.match}% match</div>
+        </div>
+        ${salary ? `<div class="salary-badge">${salary}/yr</div>` : ''}
       </div>
-    </div>
-  `).join('');
+      ${gaps.length ? `<div class="gap-tags">${gaps.slice(0,3).map(g=>`<span class="gap-tag">Gap: ${g}</span>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('');
 }
 
 function selectTrack(i) {
@@ -971,11 +1053,13 @@ function selectTrack(i) {
   state.selectedTrack = tracks[i];
   document.querySelectorAll('.track-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('track-'+i).classList.add('selected');
-  document.getElementById('step4Next').disabled = false;
+  document.getElementById('step3Next').disabled = false;
 }
+</script>
 
+<script>
 // ============================================================
-// RESUME GENERATION (Claude API)
+// RESUME GENERATION
 // ============================================================
 async function generateResume(type) {
   state.rank      = document.getElementById('rankInput').value || '';
@@ -991,7 +1075,6 @@ async function generateResume(type) {
   const pasteText = document.getElementById('pasteText').value;
   const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const docText = [allDocs, pasteText].filter(Boolean).join('\n\n');
-
   const isFederal = type === 'federal';
   const isMaster = type === 'master';
 
@@ -1044,27 +1127,21 @@ SECTION ORDER (proven highest ATS pass + interview conversion):
 1. CONTACT INFORMATION
    [FULL NAME]
    [City, State] | [Phone] | [Email] | [LinkedIn URL]
-   (No full street address needed)
 
 2. PROFESSIONAL SUMMARY (2-3 lines — keyword-rich, outcome-focused)
    [Job Title Target] | [X]+ Years [Industry] Experience
    [Strongest quantified achievement]. [Key skill 1], [Key skill 2], [Key skill 3].
 
 3. CORE COMPETENCIES / SKILLS (ATS keyword goldmine — place BEFORE experience)
-   List 10-14 most relevant skills as plain comma-separated terms. Mirror exact language from job descriptions.
-   Example: Supply Chain Management, Inventory Control, Warehouse Operations, SAP/ERP Systems, Team Leadership, Process Improvement, OSHA Compliance, Budget Management, Vendor Relations, KPI Reporting
+   List 10-14 most relevant skills as plain comma-separated terms.
 
 4. PROFESSIONAL EXPERIENCE (reverse chronological — APR bullet formula)
    For EACH position:
    ─────────────────────────────────────────
    [JOB TITLE] | [Company/Organization] | [City, State] | [Month Year – Month Year]
-
-   • [ACTION VERB] + [specific project/challenge] + [quantified result — always include metrics]
    • [ACTION VERB] + [specific project/challenge] + [quantified result]
    • [ACTION VERB] + [specific project/challenge] + [quantified result]
    ─────────────────────────────────────────
-   Use APR Formula: Action (strong verb) → Project (what you did) → Result (measurable outcome)
-   Best action verbs: Led, Managed, Streamlined, Reduced, Increased, Implemented, Designed, Optimized, Directed, Launched, Coordinated, Trained, Delivered
 
 5. EDUCATION
    [Degree] | [Institution] | [Year]
@@ -1077,114 +1154,50 @@ STRICT RULES:
 - Zero military jargon — complete civilian translation required
 - Every bullet MUST have a quantified metric (%, $, #, time saved)
 - If exact numbers unknown, use ranges [e.g., ~$1.5M–$2M inventory]
-- Skills section BEFORE experience (boosts ATS keyword match rate by 40-50%)
-- Target 75%+ keyword match with job description
-- No tables, text boxes, or graphics — ATS parsing fails on these
-- Fragment style bullets, not full sentences ("Led team of 8" not "I led a team of 8")`;
+- Skills section BEFORE experience (boosts ATS keyword match rate by 40-50%)`;
 
   const masterTemplate = `
 MASTER RESUME — Comprehensive Career Document (No Length Limit):
 
-PURPOSE: This is NOT a submission resume. It is a complete career inventory — every position, skill, achievement, and qualification captured in full detail. Use it as the source document to tailor other resumes.
+PURPOSE: This is NOT a submission resume. It is a complete career inventory.
 
 SECTION ORDER:
 1. CONTACT INFORMATION
-   [FULL NAME]
-   [City, State] | [Phone] | [Email] | [LinkedIn URL]
-   Veterans Preference: [5-Point or 10-Point] | Clearance: ${state.clearance}
-
 2. PROFESSIONAL SUMMARY (4-6 lines)
-   Comprehensive summary covering full scope of military career, leadership, technical expertise, and value proposition. Include all major functional areas.
-
-3. CORE COMPETENCIES & SKILLS
-   Organize into categories:
-   LEADERSHIP & MANAGEMENT: [skills]
-   TECHNICAL SKILLS: [skills]
-   ADMINISTRATIVE & OPERATIONAL: [skills]
-   SOFT SKILLS / PROFESSIONAL: [skills]
-   TOOLS & SYSTEMS: [any software, databases, platforms mentioned or implied by role]
-
-4. PROFESSIONAL EXPERIENCE (every position, full detail)
-   For EACH assignment/position — no omissions:
-   ─────────────────────────────────────────
-   [CIVILIAN JOB TITLE] | [Translated Unit Type] | [City, State]
-   [Month Year] – [Month Year] | 40 hours/week | Salary: $[estimate]
-   Supervisor: [Name if known, Phone — May Contact: Yes/No]
-
-   Role Summary: [2-3 sentence overview of position scope and responsibilities]
-   Key Accomplishments:
-   • [Specific achievement with metrics]
-   • [Specific achievement with metrics]
-   • [Specific achievement with metrics]
-   Skills Demonstrated: [comma-separated list of skills this role required]
-   ─────────────────────────────────────────
-
-5. EDUCATION
-   List all: degrees, coursework, military education (NCOES, OCS, BOLC, PME, etc.)
-   [Degree/Course] | [Institution/School] | [City, State] | [Year]
-
-6. MILITARY TRAINING & CERTIFICATIONS
-   List ALL: MOS qualification, additional skill identifiers, professional military education, civilian certs
-   • [Cert/Training] ([Year if known])
-
-7. AWARDS & COMMENDATIONS
-   List all military awards translated to civilian equivalents:
-   • [Award Name] — [Brief description of what it recognizes]
-
-8. SECURITY CLEARANCE
-   Level: ${state.clearance}
-   [Status: Active/Inactive/Eligible for reinstatement]
-
+3. CORE COMPETENCIES & SKILLS (categorized: Leadership, Technical, Administrative, Tools)
+4. PROFESSIONAL EXPERIENCE (every position, full detail — include role summary, key accomplishments with metrics, skills demonstrated)
+5. EDUCATION (all degrees, military education/NCOES/PME)
+6. MILITARY TRAINING & CERTIFICATIONS (ALL certs, MOS qual, ASIs, PME)
+7. AWARDS & COMMENDATIONS (translated to civilian equivalents)
+8. SECURITY CLEARANCE: ${state.clearance}
 9. PROFESSIONAL AFFILIATIONS / VOLUNTEER
 
-RULES:
-- NO length limit — capture everything
-- Translate all military jargon completely
-- Include ALL positions, no matter how brief
-- Document every skill explicitly stated AND every skill logically required for the role
-- Flag promotions and time-in-grade as leadership progression indicators`;
+RULES: No length limit — capture everything. Translate all military jargon completely.`;
 
   const rankMosInferredSkills = `
 CRITICAL — INFERRED SKILLS BY RANK/MOS (include these even if NOT in documents):
-Based on ${state.rank || 'the veteran'}'s rank and ${mos || 'MOS'}, the following skills are ASSUMED STANDARD for this level regardless of whether explicitly mentioned:
+Based on ${state.rank || 'the veteran'}'s rank and ${mos || 'MOS'}, the following skills are ASSUMED STANDARD:
 
-NCO/Senior NCO/Officer level skills (if rank indicates E5+/O1+):
-- Microsoft Office Suite (Word, Excel, PowerPoint, Outlook) — briefings and reports are a daily function
-- Budget management and resource allocation — all senior military positions manage equipment/personnel budgets
-- Personnel counseling and performance evaluations — required by Army/DoD regulation at NCO+ level
-- Training program development and instruction — every NCO trains subordinates
-- Formal briefing and public speaking — required at all NCO and officer levels
-- Mentoring and coaching — embedded in military leadership doctrine
-- Cross-functional team coordination — all military operations are joint efforts
-- Regulatory compliance and policy enforcement — military is the most regulated workplace in the US
-- Risk assessment and hazard mitigation — required for all field operations
-- Emergency/crisis response — core military competency
+NCO/Senior NCO/Officer level (E5+/O1+): Microsoft Office Suite, budget management, personnel counseling, performance evaluations, training program development, formal briefing/public speaking, mentoring, cross-functional team coordination, regulatory compliance, risk assessment, emergency/crisis response.
 
-If 10+ years service, also include:
-- Strategic planning and long-range program management
-- Interagency coordination
-- Organizational change management
-- Large-scale event and logistics coordination
+If 10+ years: strategic planning, interagency coordination, organizational change management, large-scale logistics coordination.
 
-If clearance is SECRET or above, also include:
-- Information security awareness and OPSEC
-- Handling of sensitive materials and controlled information
-- Need-to-know access control`;
+If SECRET or above clearance: information security, OPSEC, sensitive materials handling, need-to-know access control.`;
 
   const prompt = `You are an expert military-to-civilian resume writer. Generate a complete, ready-to-submit ${isMaster ? 'master career inventory' : isFederal ? 'federal USAJOBS' : 'private sector'} resume following the exact template and rules below.
 
 VETERAN BACKGROUND:
 Branch: ${state.branch ? state.branch.charAt(0).toUpperCase() + state.branch.slice(1) : 'Extract from document'}
-${BRANCH_LABELS[state.branch] || 'MOS'}: ${mos || 'Extract from document'}
-Rank at Separation: ${state.rank || 'Extract from document — use exact rank found in documents'}
-Years of Service: ${state.years || 'Extract from document — calculate from BASD or first assignment date to separation date'}
-Security Clearance: ${state.clearance || 'Extract from document — use exact clearance level stated'}
-Education: ${state.education || 'Extract from document — list all degrees, schools, and graduation years found'}
+Occupational Code (MOS/AFSC/Rating/NEC): ${mos || 'Extract from document'}
+Rank at Separation/Retirement: ${state.rank || 'Extract from document'}
+Years of Service: ${state.years || 'Extract from document'}
+Security Clearance: ${state.clearance || 'Extract from document'}
+Education: ${state.education || 'Extract from document'}
 Target Location: ${state.location || 'Open / Flexible'}
 Target Career Track: ${track.title} (${track.gs})
-Additional Information / Achievements: ${state.additional || 'Extract awards, certifications, and notable achievements from documents'}
+Additional Information: ${state.additional || 'Extract awards, certifications, and notable achievements from documents'}
 
-${docText ? `SERVICE DOCUMENTS (extract any missing background fields from this):\n${docText.slice(0, isMaster ? 80000 : 24000)}` : ''}
+${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, isMaster ? 80000 : 24000)}` : ''}
 ${docText ? 'NOTE: Use the service documents as the primary source for dates, positions, accomplishments, and metrics. Extract real details rather than using placeholders where possible.' : ''}
 
 ${rankMosInferredSkills}
@@ -1196,7 +1209,8 @@ UNIVERSAL RULES:
 - Replace all specific unit IDs and location names with general civilian equivalents
 - Remove all classified, sensitive, or operationally specific information
 - If metrics are unknown, use bracketed estimates [e.g., ~$1.5M–$2M] — never invent exact numbers
-- Translate every piece of military terminology: "SARSS" → "enterprise inventory management system", "PBUSE" → "property accountability system", "SFC" → "Senior Logistics Supervisor", etc.
+- Translate every piece of military terminology to civilian equivalents
+- Use "Separation/Retirement" not "ETS"; "Evaluation Reports" not "NCOER"; "Occupational Code" not just "MOS"
 
 Generate the complete, ready-to-use resume now. Format it cleanly with clear section headers using ALL CAPS. Output only the resume — no commentary, no preamble.`;
 
@@ -1214,18 +1228,17 @@ Generate the complete, ready-to-use resume now. Format it cleanly with clear sec
         messages: [{ role: 'user', content: prompt }]
       })
     });
-
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({}));
       throw new Error(err.error?.message || `API error ${resp.status}`);
     }
-
     const data = await resp.json();
     const text = data.content[0].text;
     state.resumes[type] = text;
     document.getElementById('resumeOutput').textContent = text;
     const label = isMaster ? 'Master career inventory' : isFederal ? 'Federal' : 'Private sector';
     toast(`${label} resume generated!`, 'success');
+    if (!reviewPromptShown) { reviewPromptShown = true; setTimeout(openReviewPrompt, 2500); }
   } catch(e) {
     toast('Resume generation failed: ' + e.message, 'error');
     console.error(e);
@@ -1237,16 +1250,15 @@ Generate the complete, ready-to-use resume now. Format it cleanly with clear sec
 function setResumeLoading(on, text='') {
   document.getElementById('resumeLoading').classList.toggle('hidden', !on);
   document.getElementById('resumeLoadingText').textContent = text;
-  document.getElementById('genFedBtn').disabled = on;
-  document.getElementById('genPrivBtn').disabled = on;
-  document.getElementById('genMasterBtn').disabled = on;
+  ['genFedBtn','genPrivBtn','genMasterBtn'].forEach(id => document.getElementById(id).disabled = on);
 }
 
 function showResumeTab(type) {
   state.activeTab = type;
-  document.getElementById('tabFed').classList.toggle('active', type === 'federal');
-  document.getElementById('tabPriv').classList.toggle('active', type === 'private');
-  document.getElementById('tabMaster').classList.toggle('active', type === 'master');
+  ['federal','private','master','linkedin'].forEach(t => {
+    const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (btn) btn.classList.toggle('active', t === type);
+  });
   const output = document.getElementById('resumeOutput');
   if (state.resumes[type]) {
     output.textContent = state.resumes[type];
@@ -1254,9 +1266,81 @@ function showResumeTab(type) {
     const placeholder = {
       federal: 'Click "Generate Federal Resume" to build your USAJOBS-format resume.',
       private: 'Click "Generate Private Sector Resume" to build your civilian resume.',
-      master: 'Click "Generate Master Resume" to build a comprehensive career inventory — all positions, all skills, all achievements. Use this as the source to tailor your other resumes.'
+      master: 'Click "Generate Master Resume" to build a comprehensive career inventory.',
+      linkedin: 'Click "LinkedIn Profile" tab again to generate your LinkedIn content.'
     };
     output.textContent = placeholder[type] || '';
+  }
+}
+
+// ============================================================
+// LINKEDIN GENERATION
+// ============================================================
+async function generateLinkedIn() {
+  showResumeTab('linkedin');
+  if (state.resumes.linkedin) return;
+
+  const track = state.selectedTrack || { title: 'Federal Employment', gs: 'GS' };
+  const mos = state.mosData ? `${state.mos} — ${state.mosData.title}` : state.mos;
+  const pasteText = document.getElementById('pasteText').value;
+  const allDocs = state.documents.map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
+  const docText = [allDocs, pasteText].filter(Boolean).join('\n\n');
+
+  setResumeLoading(true, 'Generating LinkedIn profile...');
+  try {
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: `You are an expert LinkedIn profile writer for military veterans transitioning to civilian careers.
+
+VETERAN BACKGROUND:
+Branch: ${state.branch || 'Unknown'}
+Occupational Code: ${mos || 'Unknown'}
+Rank at Separation/Retirement: ${state.rank || 'Unknown'}
+Years of Service: ${state.years || 'Unknown'}
+Target Career Track: ${track.title} (${track.gs})
+${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, 8000)}` : ''}
+
+Generate a complete LinkedIn profile package with these sections:
+
+## HEADLINE OPTIONS (pick the best 3 — 120 char max each)
+Option 1: [action-oriented headline]
+Option 2: [industry + value headline]
+Option 3: [role + impact headline]
+
+## ABOUT SECTION (2,600 char max — conversational, first-person, ends with CTA)
+[Write the full About section]
+
+## EXPERIENCE BULLETS (for most recent/relevant position — 3-5 bullets)
+[Write LinkedIn-style bullets — shorter than resume, more conversational]
+
+## SKILLS (list 15 relevant skills to add to LinkedIn)
+[comma-separated]
+
+## HOW TO ADD THIS TO LINKEDIN
+1. Go to linkedin.com/in/[your-profile] → Edit profile
+2. Click the pencil icon on your headline → paste your chosen headline
+3. Click Add profile section → About → paste the About section
+4. Update each position with the experience bullets
+5. Click Add profile section → Skills → add each skill listed above
+6. Connect with veterans in your target field using the headline as an icebreaker
+
+Output only the content above — no preamble.` }]
+      })
+    });
+    if (!resp.ok) throw new Error('API error ' + resp.status);
+    const data = await resp.json();
+    const text = data.content[0].text;
+    state.resumes.linkedin = text;
+    document.getElementById('resumeOutput').textContent = text;
+    toast('LinkedIn profile generated!', 'success');
+  } catch(e) {
+    toast('LinkedIn generation failed: ' + e.message, 'error');
+  } finally {
+    setResumeLoading(false);
   }
 }
 
@@ -1266,48 +1350,33 @@ function showResumeTab(type) {
 async function searchJobs() {
   const track = state.selectedTrack;
   if (!track) return;
-
   document.getElementById('jobsLoading').classList.remove('hidden');
   document.getElementById('jobsList').innerHTML = '';
-
   const keyword = encodeURIComponent(track.title);
   const loc = state.location ? encodeURIComponent(state.location) : '';
-
   try {
     const resp = await fetch(`/api/usajobs?keyword=${keyword}&location=${loc}`);
-
     if (!resp.ok) throw new Error('USAJOBS API returned ' + resp.status);
-
     const data = await resp.json();
     const jobs = data.SearchResult?.SearchResultItems || [];
-
     document.getElementById('jobsLoading').classList.add('hidden');
-
-    if (!jobs.length) {
-      showJobsFallback(track.title);
-      return;
-    }
-
+    if (!jobs.length) { showJobsFallback(track.title); return; }
     document.getElementById('jobsList').innerHTML = jobs.map(j => {
       const p = j.MatchedObjectDescriptor;
       const sal = p.PositionRemuneration?.[0];
       const salText = sal ? `$${Math.round(sal.MinimumRange/1000)}k–$${Math.round(sal.MaximumRange/1000)}k` : '';
       const loc = p.PositionLocation?.[0]?.LocationName || '';
-      return `
-        <div class="job-card">
-          <div class="job-title">${p.PositionTitle}</div>
-          <div class="job-agency">${p.OrganizationName}</div>
-          <div class="job-meta">
-            ${loc ? `<span class="job-tag">📍 ${loc}</span>` : ''}
-            ${salText ? `<span class="job-tag">💰 ${salText}</span>` : ''}
-            ${p.PositionSchedule?.[0]?.Name ? `<span class="job-tag">${p.PositionSchedule[0].Name}</span>` : ''}
-            ${p.PositionOfferingType?.[0]?.Name ? `<span class="job-tag">${p.PositionOfferingType[0].Name}</span>` : ''}
-          </div>
-          <a class="job-link" href="${p.PositionURI}" target="_blank">View on USAJOBS →</a>
+      return `<div class="job-card">
+        <div class="job-title">${p.PositionTitle}</div>
+        <div class="job-agency">${p.OrganizationName}</div>
+        <div class="job-meta">
+          ${loc ? `<span class="job-tag">${loc}</span>` : ''}
+          ${salText ? `<span class="job-tag">${salText}</span>` : ''}
+          ${p.PositionSchedule?.[0]?.Name ? `<span class="job-tag">${p.PositionSchedule[0].Name}</span>` : ''}
         </div>
-      `;
+        <a class="job-link" href="${p.PositionURI}" target="_blank">View on USAJOBS →</a>
+      </div>`;
     }).join('');
-
   } catch(e) {
     document.getElementById('jobsLoading').classList.add('hidden');
     showJobsFallback(track.title);
@@ -1318,20 +1387,19 @@ function showJobsFallback(title) {
   const q = encodeURIComponent(title + (state.location ? ' ' + state.location : ''));
   document.getElementById('jobsList').innerHTML = `
     <div class="jobs-fallback">
-      ℹ️ No live listings found for this track right now.
-      <a href="https://www.usajobs.gov/search/?k=${q}" target="_blank" style="color:var(--navy-light);font-weight:600">
+      No live listings found for this track right now.
+      <a href="https://www.usajobs.gov/search/?k=${q}" target="_blank" style="color:var(--navy-light);font-weight:600;display:inline-block;margin-top:0.35rem">
         Search "${title}" on USAJOBS directly →
       </a>
-    </div>
-  `;
+    </div>`;
 }
+</script>
 
+<script>
 // ============================================================
 // EXPORT
 // ============================================================
-function exportPDF() {
-  window.print();
-}
+function exportPDF() { window.print(); }
 
 function exportText() {
   const text = document.getElementById('resumeOutput').textContent;
@@ -1349,11 +1417,13 @@ function exportText() {
 function copyResume() {
   const text = document.getElementById('resumeOutput').textContent;
   if (!text || text.startsWith('Click')) { toast('Generate a resume first.','error'); return; }
-  navigator.clipboard.writeText(text).then(() => toast('Copied to clipboard!','success')).catch(() => toast('Copy failed — try selecting and copying manually.','error'));
+  navigator.clipboard.writeText(text)
+    .then(() => toast('Copied to clipboard!','success'))
+    .catch(() => toast('Copy failed — try selecting and copying manually.','error'));
 }
 
 // ============================================================
-// FILE UPLOAD
+// FILE UPLOAD + SCANNING PROGRESS
 // ============================================================
 async function extractText(file) {
   const ext = file.name.split('.').pop().toLowerCase();
@@ -1367,25 +1437,18 @@ async function extractText(file) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     const buf = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-
-    // Try native text extraction first (works on non-scanned PDFs)
     let nativeText = '';
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
       nativeText += content.items.map(s => s.str).join(' ') + '\n';
     }
-
-    // If we got substantial text, use it
     if (nativeText.replace(/\s/g, '').length > 300) return nativeText;
-
-    // Scanned PDF — use Claude Vision to extract text
     toast(`Scanning ${file.name} with AI vision...`, '');
     const MAX_PAGES = 40;
     const pageCount = Math.min(pdf.numPages, MAX_PAGES);
     const BATCH = 5;
     let allText = '';
-
     for (let start = 1; start <= pageCount; start += BATCH) {
       const end = Math.min(start + BATCH - 1, pageCount);
       const images = [];
@@ -1393,8 +1456,7 @@ async function extractText(file) {
         const page = await pdf.getPage(i);
         const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        canvas.width = viewport.width; canvas.height = viewport.height;
         await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
         images.push(canvas.toDataURL('image/jpeg', 0.82).split(',')[1]);
       }
@@ -1413,43 +1475,86 @@ async function extractText(file) {
   throw new Error('Unsupported file type');
 }
 
+function updateScanProgress() {
+  const total = Object.keys(scanState).length;
+  const done = Object.values(scanState).filter(s => s === 'done' || s === 'error').length;
+  const bar = document.getElementById('scanBarFill');
+  const summary = document.getElementById('scanSummary');
+  const wrap = document.getElementById('scanProgress');
+  if (total === 0) { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  bar.style.width = (total ? Math.round((done/total)*100) : 0) + '%';
+  const scanning = done < total;
+  if (scanning) {
+    summary.textContent = `Scanning ${done} of ${total} document${total>1?'s'}...`;
+  } else {
+    const totalPages = state.documents.reduce((a,d) => a + (d.pages||1), 0);
+    summary.textContent = `${total} doc${total>1?'s':''} scanned · ${totalPages} page${totalPages>1?'s':''} · ready to analyze`;
+  }
+  const analyzeBtn = document.getElementById('analyzeBtn');
+  if (analyzeBtn) analyzeBtn.disabled = scanning;
+}
+
 function renderDocChips() {
   const chips = document.getElementById('docChips');
-  chips.innerHTML = state.documents.map((d, i) => `
-    <div class="doc-chip">
-      <span class="doc-chip-name" title="${d.name}">📄 ${d.name}</span>
-      <button class="doc-chip-remove" onclick="removeDoc(${i})" title="Remove">✕</button>
-    </div>
-  `).join('');
+  chips.innerHTML = state.documents.map((d, i) => {
+    const s = scanState[d.name] || 'idle';
+    const icon = s === 'scanning' ? `<span class="spinner spinner-sm"></span>`
+      : s === 'done' ? '✓'
+      : s === 'error' ? '✗'
+      : '📄';
+    return `<div class="doc-chip ${s}">
+      ${icon}
+      <span class="doc-chip-name" title="${d.name}">${d.name}</span>
+      ${s !== 'scanning' ? `<button class="doc-chip-remove" onclick="removeDoc(${i})" title="Remove">✕</button>` : ''}
+    </div>`;
+  }).join('');
 }
 
 async function handleFiles(files) {
   if (!files || !files.length) return;
   const fileArr = Array.from(files);
-  let added = 0;
   for (const file of fileArr) {
     if (file.size > 5 * 1024 * 1024) { toast(`${file.name}: too large (5MB max)`, 'error'); continue; }
-    const alreadyLoaded = state.documents.some(d => d.name === file.name);
-    if (alreadyLoaded) continue;
+    if (state.documents.some(d => d.name === file.name)) continue;
+    state.documents.push({ name: file.name, text: '', pages: 1 });
+    scanState[file.name] = 'scanning';
+    scanTotal++;
+    renderDocChips();
+    updateScanProgress();
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    if (analyzeBtn) analyzeBtn.disabled = true;
     try {
       const text = await extractText(file);
-      state.documents.push({ name: file.name, text });
-      added++;
+      const idx = state.documents.findIndex(d => d.name === file.name);
+      if (idx !== -1) {
+        state.documents[idx].text = text;
+        state.documents[idx].pages = Math.max(1, Math.ceil(text.length / 3000));
+      }
+      scanState[file.name] = 'done';
+      scanDone++;
     } catch(e) {
+      scanState[file.name] = 'error';
+      scanDone++;
       toast(`Could not parse ${file.name} — try copy-pasting instead.`, 'error');
-      console.error(e);
     }
-  }
-  if (added) {
     renderDocChips();
-    toast(`${added} file${added > 1 ? 's' : ''} loaded.`, 'success');
+    updateScanProgress();
   }
   document.getElementById('fileInput').value = '';
+  const allDone = Object.values(scanState).every(s => s !== 'scanning');
+  if (allDone && Object.keys(scanState).length > 0) {
+    const good = Object.values(scanState).filter(s => s === 'done').length;
+    if (good > 0) toast(`${good} file${good > 1 ? 's' : ''} loaded.`, 'success');
+  }
 }
 
 function removeDoc(index) {
+  const name = state.documents[index].name;
   state.documents.splice(index, 1);
+  delete scanState[name];
   renderDocChips();
+  updateScanProgress();
 }
 
 function dragOver(e) { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag'); }
@@ -1461,7 +1566,7 @@ function dropFile(e) {
 }
 
 // ============================================================
-// SETTINGS
+// SETTINGS DRAWER
 // ============================================================
 function openSettings() {
   if (currentUser) document.getElementById('drawerUserEmail').textContent = currentUser.email;
@@ -1480,11 +1585,6 @@ function closeSettings() {
   document.getElementById('drawerOverlay').classList.remove('open');
 }
 
-function saveSettings() {
-  toast('Settings saved.', 'success');
-  setTimeout(closeSettings, 800);
-}
-
 function saveContact() {
   state.contact = {
     name:  document.getElementById('contactName').value,
@@ -1496,10 +1596,74 @@ function saveContact() {
   toast('Contact info saved.', 'success');
 }
 
+// ============================================================
+// ABOUT MODAL + REVIEWS
+// ============================================================
+function openAbout() {
+  document.getElementById('aboutOverlay').classList.add('open');
+  loadReviews();
+}
+function closeAbout() { document.getElementById('aboutOverlay').classList.remove('open'); }
 
-// ============================================================
-// DEMO MODE (92A)
-// ============================================================
+function openReviewPrompt() { document.getElementById('reviewPromptOverlay').classList.add('open'); }
+function closeReviewPrompt() { document.getElementById('reviewPromptOverlay').classList.remove('open'); }
+
+function setRating(n) {
+  reviewRating = n;
+  document.querySelectorAll('#starRow .star-btn').forEach((b,i) => b.classList.toggle('lit', i < n));
+}
+
+function setPromptRating(n) {
+  promptReviewRating = n;
+  document.querySelectorAll('#promptStarRow .star-btn').forEach((b,i) => b.classList.toggle('lit', i < n));
+}
+
+async function submitReview() {
+  if (!reviewRating) { toast('Please select a star rating.', 'error'); return; }
+  const text = document.getElementById('reviewText').value.trim();
+  const name = document.getElementById('reviewName').value.trim() || 'Anonymous Veteran';
+  await saveReview(reviewRating, text, name);
+}
+
+async function submitPromptReview() {
+  if (!promptReviewRating) { toast('Please select a star rating.', 'error'); return; }
+  const text = document.getElementById('promptReviewText').value.trim();
+  const name = document.getElementById('promptReviewName').value.trim() || 'Anonymous Veteran';
+  await saveReview(promptReviewRating, text, name);
+  closeReviewPrompt();
+}
+
+async function saveReview(rating, text, display_name) {
+  if (!sbClient) return;
+  try {
+    const { error } = await sbClient.from('reviews').insert({ rating, text, display_name, created_at: new Date().toISOString() });
+    if (error) throw error;
+    toast('Review submitted — thank you!', 'success');
+    loadReviews();
+  } catch(e) {
+    toast('Could not save review: ' + (e.message || e), 'error');
+  }
+}
+
+async function loadReviews() {
+  if (!sbClient) return;
+  const el = document.getElementById('reviewsList');
+  try {
+    const { data, error } = await sbClient.from('reviews').select('*').order('created_at', { ascending: false }).limit(20);
+    if (error || !data || !data.length) {
+      el.innerHTML = '<div style="font-size:0.82rem;color:var(--text-light)">No reviews yet — be the first!</div>';
+      return;
+    }
+    el.innerHTML = data.map(r => `
+      <div class="review-item">
+        <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        ${r.text ? `<div class="review-text">${r.text.replace(/</g,'&lt;')}</div>` : ''}
+        <div class="review-name">${r.display_name || 'Anonymous Veteran'}</div>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="font-size:0.82rem;color:var(--text-light)">Could not load reviews.</div>';
+  }
+}
 
 // ============================================================
 // TOAST
@@ -1510,7 +1674,10 @@ function toast(msg, type='') {
   el.className = 'toast' + (type ? ' '+type : '');
   el.textContent = msg;
   wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(110%)'; el.style.transition='all 0.3s'; setTimeout(() => el.remove(), 350); }, 3500);
+  setTimeout(() => {
+    el.style.opacity='0'; el.style.transform='translateX(110%)'; el.style.transition='all 0.3s';
+    setTimeout(() => el.remove(), 350);
+  }, 3500);
 }
 
 // ============================================================
@@ -1524,15 +1691,9 @@ async function initAuth() {
   const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
   if (!cfg.supabaseUrl) { showAuthError('Configuration error. Please try again later.'); return; }
   sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-
   const { data: { session } } = await sbClient.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    showApp();
-  } else {
-    showAuthGate();
-  }
-
+  if (session) { currentUser = session.user; showApp(); }
+  else showAuthGate();
   sbClient.auth.onAuthStateChange((_event, session) => {
     if (session) { currentUser = session.user; showApp(); }
     else { currentUser = null; showAuthGate(); }
@@ -1556,10 +1717,7 @@ function showAuthGate() {
 }
 
 async function signInWithGoogle() {
-  const { error } = await sbClient.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: window.location.origin }
-  });
+  const { error } = await sbClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
   if (error) showAuthError(error.message);
 }
 
@@ -1596,9 +1754,7 @@ function showAuthError(msg, isSuccess = false) {
   el.classList.remove('hidden');
 }
 
-async function signOut() {
-  await sbClient.auth.signOut();
-}
+async function signOut() { await sbClient.auth.signOut(); }
 
 // ============================================================
 // RESUME SAVE / LOAD
@@ -1607,13 +1763,13 @@ async function saveResume() {
   const content = document.getElementById('resumeOutput').textContent.trim();
   if (!content || content.startsWith('Click')) { toast('Generate a resume first.', 'error'); return; }
   const { data: { session } } = await sbClient.auth.getSession();
-  const title = `${state.mos || 'Resume'} — ${state.selectedTrack?.title || 'General'} — ${state.activeTab === 'federal' ? 'Federal' : 'Private Sector'}`;
+  const title = `${state.mos || 'Resume'} — ${state.selectedTrack?.title || 'General'} — ${state.activeTab === 'federal' ? 'Federal' : state.activeTab === 'linkedin' ? 'LinkedIn' : state.activeTab === 'master' ? 'Master' : 'Private Sector'}`;
   const resp = await fetch('/api/resumes/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
     body: JSON.stringify({ title, branch: state.branch, mos: state.mos, resume_type: state.activeTab, content })
   });
-  if (resp.ok) { toast('Resume saved!', 'success'); }
+  if (resp.ok) toast('Resume saved!', 'success');
   else { const err = await resp.json().catch(() => ({})); toast(err.error || 'Save failed.', 'error'); }
 }
 
@@ -1631,14 +1787,13 @@ async function loadSavedResumes() {
   if (!resumes.length) { el.innerHTML = '<div style="font-size:0.82rem;color:var(--text-light)">No saved resumes yet.</div>'; return; }
   el.innerHTML = resumes.map(r => `
     <div class="saved-resume-item">
-      <input class="form-input saved-resume-name" id="rname-${r.id}" value="${r.title.replace(/"/g,'&quot;')}" style="font-size:0.85rem;font-weight:600;padding:0.3rem 0.5rem;margin-bottom:2px" onblur="renameResume('${r.id}')" onkeydown="if(event.key==='Enter')this.blur()">
+      <input class="form-input" id="rname-${r.id}" value="${r.title.replace(/"/g,'&quot;')}" style="font-size:0.85rem;font-weight:600;padding:0.3rem 0.5rem;margin-bottom:2px" onblur="renameResume('${r.id}')" onkeydown="if(event.key==='Enter')this.blur()">
       <div class="saved-resume-date">${new Date(r.created_at).toLocaleDateString()}</div>
       <div style="display:flex;gap:0.5rem;margin-top:0.6rem">
         <button class="btn btn-outline btn-sm" onclick="viewSavedResume('${r.id}')">View</button>
         <button class="btn btn-outline btn-sm" style="color:var(--error)" onclick="deleteResume('${r.id}')">Delete</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function viewSavedResume(id) {
@@ -1646,7 +1801,7 @@ function viewSavedResume(id) {
   if (!content) return;
   document.getElementById('resumeOutput').textContent = content;
   closeSettings();
-  goStep(5);
+  goStep(4);
 }
 
 async function renameResume(id) {
