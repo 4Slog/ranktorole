@@ -1441,24 +1441,23 @@ async function extractCareerProfile() {
 
   const prompt = `Extract a structured career profile JSON from these military service documents.
 
+PURPOSE: This profile is a METADATA INDEX only — it provides structure (dates, titles, locations, metrics) to resume generators. Full accomplishment text lives in the source documents and will be provided to generators separately. Keep output COMPACT.
+
 EXTRACTION RULES:
 1. One assignment record per RATING PERIOD (per NCOER/OER/FITREP boundary). Three sequential NCOERs at Fort Gordon = three separate assignment objects, NOT one combined record.
 2. ratingPeriodStart/ratingPeriodEnd = dates on the evaluation report, NOT PCS orders.
-3. rawMilitary = verbatim text from document — copy exactly, do not paraphrase or alter.
-4. For metrics: extract the LARGEST documented figure (e.g. APS equipment = $3.2B not sub-unit property book).
-5. civilianTitle: map each military duty title to the closest civilian job title (e.g. "Automated Logistical Specialist" → "Supply Chain / Inventory Manager").
-6. TIERED DETAIL by assignment era — this is critical for keeping output compact:
-   • Post-2018 (recent 6 years): TOP 3 accomplishments — rawMilitary = ONE sentence (key action + biggest metric). Include scopeStatement.
-   • 2013–2018 (mid-career): TOP 1 accomplishment only — rawMilitary = ONE sentence. Include scopeStatement.
-   • Pre-2013 (early career): NO accomplishments — set accomplishments:[] — header fields only. Early career is summarized in careerSummary, not expanded per-record.
-7. For missing fields use null (not empty string "").
-8. completenessScore 0-100 based on data completeness.
-9. coverageGaps: flag any date ranges not covered by any document.
-10. Do NOT generate civilianTranslation or federalTranslation fields — leave them out entirely. Resume generators will produce those at write time.
+3. civilianTitle: map each military duty title to the closest civilian job title.
+4. keyMetrics: extract the 2-3 most impactful quantified results as short strings (e.g. "$3.2B APS-4 accountability", "34 personnel supervised", "99.9% inventory accuracy"). TIERED by era:
+   • Post-2018: up to 3 keyMetrics per assignment
+   • 2013–2018: up to 2 keyMetrics per assignment
+   • Pre-2013: NO keyMetrics — omit the field entirely
+5. scopeStatement: ONE short phrase describing scope (e.g. "led 34-person supply section"). Post-2018 and 2013-2018 only.
+6. For missing fields use null. Do NOT generate any text descriptions or accomplishment narratives.
+7. completenessScore 0-100. coverageGaps: flag uncovered date ranges.
 
 Return ONLY valid JSON — no markdown fences, no explanation.
 
-SCHEMA (follow exactly):
+SCHEMA (follow exactly — no extra fields):
 {
   "contact": {"name": null, "phone": null, "email": null, "city": null, "state": null, "zip": null},
   "branch": null, "mos": null, "mosTitle": null, "rank": null, "payGrade": null,
@@ -1468,21 +1467,14 @@ SCHEMA (follow exactly):
   "careerSummary": null,
   "assignments": [
     {
-      "id": "assign_1", "positionType": "primary_duty",
+      "id": "assign_1",
       "ratingPeriodStart": null, "ratingPeriodEnd": null, "evaluationReportType": null,
       "dutyTitle": null, "civilianTitle": null, "scopeStatement": null,
       "unit": {"designation": null, "parentCommand": null, "personnelStrength": null},
       "location": {"installation": null, "city": null, "state": null, "country": "USA"},
       "hoursPerWeek": 40, "payGrade": null, "salaryStart": null, "salaryEnd": null,
       "supervisor": {"title": null, "name": null, "phone": null},
-      "accomplishments": [
-        {
-          "id": "acc_1_1",
-          "rawMilitary": null,
-          "metrics": {"dollarValue": null, "personnelCount": null, "percentageImprovement": null, "timeframe": null}
-        }
-      ],
-      "confidence": "high"
+      "keyMetrics": []
     }
   ],
   "education": [{"degree": null, "major": null, "institution": null, "city": null, "state": null, "year": null}],
@@ -1572,15 +1564,15 @@ async function generateResume(type) {
   // Pass 1: Ensure career profile extracted from documents
   const profile = await ensureCareerProfile();
 
-  // Build source context — prefer structured profile, fall back to raw docs
+  // Build source context — compact profile (structure/metadata) + raw docs (accomplishment text)
   const pasteText = document.getElementById('pasteText').value;
   const allDocs = state.documents.slice().reverse().map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const rawDocText = [allDocs, pasteText].filter(Boolean).join('\n\n');
   const profileJSON = profile ? JSON.stringify(profile, null, 2) : null;
-  const docLimit = isMaster ? 80000 : 40000;
+  const rawDocLimit = isMaster ? 120000 : 50000;
   const sourceContext = profileJSON
-    ? `CAREER PROFILE (structured extraction — use as primary source):\n${profileJSON.slice(0, docLimit)}`
-    : (rawDocText ? `SERVICE DOCUMENTS (raw fallback):\n${rawDocText.slice(0, isMaster ? 150000 : 50000)}` : 'No documents provided.');
+    ? `CAREER PROFILE (metadata: dates, titles, locations, metrics — use for structure):\n${profileJSON}\n\nSERVICE DOCUMENTS (full text — use for accomplishment details, evaluator quotes, and narrative content):\n${rawDocText.slice(0, rawDocLimit)}`
+    : (rawDocText ? `SERVICE DOCUMENTS:\n${rawDocText.slice(0, rawDocLimit)}` : 'No documents provided.');
 
   const jobAnnSection = state.jobAnnouncement
     ? `\nTARGET JOB ANNOUNCEMENT (mirror exact keywords, KSAs, and OPM language — HR scores against this verbatim):\n${state.jobAnnouncement.slice(0, 3000)}`
@@ -1820,7 +1812,7 @@ async function generateLinkedIn() {
   const allDocs = state.documents.slice().reverse().map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const rawDocText = [allDocs, pasteText].filter(Boolean).join('\n\n');
   const sourceContext = profileJSON
-    ? `CAREER PROFILE:\n${profileJSON.slice(0, 40000)}`
+    ? `CAREER PROFILE (metadata: dates, titles, metrics):\n${profileJSON}\n\nSERVICE DOCUMENTS (accomplishment detail):\n${rawDocText.slice(0, 50000)}`
     : (rawDocText ? `SERVICE DOCUMENTS:\n${rawDocText.slice(0, 50000)}` : '');
   const jobAnnSection = state.jobAnnouncement
     ? `\nTARGET ROLE — tailor keywords, headline, and About to this:\n${state.jobAnnouncement.slice(0, 2000)}`
@@ -1924,7 +1916,7 @@ async function generateCoverLetter() {
   const allDocs = state.documents.slice().reverse().map(d => `=== ${d.name} ===\n${d.text}`).join('\n\n');
   const rawDocText = [allDocs, pasteText].filter(Boolean).join('\n\n');
   const sourceContext = profileJSON
-    ? `CAREER PROFILE:\n${profileJSON.slice(0, 25000)}`
+    ? `CAREER PROFILE (metadata):\n${profileJSON}\n\nSERVICE DOCUMENTS (detail):\n${rawDocText.slice(0, 30000)}`
     : (rawDocText ? `SERVICE DOCUMENTS:\n${rawDocText.slice(0, 30000)}` : '');
   const jobSection = state.jobAnnouncement
     ? `TARGET JOB:\n${state.jobAnnouncement.slice(0, 2500)}`
