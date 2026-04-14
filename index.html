@@ -1444,22 +1444,21 @@ async function extractCareerProfile() {
 EXTRACTION RULES:
 1. One assignment record per RATING PERIOD (per NCOER/OER/FITREP boundary). Three sequential NCOERs at Fort Gordon = three separate assignment objects, NOT one combined record.
 2. ratingPeriodStart/ratingPeriodEnd = dates on the evaluation report, NOT PCS orders.
-3. rawMilitary = verbatim text from document — never paraphrase or alter.
-4. For metrics: always use the LARGEST documented figure (APS equipment = $3.2B not the sub-unit property book; use what's documented).
-5. civilianTitle: translate each military duty title to the closest civilian job title.
-6. federalTranslation: rewrite each accomplishment using OPM/USAJOBS keyword patterns.
-7. TIERED DETAIL by assignment era:
-   • Post-2018 (recent): TOP 3 accomplishments — rawMilitary = ONE sentence (key action + biggest metric).
-   • 2013–2018: TOP 1 accomplishment only — rawMilitary = ONE sentence.
-   • Pre-2013: NO accomplishments — set accomplishments:[] — header fields only (dates, dutyTitle, civilianTitle, unit, location, payGrade). Pre-2013 service is captured in careerSummary, not expanded per-record.
-   Rationale: OPM guidance = full detail on most recent 5-7 years; older service → summary level.
-8. For missing fields use null (not empty string "").
-9. completenessScore 0-100 based on data completeness across all fields.
-10. coverageGaps: flag any date ranges not covered by any document.
+3. rawMilitary = verbatim text from document — copy exactly, do not paraphrase or alter.
+4. For metrics: extract the LARGEST documented figure (e.g. APS equipment = $3.2B not sub-unit property book).
+5. civilianTitle: map each military duty title to the closest civilian job title (e.g. "Automated Logistical Specialist" → "Supply Chain / Inventory Manager").
+6. TIERED DETAIL by assignment era — this is critical for keeping output compact:
+   • Post-2018 (recent 6 years): TOP 3 accomplishments — rawMilitary = ONE sentence (key action + biggest metric). Include scopeStatement.
+   • 2013–2018 (mid-career): TOP 1 accomplishment only — rawMilitary = ONE sentence. Include scopeStatement.
+   • Pre-2013 (early career): NO accomplishments — set accomplishments:[] — header fields only. Early career is summarized in careerSummary, not expanded per-record.
+7. For missing fields use null (not empty string "").
+8. completenessScore 0-100 based on data completeness.
+9. coverageGaps: flag any date ranges not covered by any document.
+10. Do NOT generate civilianTranslation or federalTranslation fields — leave them out entirely. Resume generators will produce those at write time.
 
-Return ONLY valid JSON — no markdown fences, no explanation, no preamble or closing text.
+Return ONLY valid JSON — no markdown fences, no explanation.
 
-SCHEMA (follow exactly, populate all fields from documents):
+SCHEMA (follow exactly):
 {
   "contact": {"name": null, "phone": null, "email": null, "city": null, "state": null, "zip": null},
   "branch": null, "mos": null, "mosTitle": null, "rank": null, "payGrade": null,
@@ -1470,32 +1469,28 @@ SCHEMA (follow exactly, populate all fields from documents):
   "assignments": [
     {
       "id": "assign_1", "positionType": "primary_duty",
-      "includeIn": ["federal","private_sector"],
       "ratingPeriodStart": null, "ratingPeriodEnd": null, "evaluationReportType": null,
       "dutyTitle": null, "civilianTitle": null, "scopeStatement": null,
-      "unit": {"type": null, "designation": null, "parentCommand": null, "personnelStrength": null},
+      "unit": {"designation": null, "parentCommand": null, "personnelStrength": null},
       "location": {"installation": null, "city": null, "state": null, "country": "USA"},
       "hoursPerWeek": 40, "payGrade": null, "salaryStart": null, "salaryEnd": null,
-      "supervisor": {"title": null, "name": null, "phone": null, "mayContact": true},
+      "supervisor": {"title": null, "name": null, "phone": null},
       "accomplishments": [
         {
           "id": "acc_1_1",
           "rawMilitary": null,
-          "civilianTranslation": null,
-          "federalTranslation": null,
-          "metrics": {"dollarValue": null, "personnelCount": null, "percentageImprovement": null, "timeframe": null},
-          "skills": [], "includeIn": ["federal","private_sector"]
+          "metrics": {"dollarValue": null, "personnelCount": null, "percentageImprovement": null, "timeframe": null}
         }
       ],
-      "systems": [], "dateConflicts": [], "confidence": "high", "sourceDocuments": []
+      "confidence": "high"
     }
   ],
   "education": [{"degree": null, "major": null, "institution": null, "city": null, "state": null, "year": null}],
-  "militaryEducation": [{"course": null, "institution": null, "completionDate": null}],
-  "awards": [{"name": null, "abbreviation": null, "count": 1, "civilianTranslation": null}],
+  "militaryEducation": [{"course": null, "completionDate": null}],
+  "awards": [{"name": null, "abbreviation": null, "count": 1}],
   "certifications": [{"name": null, "issuer": null, "dateEarned": null}],
   "skills": {"technical": [], "leadership": [], "logistics": []},
-  "deployments": [{"operation": null, "theater": null, "startDate": null, "endDate": null, "role": null, "combatZone": true}],
+  "deployments": [{"operation": null, "theater": null, "startDate": null, "endDate": null, "combatZone": true}],
   "meta": {"extractedFrom": [], "completenessScore": 0, "coverageGaps": [], "missingCriticalFields": []}
 }
 
@@ -1507,8 +1502,8 @@ ${docText.slice(0, 120000)}`;
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 8000,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 6000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
