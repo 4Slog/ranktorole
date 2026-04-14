@@ -1086,102 +1086,64 @@ async function generateResume(type) {
   const federalTemplate = `
 FEDERAL RESUME (USAJOBS FORMAT):
 
-SECTION ORDER (mandatory):
-1. CONTACT INFORMATION
-   [FULL NAME]
-   [CITY, STATE] | [PHONE] | [EMAIL]
+SECTIONS (in this order):
+1. CONTACT: [NAME] | [CITY, STATE] | [PHONE] | [EMAIL]
    Veterans Preference: [5-Point or 10-Point] | Clearance: ${state.clearance || 'See documents'}
+2. PROFESSIONAL SUMMARY (3-4 lines) — keyword-rich, targeting ${track.title} (${track.gs})
+3. PROFESSIONAL EXPERIENCE (reverse chronological, largest section)
+   Each entry format:
+   [JOB TITLE] | [UNIT TYPE — no unit IDs] | [City, State or Country]
+   [Month Year] – [Month Year] | 40 hours/week | Salary: [rank-based equivalent, e.g., E-7 ~$54k–$62k/yr]
+   Supervisor: [Title/Name if known, or "[Supervisor Name]"] | May Contact: Yes
+   • Action verb + specific task + quantified result
+4. EDUCATION: [Degree] | [Institution] | [City, State] | [Year]
+5. CERTIFICATIONS: Professional certs and military schools only (no fitness tests)
+6. SKILLS: comma-separated
 
-2. PROFESSIONAL SUMMARY (3-4 lines)
-   Keyword-rich, targeting ${track.title} (${track.gs}). Lead with years of experience and strongest qualification. Mirror terminology from federal job announcements.
-
-3. PROFESSIONAL EXPERIENCE (reverse chronological — largest section)
-   GROUPING RULE: Consolidate multiple evaluation periods at the SAME assignment into ONE entry showing the full date range. Only create a separate entry if the job title or primary duties changed at that unit.
-   For EACH entry use this exact format:
-   ─────────────────────────────────────────
-   [JOB TITLE] | [EMPLOYER / UNIT TYPE] | [City, State or Country]
-   [Month Year] – [Month Year] | 40 hours/week | Salary: [military pay equivalent for rank held, e.g., "E-7, ~$54,000–$62,000/year equivalent" — do not invent a specific number]
-   Supervisor: [Rank/Title, Name if known — otherwise "[Supervisor Name]"] | May Contact: Yes
-
-   • Accomplishment bullet with action verb + specific task + quantified result
-   ─────────────────────────────────────────
-   NOTE: 40 hours/week is the correct value for ALL active duty military positions. Never use a different number.
-
-4. EDUCATION
-   [Degree] | [Institution] | [City, State] | [Year]
-
-5. CERTIFICATIONS & TRAINING
-   • Professional certifications, military schools (NCOES, PME), and security clearance only
-
-6. SKILLS
-   [Comma-separated list of relevant technical and leadership skills]
-
-STRICT RULES:
-- Plain text only — no tables, columns, graphics, or special characters
-- Every experience entry MUST have hours/week, supervisor, salary — HR auto-rejects missing fields
-- Use exact keywords from federal job announcements (OPM keyword matching is literal)
-- Veterans preference: 5-point for honorable discharge; 10-point for service-connected disability
-- Translate ALL military jargon to civilian equivalents`;
+FEDERAL-SPECIFIC RULES:
+- 40 hours/week is correct for ALL active duty positions — never change this
+- Every entry MUST have hours/week, supervisor, salary — HR auto-rejects if missing
+- Plain text only — no tables, columns, graphics
+- Mirror exact keywords from the target job announcement`;
 
   const privateTemplate = `
 PRIVATE SECTOR RESUME (ATS-Optimized):
-
-SECTION ORDER:
-1. CONTACT INFORMATION
-   [FULL NAME]
-   [City, State] | [Phone] | [Email] | [LinkedIn URL]
-
-2. PROFESSIONAL SUMMARY (2-3 lines — keyword-rich, outcome-focused)
-   [Job Title Target] | [X]+ Years [Industry] Experience
-   [Strongest quantified achievement]. [Key skill 1], [Key skill 2], [Key skill 3].
-
-3. CORE COMPETENCIES / SKILLS (place BEFORE experience — ATS keyword section)
-   10-14 most relevant skills, comma-separated.
-
+SECTIONS (in this order):
+1. CONTACT: [NAME] | [City, State] | [Phone] | [Email]
+2. PROFESSIONAL SUMMARY (2-3 lines) — keyword-rich, targeting ${track.title} (${track.gs})
+3. CORE COMPETENCIES (place BEFORE experience — ATS keyword boost)
+   10-14 most relevant skills, comma-separated
 4. PROFESSIONAL EXPERIENCE (reverse chronological)
-   GROUPING RULE: Consolidate multiple evaluation periods at the SAME assignment into ONE entry. Only create separate entries if the title or primary role changed.
-   For EACH entry:
-   ─────────────────────────────────────────
    [CIVILIAN JOB TITLE] | [Organization type, no unit IDs] | [City, State] | [Month Year – Month Year]
-   • [ACTION VERB] + [specific challenge/project] + [quantified result]
-   ─────────────────────────────────────────
-
-5. EDUCATION
-   [Degree] | [Institution] | [Year]
-
+   • Action verb + specific task/challenge + quantified result
+5. EDUCATION: [Degree] | [Institution] | [Year]
 6. CERTIFICATIONS (relevant professional certs only)
-   • [Cert Name] ([Year])
-
-STRICT RULES:
-- 1-2 pages maximum (2 pages appropriate for 15+ years)
-- DO NOT include hours/week, salary, or supervisor contact — those are federal resume fields only
-- Zero military jargon — complete civilian translation required
+PRIVATE-SPECIFIC RULES:
+- 1-2 pages max (2 pages appropriate for 15+ years)
+- DO NOT include hours/week, salary, or supervisor contact — federal only
 - Every bullet MUST have a quantified metric (%, $, #, time saved)
-- If exact numbers unknown, use ranges [e.g., ~$1.5M–$2M inventory]
 - Skills section BEFORE experience (boosts ATS keyword match rate)`;
 
   const masterTemplate = `
 MASTER RESUME — Comprehensive Career Inventory (No Length Limit):
-
-PURPOSE: This is NOT a submission resume. It is a complete career inventory for the veteran's own reference. Include EVERYTHING.
-
-SECTION ORDER:
+PURPOSE: NOT a submission resume. A complete career inventory for the veteran's own reference. Include EVERYTHING.
+SECTIONS (in this order):
 1. CONTACT INFORMATION
 2. PROFESSIONAL SUMMARY (4-6 lines)
 3. CORE COMPETENCIES & SKILLS (categorized: Leadership, Technical, Administrative, Systems & Tools)
-4. PROFESSIONAL EXPERIENCE — EXPAND ALL:
-   Show each assignment individually. For assignments with multiple evaluation periods (e.g., three NCOERs at Fort Wainwright), list EACH period as its own sub-entry under that assignment. Include: role summary, all key accomplishments with metrics, notable evaluator comments if present.
-   Format: [Assignment/Unit type | Location | Full date range]
-     > [Rating period 1 title] | [dates] — [accomplishments]
-     > [Rating period 2 title] | [dates] — [accomplishments]
-5. EDUCATION (all degrees, military education, NCOES, PME — list all)
+4. PROFESSIONAL EXPERIENCE — EXPAND ALL
+   Show each assignment. For assignments with multiple rating periods, list EACH period as its own sub-entry.
+   Format: [Unit type | Location | Full assignment date range]
+     > [Duty title] | [rating period dates] — [accomplishments + metrics + notable evaluator language verbatim]
+5. EDUCATION (all degrees, military education, NCOES, PME)
 6. MILITARY TRAINING & CERTIFICATIONS (every cert, MOS qualification, ASI, language, PME)
-7. AWARDS & COMMENDATIONS (list all with civilian translation of significance)
+7. AWARDS & COMMENDATIONS (all awards with civilian translation of significance)
 8. SECURITY CLEARANCE: ${state.clearance || 'See documents'}
-9. DEPLOYMENTS & COMBAT SERVICE
+9. DEPLOYMENTS & COMBAT SERVICE (operation name, theater, dates, role)
 10. PROFESSIONAL AFFILIATIONS / VOLUNTEER SERVICE
-
-RULES: No length limit. Expand every period. Include evaluator language verbatim in quotes.`;
+MASTER-SPECIFIC RULES:
+- No length limit — expand every period, every assignment
+- Include verbatim evaluator quotes for top-tier ratings`;
 
   const rankMosInferredSkills = `
 CRITICAL — INFERRED SKILLS BY RANK/MOS (include these even if NOT in documents):
@@ -1224,24 +1186,20 @@ ${rankMosInferredSkills}
 
 ${isMaster ? masterTemplate : isFederal ? federalTemplate : privateTemplate}
 
-UNIVERSAL RULES:
-- CONTACT INFO: Use the exact name/email/phone/location values provided above. Do NOT invent phone numbers, emails, or addresses under any circumstances.
-- DOCUMENT RECONCILIATION: The veteran may provide multiple document types (Talent Profile, ERB, NCOERs, DD-214, award citations) that each cover the same career from a different angle. Discrepancies between them are normal — do not pick one source and discard the others. Synthesize them: (1) ASSIGNMENT DATES: The Talent Profile and ERB show official PCS assignment windows (best for overall start/end dates per duty station). NCOERs show rating periods within an assignment — use these to establish sub-periods and fill in gaps the TP/ERB may leave vague. When TP dates and NCOER dates differ by 1-3 months, this is a rating period boundary vs. assignment date difference — use the wider range. (2) ACCOMPLISHMENTS & METRICS: NCOERs contain the most specific, contemporaneous performance data — prefer NCOER bullet language for all quantified accomplishments. TP/ERB bullets are summaries; if they add unique data not in NCOERs, include it. (3) DUTY TITLES: NCOERs show the actual duty position title. TP/ERB show the position code or MOS. Use the NCOER title (more descriptive) translated to civilian language. (4) CONFLICTS: When two documents give genuinely contradictory data (e.g., different dollar figures for same inventory), use the NCOER value (primary performance record) and note the discrepancy only if material.
-- CHRONOLOGICAL CONTINUITY: Military service is continuous employment — zero gaps exist from enlistment to separation. Every month is accounted for. Never silently skip time.
-- DATE CHAINING: After extracting all positions, sort them in chronological order (oldest first). Then verify the chain: the end date of each position must connect directly to the start date of the next position — the gap should be 0 or 1 month. If position B started July 2005, then position A (the one before it) must have ended no later than June 2005. Work in both directions: a known start date caps the end date of the prior assignment; a known end date floors the start date of the next. Any gap larger than 1 month between adjacent positions represents undocumented service — flag it: [UNDOCUMENTED PERIOD: MMM YYYY – MMM YYYY — additional records needed].
-- DATE VALIDATION: All date ranges must be forward-chronological (start date before end date). If documents show conflicting or ambiguous dates, write [DATE CONFLICT — verify with service records] rather than outputting an invalid range.
-- POSITION CONSOLIDATION: Group multiple evaluation periods at the SAME unit (same location, same organization) into ONE position entry with the full date range. HOWEVER: different duty stations (different cities or countries) are ALWAYS separate entries, even if the MOS or role is similar. Never combine assignments from different locations into a single entry.
-- GS LEVEL TARGETING: Use the veteran's rank to suggest appropriate GS target range in the professional summary. Guide: E-1 to E-3: GS-2 to GS-4; E-4: GS-3 to GS-5; E-5/E-6: GS-5 to GS-7; E-7/E-8: GS-7 to GS-11 (GS-9 to GS-11 with 10+ years); E-9: GS-10 to GS-13; W-1/W-2: GS-7 to GS-9; W-3/W-4: GS-9 to GS-12; W-5: GS-12 to GS-13; O-1/O-2: GS-7 to GS-9; O-3: GS-9 to GS-11; O-4/O-5: GS-12 to GS-14; O-6+: GS-14 to GS-15. Adjust upward if years of service is 15+ (experienced veteran commands higher grades).
-- DUTY STATION LOCATIONS: Keep real city/state/country for every position. Do not replace geographic locations with invented cities.
-- UNIT DESIGNATIONS: Translate specific unit IDs to general civilian-readable descriptions, but preserve the actual city/state/country.
-- SALARY (federal only): Use military pay equivalent for the rank held (e.g., "E-7, ~$54,000–$62,000/year equivalent"). Never invent specific dollar figures.
-- CERTIFICATIONS: List certification name and year earned only. Do not include expiration status. No physical fitness tests or routine qualifications.
-- EDUCATION: Only include education explicitly confirmed in the documents. Do not add speculative entries.
-- Remove all classified, sensitive, or operationally specific information
-- Use bracketed estimates for unknown metrics [e.g., ~$1.5M–$2M] — never invent exact figures
-- Translate all military terminology to civilian equivalents
+UNIVERSAL RULES (apply to all resume types, in priority order):
+1. CONTACT: Use provided name/email/phone/location exactly. Never invent or alter.
+2. SOURCES: Synthesize all documents — do not pick one and discard others. TP/ERB → official assignment date windows. NCOERs → accomplishments, metrics, duty titles (prefer NCOER values for all quantified data). 1–3 month date differences between TP/ERB and NCOER = rating boundary variance — use the wider range. Metric conflicts → use NCOER value.
+3. TIMELINE: Military service is continuous — zero gaps exist from enlistment to separation. Sort all positions chronologically (oldest first). End date of each position must connect to start of next (≤1 month gap). Known start date caps end date of prior assignment; known end date floors start date of next. Backward date range → [DATE CONFLICT — verify with service records]. Gap >1 month → [UNDOCUMENTED PERIOD: MMM YYYY–MMM YYYY — additional records needed].
+4. POSITIONS: Same unit + same location → ONE entry spanning the full date range. Different city or country → always a separate entry, even if MOS/role is similar. Master resume only: expand each rating period as its own sub-entry under the assignment.
+5. GS TARGETING: E-1–E-3: GS-2–4; E-4: GS-3–5; E-5/E-6: GS-5–7; E-7/E-8: GS-7–11 (GS-9–11 with 10+ yrs); E-9: GS-10–13; W-1/W-2: GS-7–9; W-3/W-4: GS-9–12; W-5: GS-12–13; O-1/O-2: GS-7–9; O-3: GS-9–11; O-4/O-5: GS-12–14; O-6+: GS-14–15. Adjust upward 1–2 grades for 15+ years of service.
+6. LOCATIONS: Keep real city/state/country for every position. Translate unit IDs to civilian descriptions but never replace actual geographic locations.
+7. SALARY (federal only): Use rank-equivalent pay range (e.g., "E-7, ~$54k–$62k/yr equivalent"). Never invent specific figures.
+8. CERTS/EDUCATION: From documents only. No expiration status. No fitness tests or routine qualifications. No speculative degrees.
+9. LANGUAGE: Expand all military acronyms on first use (e.g., "NCOER (Non-Commissioned Officer Evaluation Report)"). Translate all jargon to civilian equivalents. Translate awards: MSM = top-5% performance award; ARCOM = commendation award; AAM = achievement award; MUC/PUC = unit excellence award; BSM = valor or meritorious service medal. Translate NCOER ratings: "Most Qualified" = top performer (top 5–10%); "Highly Qualified" = above average performer. Unknown metrics → [~estimate range]. No classified or operationally sensitive information.
+10. DEPLOYMENTS: Identify combat/contingency deployments by operation name, theater, and duration. Frame as high-stakes logistics operations under hostile conditions with zero margin for error.
+11. OUTPUT: Resume content only — no preamble, explanation, or closing commentary.
 
-Generate the complete, ready-to-use resume now. Format it cleanly with clear section headers using ALL CAPS. Output only the resume — no commentary, no preamble.`;
+Generate the complete resume now. Use ALL CAPS section headers.`;
 
   const loadingText = isMaster ? 'Building master career inventory...' : isFederal ? 'Generating federal resume...' : 'Generating private sector resume...';
   setResumeLoading(true, loadingText);
@@ -1341,8 +1299,15 @@ Rank at Separation/Retirement: ${state.rank || 'Extract from document'}
 Years of Service: ${state.years || 'Extract from document'}
 Security Clearance: ${state.clearance || 'Extract from document'}
 Target Career Track: ${track.title} (${track.gs})
-${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, 24000)}` : ''}
-NOTE: Military service is continuous — no employment gaps exist between enlistment and separation.
+Name: ${contact.name || '[NAME]'}
+${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, 50000)}` : ''}
+
+LANGUAGE RULES:
+- Expand all military acronyms on first use. Translate all jargon to civilian equivalents.
+- Translate awards: MSM = top-5% performance award; ARCOM = commendation award; AAM = achievement award; MUC/PUC = unit excellence award.
+- NCOER ratings: "Most Qualified" = top performer (top 5–10%); "Highly Qualified" = above average.
+- Military service is continuous — no employment gaps exist between enlistment and separation.
+- No classified or operationally sensitive information.
 
 Generate a complete LinkedIn profile package with these sections:
 
