@@ -1224,7 +1224,7 @@ Generate the complete, ready-to-use resume now. Format it cleanly with clear sec
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         model: isMaster ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001',
-        max_tokens: isMaster ? 8000 : isFederal ? 3000 : 2000,
+        max_tokens: isMaster ? 5000 : isFederal ? 3000 : 2000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
