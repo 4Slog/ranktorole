@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RankToRole — Military to Civilian Resume Builder</title>
+<title>VeteranTransition — Military Career Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -379,7 +379,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="lp-nav">
     <div class="lp-nav-logo">
       <span class="lp-nav-star">★</span>
-      <span class="lp-nav-name">RankToRole</span>
+      <span class="lp-nav-name">VeteranTransition</span>
     </div>
     <div class="lp-nav-actions">
       <button class="lp-nav-signin" onclick="openAuthModal('signin')">Sign In</button>
@@ -464,7 +464,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
   <!-- Landing footer -->
   <div class="lp-footer">
-    <span>© 2025 RankToRole</span>
+    <span>© 2026 VeteranTransition</span>
     <span>·</span>
     <a onclick="openAuthModal('signin')">Sign In</a>
     <span>·</span>
@@ -480,8 +480,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <button class="modal-close" onclick="closeAuthModal()" style="float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-light);line-height:1">✕</button>
     <div class="auth-logo">
       <div class="auth-logo-star">★</div>
-      <div class="auth-logo-text">RankToRole</div>
-      <div class="auth-logo-sub">Military → Civilian Resume Builder</div>
+      <div class="auth-logo-text">VeteranTransition</div>
+      <div class="auth-logo-sub">Military Career Platform</div>
     </div>
     <div class="auth-title" id="authTitle">Sign in to your account</div>
     <button class="google-btn" onclick="signInWithGoogle()">
@@ -508,8 +508,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="header-left">
     <div class="logo-star">★</div>
     <div>
-      <div class="logo-text">RankToRole</div>
-      <div class="logo-sub">Military → Civilian Resume Builder</div>
+      <div class="logo-text">VeteranTransition</div>
+      <div class="logo-sub">Military Career Platform</div>
     </div>
   </div>
   <div class="header-actions">
@@ -842,7 +842,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="modal">
     <button class="modal-close" onclick="closeAbout()">✕</button>
     <div class="modal-title">About the Builder</div>
-    <div class="modal-sub">The story behind RankToRole</div>
+    <div class="modal-sub">The story behind VeteranTransition</div>
     <p style="font-size:0.9rem;line-height:1.7;color:var(--text);margin-bottom:1rem">
       Built by <strong>SFC (Ret.) Paul Sowu</strong> — 20 years Army, 92A Automated Logistical Specialist. I went through this transition. TAP gave me a generic resume. I built the tool I wish I had.
     </p>
@@ -1126,14 +1126,14 @@ const BRANCH_LABELS = {
 // INIT
 // ============================================================
 function saveResumesToStorage() {
-  try { localStorage.setItem('ranktorole_resumes', JSON.stringify(state.resumes)); } catch(e) {}
+  try { localStorage.setItem('veterantransition_resumes', JSON.stringify(state.resumes)); } catch(e) {}
 }
 
 function init() {
-  const stored = JSON.parse(localStorage.getItem('ranktorole_contact') || '{}');
+  const stored = JSON.parse(localStorage.getItem('veterantransition_contact') || '{}');
   state.contact = stored;
   try {
-    const saved = JSON.parse(localStorage.getItem('ranktorole_resumes') || '{}');
+    const saved = JSON.parse(localStorage.getItem('veterantransition_resumes') || '{}');
     Object.keys(state.resumes).forEach(k => { if (saved[k]) state.resumes[k] = saved[k]; });
   } catch(e) {}
   renderStep(1);
@@ -1197,7 +1197,7 @@ function onJobAnnChange() {
   state.jobAnnouncement = val;
   if (Object.values(state.resumes).some(v => v)) {
     state.resumes = { federal: '', private: '', master: '', linkedin: '', coverletter: '' };
-    localStorage.removeItem('ranktorole_resumes');
+    localStorage.removeItem('veterantransition_resumes');
     const tabIds = { federal:'tabFed', private:'tabPriv', master:'tabMaster', linkedin:'tabLinkedIn', coverletter:'tabCover' };
     Object.values(tabIds).forEach(id => {
       const btn = document.getElementById(id); if (btn) btn.classList.remove('done','active');
@@ -1837,7 +1837,7 @@ function exportText() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `ranktorole_resume_${state.activeTab}_${Date.now()}.txt`;
+  a.download = `veterantransition_resume_${state.activeTab}_${Date.now()}.txt`;
   a.click();
   URL.revokeObjectURL(url);
   toast('Resume downloaded.', 'success');
@@ -2021,7 +2021,7 @@ function saveContact() {
     phone: document.getElementById('contactPhone').value,
     city:  document.getElementById('contactCity').value
   };
-  localStorage.setItem('ranktorole_contact', JSON.stringify(state.contact));
+  localStorage.setItem('veterantransition_contact', JSON.stringify(state.contact));
   toast('Contact info saved.', 'success');
 }
 
@@ -2197,7 +2197,7 @@ function showApp() {
   document.getElementById('appWrapper').classList.remove('hidden');
   document.getElementById('userChip').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
-  const stored = JSON.parse(localStorage.getItem('ranktorole_contact') || '{}');
+  const stored = JSON.parse(localStorage.getItem('veterantransition_contact') || '{}');
   state.contact = stored;
   init();
 }
