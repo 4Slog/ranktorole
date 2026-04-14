@@ -1184,6 +1184,11 @@ If 10+ years: strategic planning, interagency coordination, organizational chang
 
 If SECRET or above clearance: information security, OPSEC, sensitive materials handling, need-to-know access control.`;
 
+  const contactName  = contact.name  || '[YOUR FULL NAME]';
+  const contactEmail = contact.email || '[YOUR EMAIL]';
+  const contactPhone = contact.phone || '[YOUR PHONE]';
+  const contactCity  = contact.city  || '[YOUR CITY, STATE]';
+
   const prompt = `You are an expert military-to-civilian resume writer. Generate a complete, ready-to-submit ${isMaster ? 'master career inventory' : isFederal ? 'federal USAJOBS' : 'private sector'} resume following the exact template and rules below.
 
 VETERAN BACKGROUND:
@@ -1197,6 +1202,12 @@ Target Location: ${state.location || 'Open / Flexible'}
 Target Career Track: ${track.title} (${track.gs})
 Additional Information: ${state.additional || 'Extract awards, certifications, and notable achievements from documents'}
 
+CONTACT INFORMATION (use these exact values — do not invent or alter):
+Name: ${contactName}
+Email: ${contactEmail}
+Phone: ${contactPhone}
+Location: ${contactCity}
+
 ${docText ? `SERVICE DOCUMENTS:\n${docText.slice(0, isMaster ? 150000 : 24000)}` : ''}
 ${docText ? 'NOTE: Use the service documents as the primary source for dates, positions, accomplishments, and metrics. Extract real details rather than using placeholders where possible.' : ''}
 
@@ -1205,8 +1216,10 @@ ${rankMosInferredSkills}
 ${isMaster ? masterTemplate : isFederal ? federalTemplate : privateTemplate}
 
 UNIVERSAL RULES:
-- Use contact placeholders: [FULL NAME], [EMAIL], [PHONE], [CITY, STATE], [LINKEDIN]
-- Replace all specific unit IDs and location names with general civilian equivalents
+- CONTACT INFO: Use the exact name/email/phone/location values provided above. Do NOT invent phone numbers, emails, or addresses under any circumstances.
+- DUTY STATION LOCATIONS: Keep real city/state/country for each position (e.g., Fort Wainwright, AK; Seoul, South Korea; Salt Lake City, UT). Do not replace geographic locations with made-up cities.
+- UNIT DESIGNATIONS: Translate specific unit IDs (e.g., "403d AFSB") to general civilian descriptions (e.g., "U.S. Army Forward Logistics Base"), but preserve the actual location.
+- SALARY: For federal resume entries, use [SALARY] as placeholder if not in documents — do not invent dollar figures.
 - Remove all classified, sensitive, or operationally specific information
 - If metrics are unknown, use bracketed estimates [e.g., ~$1.5M–$2M] — never invent exact numbers
 - Translate every piece of military terminology to civilian equivalents
