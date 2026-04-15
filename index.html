@@ -606,6 +606,11 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
     <div class="home-section-label">What would you like to do?</div>
     <div class="home-action-grid" id="homeActionGrid"></div>
+
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <button class="btn btn-outline" onclick="openFeedback()" style="border-color:var(--text-light);color:var(--text-light);font-size:0.8rem">Give Feedback</button>
+      <button class="btn btn-outline" onclick="openReviewPrompt()" style="border-color:var(--gold);color:var(--navy);font-size:0.8rem">⭐ Rate This App</button>
+    </div>
   </div>
 </div>
 
@@ -2376,6 +2381,14 @@ function showJobsFallback(title) {
 // ============================================================
 // EXPORT
 // ============================================================
+function resumeFilename(ext) {
+  const type = (TAB_LABELS[state.activeTab] || state.activeTab).replace(/\s+/g, '_');
+  const rawName = state.contact?.name || currentUser?.email?.split('@')[0] || 'Resume';
+  const name = rawName.replace(/\s+/g, '_');
+  const date = new Date().toISOString().slice(0, 10);
+  return `${type}_${name}_${date}.${ext}`;
+}
+
 function exportPDF() { window.print(); }
 
 function exportText() {
@@ -2385,7 +2398,7 @@ function exportText() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `veterantransition_resume_${state.activeTab}_${Date.now()}.txt`;
+  a.download = resumeFilename('txt');
   a.click();
   URL.revokeObjectURL(url);
   toast('Resume downloaded.', 'success');
@@ -2637,7 +2650,7 @@ async function exportDocx() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `veterantransition_${state.activeTab}_${Date.now()}.docx`;
+  a.download = resumeFilename('docx');
   a.click();
   URL.revokeObjectURL(url);
   toast('DOCX downloaded.', 'success');
@@ -3101,7 +3114,9 @@ async function saveResume() {
   const content = document.getElementById('resumeOutput').innerText.trim();
   if (!content || content.startsWith('Click')) { toast('Generate a resume first.', 'error'); return; }
   const { data: { session } } = await sbClient.auth.getSession();
-  const title = `${state.mos || 'Resume'} — ${state.selectedTrack?.title || 'General'} — ${TAB_LABELS[state.activeTab] || state.activeTab}`;
+  const userName = state.contact?.name || currentUser?.email?.split('@')[0] || 'Resume';
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const title = `${TAB_LABELS[state.activeTab] || state.activeTab} — ${userName} — ${dateStr}`;
   const resp = await fetch('/api/resumes/save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
