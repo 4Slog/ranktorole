@@ -247,6 +247,27 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .footer a{color:var(--navy-light);cursor:pointer;text-decoration:none;font-weight:500}
 .footer a:hover{text-decoration:underline}
 
+/* Home Dashboard */
+.home-welcome{font-size:1.45rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem}
+.home-sub{font-size:0.88rem;color:var(--text-light);margin-bottom:1.75rem}
+.home-section-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:0.65rem}
+.home-status-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.65rem;margin-bottom:1.75rem}
+@media(max-width:640px){.home-status-grid{grid-template-columns:repeat(3,1fr)}}
+.home-status-card{border:1.5px solid var(--border);border-radius:8px;padding:0.85rem 0.5rem;text-align:center;background:white;transition:all 0.2s}
+.home-status-card.done{border-color:#22c55e;background:#f0fdf4}
+.home-status-icon{font-size:1.2rem;margin-bottom:0.25rem}
+.home-status-label{font-size:0.72rem;font-weight:600;color:var(--text-light);line-height:1.3}
+.home-status-card.done .home-status-label{color:#166534}
+.home-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:480px){.home-action-grid{grid-template-columns:1fr}}
+.home-action-card{border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all 0.2s;background:white;text-align:left}
+.home-action-card:hover{border-color:var(--navy);box-shadow:0 4px 12px rgba(0,0,0,0.08);transform:translateY(-1px)}
+.home-action-card.primary{border-color:var(--gold);background:#fffbeb}
+.home-action-card.primary:hover{border-color:#b8963f}
+.home-action-icon{font-size:1.4rem;margin-bottom:0.4rem}
+.home-action-title{font-weight:700;color:var(--navy);font-size:0.95rem;margin-bottom:0.2rem}
+.home-action-desc{font-size:0.8rem;color:var(--text-light);line-height:1.5}
+
 /* ============================================================
    MOBILE (≤640px)
    ============================================================ */
@@ -429,7 +450,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="lp-hero-inner">
       <div class="lp-hero-eyebrow">Built by a veteran. For veterans.</div>
       <h1 class="lp-hero-h1">Your service record is a<br class="lp-br"> <span class="lp-gold">resume goldmine.</span></h1>
-      <p class="lp-hero-sub">Upload your DD-214, NCOERs, or Talent Profile. Get a federal-grade USAJOBS resume, an ATS-optimized private sector resume, and a complete master career inventory — in minutes.</p>
+      <p class="lp-hero-sub">Upload your DD-214, evaluation reports (OER/NCOER/FITREP), or service records. Get a federal-grade USAJOBS resume, an ATS-optimized private sector resume, and a complete master career inventory — in minutes.</p>
       <div class="lp-hero-btns">
         <button class="lp-btn-primary" onclick="openAuthModal('signup')">Build My Resume — Free</button>
         <button class="lp-btn-outline" onclick="openAuthModal('signin')">Sign In</button>
@@ -448,7 +469,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="lp-feature-card">
       <div class="lp-feature-icon">🤖</div>
       <div class="lp-feature-title">AI-Powered Translation</div>
-      <div class="lp-feature-desc">Military jargon becomes civilian gold. NCOERs, DA 2166-8s, and Talent Profiles extracted and translated automatically — including scanned PDFs.</div>
+      <div class="lp-feature-desc">Military jargon becomes civilian gold. Evaluation reports, award citations, and service records extracted and translated automatically — including scanned PDFs.</div>
     </div>
     <div class="lp-feature-card">
       <div class="lp-feature-icon">🎯</div>
@@ -559,7 +580,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </div>
 
 <!-- PROGRESS NAV -->
-<div class="progress-nav" id="progressNav">
+<div class="progress-nav hidden" id="progressNav">
+  <div class="step-item clickable" onclick="showHome()" style="margin-right:0.75rem;color:rgba(255,255,255,0.5);font-size:0.75rem">⌂ Home</div>
   <div class="step-item active" id="step-nav-1"><div class="step-num">1</div>Upload</div>
   <div class="step-arrow">›</div>
   <div class="step-item" id="step-nav-2"><div class="step-num">2</div>Confirm Info</div>
@@ -568,6 +590,20 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </div>
 
 <div class="main">
+
+<!-- HOME SCREEN -->
+<div id="homeScreen" class="hidden">
+  <div class="card">
+    <div id="homeWelcome" class="home-welcome">Welcome back!</div>
+    <div id="homeSub" class="home-sub">Ready to build your next resume.</div>
+
+    <div class="home-section-label">Resume Status</div>
+    <div class="home-status-grid" id="homeStatusGrid"></div>
+
+    <div class="home-section-label">What would you like to do?</div>
+    <div class="home-action-grid" id="homeActionGrid"></div>
+  </div>
+</div>
 
 <!-- STEP 1: UPLOAD (hero) -->
 <div id="step1">
@@ -594,10 +630,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
     <div class="doc-chips" id="docChips"></div>
 
-    <div style="margin:1.5rem 0;text-align:center;color:var(--text-light);font-size:0.83rem;font-weight:600">— OR PASTE DOCUMENT TEXT —</div>
-    <div class="form-group">
-      <label class="form-label">Paste Document Text</label>
-      <textarea class="form-input" id="pasteText" style="min-height:120px" placeholder="Paste text from your DD-214, evaluation reports, award citations, or performance reviews here..."></textarea>
+    <div style="margin-top:1.25rem">
+      <button type="button" class="job-ann-toggle" onclick="togglePasteArea()" id="pasteToggle">
+        <span id="pasteChevron" style="transition:transform 0.2s;display:inline-block;margin-right:0.25rem">›</span>
+        Or paste document text directly
+        <span style="font-weight:400;color:var(--text-light);font-size:0.79rem;margin-left:0.35rem">(optional)</span>
+      </button>
+      <div id="pasteArea" class="hidden">
+        <textarea class="form-input" id="pasteText" style="min-height:120px;margin-top:0.5rem" placeholder="Paste text from your DD-214, evaluation reports, award citations, or performance reviews here..."></textarea>
+      </div>
     </div>
 
     <div class="btn-row">
@@ -745,7 +786,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
     <div class="form-group">
       <label class="form-label">Additional Skills, Certifications, or Achievements <span style="font-weight:400;color:var(--text-light)">(optional)</span></label>
-      <textarea class="form-input" id="additionalInput" placeholder="e.g. APFT scores, SHARP training, OSHA 10, forklift certified, deployed to Afghanistan 2018-2019, managed $2M equipment inventory, led 12-person team..."></textarea>
+      <textarea class="form-input" id="additionalInput" placeholder="e.g. OSHA 10, forklift certified, PMP, deployed to Afghanistan 2018-2019, managed $2M equipment inventory, led 12-person team, honor graduate..."></textarea>
       <div class="form-hint">Include any notable achievements, awards (MSM, AAM), deployments, special qualifications, or civilian certifications.</div>
     </div>
 
@@ -1232,7 +1273,62 @@ function init() {
     const savedProfile = JSON.parse(localStorage.getItem('veterantransition_profile') || 'null');
     if (savedProfile) state.careerProfile = savedProfile;
   } catch(e) {}
-  renderStep(1);
+  showHome();
+}
+
+function showHome() {
+  // Hide progress nav + steps
+  document.getElementById('progressNav').classList.add('hidden');
+  document.getElementById('homeScreen').classList.remove('hidden');
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step'+i);
+    if (el) el.classList.add('hidden');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Welcome message
+  const name = state.contact?.name || currentUser?.email?.split('@')[0] || 'there';
+  const firstName = name.split(' ')[0];
+  document.getElementById('homeWelcome').textContent = `Welcome back, ${firstName}!`;
+
+  const hasProfile = !!state.careerProfile;
+  const generatedTypes = Object.entries(state.resumes).filter(([,v]) => v);
+  const hasResumes = generatedTypes.length > 0;
+
+  document.getElementById('homeSub').textContent = hasResumes
+    ? `You have ${generatedTypes.length} resume${generatedTypes.length > 1 ? 's' : ''} ready. Pick up where you left off or start fresh.`
+    : hasProfile
+      ? 'Your career profile is extracted. Build your resumes now.'
+      : 'Upload your service documents to get started.';
+
+  // Status grid
+  const statusLabels = { federal:'Federal Resume', private:'Private Sector', master:'Master Resume', linkedin:'LinkedIn Profile', coverletter:'Cover Letter' };
+  const statusIcons  = { federal:'📋', private:'💼', master:'📁', linkedin:'🔗', coverletter:'✉️' };
+  const grid = document.getElementById('homeStatusGrid');
+  grid.innerHTML = Object.entries(statusLabels).map(([type, label]) => {
+    const done = !!state.resumes[type];
+    return `<div class="home-status-card${done ? ' done' : ''}">
+      <div class="home-status-icon">${done ? '✅' : statusIcons[type]}</div>
+      <div class="home-status-label">${label}</div>
+    </div>`;
+  }).join('');
+
+  // Action grid
+  const actions = document.getElementById('homeActionGrid');
+  const cards = [];
+  if (hasProfile || hasResumes) {
+    cards.push(`<div class="home-action-card primary" onclick="goStep(3)">
+      <div class="home-action-icon">▶️</div>
+      <div class="home-action-title">Continue Building</div>
+      <div class="home-action-desc">${hasResumes ? 'View and edit your generated resumes.' : 'Your profile is ready — generate your resumes now.'}</div>
+    </div>`);
+  }
+  cards.push(`<div class="home-action-card" onclick="goStep(1)">
+    <div class="home-action-icon">📄</div>
+    <div class="home-action-title">${hasProfile || hasResumes ? 'Start Fresh' : 'Get Started'}</div>
+    <div class="home-action-desc">Upload service documents and build a new resume from scratch.</div>
+  </div>`);
+  actions.innerHTML = cards.join('');
 }
 
 // ============================================================
@@ -1240,6 +1336,8 @@ function init() {
 // ============================================================
 function goStep(n) {
   state.step = n;
+  document.getElementById('homeScreen').classList.add('hidden');
+  document.getElementById('progressNav').classList.remove('hidden');
   renderStep(n);
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1283,6 +1381,14 @@ function toggleInsights() {
 function toggleJobAnn() {
   const body = document.getElementById('jobAnnBody');
   const chevron = document.getElementById('jobAnnChevron');
+  const opening = body.classList.contains('hidden');
+  body.classList.toggle('hidden', !opening);
+  chevron.style.transform = opening ? 'rotate(90deg)' : '';
+}
+
+function togglePasteArea() {
+  const body = document.getElementById('pasteArea');
+  const chevron = document.getElementById('pasteChevron');
   const opening = body.classList.contains('hidden');
   body.classList.toggle('hidden', !opening);
   chevron.style.transform = opening ? 'rotate(90deg)' : '';
@@ -1719,7 +1825,7 @@ RULES (non-negotiable):
 - Supervisor name unknown → use "[Supervisor Name]" as placeholder
 - Salary unknown → estimate by rank: E-5 ~$42k–$48k, E-6 ~$47k–$54k, E-7 ~$54k–$62k, E-8 ~$62k–$72k
 - ALL CAPS section headers in markdown headings ONLY (## SECTION)
-- EXCLUDE from certifications: ACFT/APFT scores, weapons quals (M4, M16, pistol), PT tests
+- EXCLUDE from certifications: PT/fitness test scores, weapons qualification scores, routine annual training events
 - Mirror exact keywords from job announcement in bullets and skills section
 ${state.veteransPreference ? `- Note veterans preference: "${state.veteransPreference} — DD-214 on file"` : ''}
 
@@ -1776,7 +1882,7 @@ RULES (non-negotiable):
 - ATS: contact info in document body (not header/footer) — already placed above, keep it there
 - Strip ALL military jargon — spell out every term or use civilian equivalent
 - No rank abbreviations — use civilian tier: Operations Manager, Senior Logistics Specialist
-- No unit numbers/IDs in org names — use "U.S. Army" or "Department of Defense" style
+- No unit numbers/IDs in org names — use branch name (U.S. Army / U.S. Navy / U.S. Marine Corps / U.S. Air Force / U.S. Space Force / U.S. Coast Guard) or "Department of Defense" style
 - Every bullet must have a quantified metric (%, $, headcount, or time)
 - Skills appear both in Core Competencies AND in experience bullets (ATS keyword matching)
 - Do NOT include: hours/week, supervisor contact, salary, security clearance (unless relevant to target role)
@@ -1958,8 +2064,13 @@ OPEN TO WORK: Advise "Recruiters Only" mode for active job seekers (no public gr
 ALL-STAR STATUS checklist (required for maximum LinkedIn algorithm reach):
 Note which elements are still needed: photo, headline, industry/location, current job, 2 past jobs, 5 skills, About, 50 connections.
 
-Sections to output: ## HEADLINE OPTIONS | ## ABOUT SECTION | ## EXPERIENCE BULLETS | ## SKILLS LIST | ## SETUP INSTRUCTIONS | ## ALL-STAR CHECKLIST
-No preamble or commentary.`;
+OUTPUT FORMAT — strictly markdown:
+- Use ## for each section header (## HEADLINE OPTIONS, ## ABOUT SECTION, etc.)
+- Use ### for subsection labels within a section
+- Use - for all bullet lists
+- Use **bold** for emphasis, labels, and recruiter tips
+- Sections in order: ## HEADLINE OPTIONS | ## ABOUT SECTION | ## EXPERIENCE | ## SKILLS LIST | ## SETUP INSTRUCTIONS | ## ALL-STAR CHECKLIST
+No preamble or commentary outside the markdown sections.`;
 
   try {
     const resp = await fetch('/api/chat', {
@@ -2100,7 +2211,14 @@ VETERAN FRAMING — CRITICAL:
 - Never explain why you left the military
 - Never use rank abbreviations without translating (and in cover letters, prefer civilian leadership title)
 
-Generate the complete cover letter now. Cover letter content only — no preamble or commentary.`;
+OUTPUT FORMAT — plain prose, no section headers:
+- Output the letter as clean paragraphs separated by blank lines
+- Date and address lines each on their own line (blank line between address block and salutation)
+- No markdown headers (##) — the letter flows as date, address, salutation, body paragraphs, closing
+- Use **bold** only for the job announcement number in the Re: line
+- No preamble or commentary outside the letter itself
+
+Generate the complete cover letter now.`;
 
   try {
     const resp = await fetch('/api/chat', {
