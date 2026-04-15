@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — VeteranTransition</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a3a5c;--gold:#c9a84c;--navy-dark:#122840;--bg:#f0f4f8;--text:#1a202c;--text-light:#64748b;--border:#e2e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6}
+.header{background:var(--navy-dark);color:white;padding:0.9rem 2rem;display:flex;align-items:center;gap:0.75rem}
+.header img{width:32px;height:32px;object-fit:contain}
+.header-name{font-size:1.2rem;font-weight:800}
+.header a{color:rgba(255,255,255,0.6);font-size:0.82rem;margin-left:auto;text-decoration:none}
+.header a:hover{color:white}
+.main{max-width:760px;margin:2.5rem auto;padding:0 1.5rem 4rem}
+.page-title{font-size:2rem;font-weight:800;color:var(--navy);margin-bottom:0.35rem}
+.page-date{font-size:0.83rem;color:var(--text-light);margin-bottom:2.5rem}
+h2{font-size:1.05rem;font-weight:700;color:var(--navy);margin:2rem 0 0.6rem;padding-bottom:0.35rem;border-bottom:2px solid var(--gold)}
+p{margin-bottom:0.9rem;color:var(--text)}
+ul{margin:0.4rem 0 0.9rem 1.4rem;color:var(--text)}
+ul li{margin-bottom:0.35rem}
+.highlight{background:#fffbeb;border:1px solid var(--gold);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.9rem}
+.contact-box{background:var(--navy-dark);color:white;border-radius:10px;padding:1.5rem;margin-top:2.5rem}
+.contact-box a{color:var(--gold)}
+strong{color:var(--navy)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="/android-chrome-192x192.png" alt="VeteranTransition logo">
+  <span class="header-name">VeteranTransition</span>
+  <a href="/">← Back to App</a>
+</div>
+
+<div class="main">
+  <div class="page-title">Privacy Policy</div>
+  <div class="page-date">Effective date: April 15, 2026 · Last updated: April 15, 2026</div>
+
+  <div class="highlight">
+    <strong>Short version:</strong> We use your service documents only to generate your resume, in real time. Documents are never stored on our servers. The only data we retain is your account email, any resumes you explicitly choose to save, and optional feedback you submit.
+  </div>
+
+  <h2>1. Who We Are</h2>
+  <p>VeteranTransition ("we," "us," or "our") is a military career platform operated at <strong>veterantransition.app</strong>. It is built and maintained by a veteran, for veterans. Questions about this policy can be directed to <strong>sowu.paul@gmail.com</strong>.</p>
+
+  <h2>2. What We Collect</h2>
+
+  <p><strong>Account information.</strong> When you create an account or sign in with Google, we collect your email address. If you use email/password sign-in, we also store a hashed (never plain-text) password. We do not collect your name, phone number, or payment information.</p>
+
+  <p><strong>Service documents (uploaded files).</strong> When you upload files (DD-214, evaluation reports, award citations, etc.), they are processed in your browser and transmitted securely to our AI service to extract your career information. <strong>Uploaded files are never written to permanent storage.</strong> They exist only for the duration of the API call and are then discarded.</p>
+
+  <p><strong>Generated resumes.</strong> Resume text is stored in your browser's localStorage by default. If you click "Save Resume," the resume text is stored in our database linked to your account so you can retrieve it later.</p>
+
+  <p><strong>Contact information you enter.</strong> Name, email, phone, and city entered in the Settings drawer are stored in your browser's localStorage only — not sent to our servers unless included in a resume you save.</p>
+
+  <p><strong>Feedback.</strong> If you submit feedback via the feedback form, we collect your optional email address, a star rating, and your comment. This is stored in our database to help us improve the product.</p>
+
+  <p><strong>Usage data.</strong> Our hosting provider (Vercel) collects standard server logs including IP addresses, browser type, and pages visited. We do not use third-party analytics.</p>
+
+  <h2>3. How We Use Your Data</h2>
+  <ul>
+    <li>To generate your resume using AI (documents are processed in real time and discarded)</li>
+    <li>To authenticate your account and keep your session secure</li>
+    <li>To store resumes you explicitly choose to save</li>
+    <li>To respond to feedback you submit</li>
+    <li>To maintain and improve the platform</li>
+  </ul>
+  <p>We do not sell your data. We do not use your data for advertising. We do not share your data with third parties except as described in Section 4.</p>
+
+  <h2>4. Third-Party Services</h2>
+  <p>We use the following services to operate the platform:</p>
+  <ul>
+    <li><strong>Anthropic (Claude AI)</strong> — processes your uploaded documents and generates resume text. Document content is transmitted to Anthropic's API under their <a href="https://www.anthropic.com/privacy" target="_blank">privacy policy</a>. Anthropic does not use API inputs to train their models.</li>
+    <li><strong>Supabase</strong> — provides our database and authentication infrastructure. Data is stored in the U.S. (AWS us-west-2). See <a href="https://supabase.com/privacy" target="_blank">Supabase's privacy policy</a>.</li>
+    <li><strong>Vercel</strong> — hosts the application and serverless API functions. See <a href="https://vercel.com/legal/privacy-policy" target="_blank">Vercel's privacy policy</a>.</li>
+    <li><strong>O*NET Web Services (USDOL/ETA)</strong> — provides occupational crosswalk and career track data. No personal data is sent to O*NET.</li>
+    <li><strong>USAJOBS (OPM)</strong> — provides live federal job listings. Only your job title search terms are sent; no account data is shared.</li>
+    <li><strong>Google OAuth</strong> — if you sign in with Google, Google processes your authentication. See <a href="https://policies.google.com/privacy" target="_blank">Google's privacy policy</a>.</li>
+  </ul>
+
+  <h2>5. Data Retention</h2>
+  <ul>
+    <li><strong>Uploaded documents:</strong> Never stored — discarded after resume generation</li>
+    <li><strong>Saved resumes:</strong> Retained until you delete them or close your account</li>
+    <li><strong>Account data (email):</strong> Retained until you request account deletion</li>
+    <li><strong>Feedback:</strong> Retained indefinitely to inform product improvements</li>
+    <li><strong>Browser localStorage:</strong> Cleared when you clear your browser data</li>
+  </ul>
+
+  <h2>6. Security</h2>
+  <p>All data in transit is encrypted via HTTPS/TLS. Saved resumes in our database are protected by row-level security — your resumes are only accessible with your authenticated session. We do not have access to your Google account password.</p>
+
+  <h2>7. Your Rights</h2>
+  <p>You may request at any time:</p>
+  <ul>
+    <li><strong>Access</strong> — a copy of the data we hold about you</li>
+    <li><strong>Deletion</strong> — removal of your account and all associated data</li>
+    <li><strong>Correction</strong> — update of any inaccurate data</li>
+  </ul>
+  <p>To exercise these rights, email <strong>sowu.paul@gmail.com</strong> with the subject line "Privacy Request." We will respond within 30 days.</p>
+
+  <h2>8. Children's Privacy</h2>
+  <p>VeteranTransition is intended for adults (18+) who have served or are serving in the U.S. military. We do not knowingly collect data from anyone under 18.</p>
+
+  <h2>9. Changes to This Policy</h2>
+  <p>If we make material changes to this policy, we will update the "Last updated" date at the top of this page. Continued use of the platform after changes constitutes acceptance of the updated policy.</p>
+
+  <div class="contact-box">
+    <div style="font-weight:700;font-size:1rem;margin-bottom:0.5rem">Questions?</div>
+    <p style="color:rgba(255,255,255,0.8);margin-bottom:0.35rem">Contact us at <a href="mailto:sowu.paul@gmail.com">sowu.paul@gmail.com</a></p>
+    <p style="color:rgba(255,255,255,0.55);font-size:0.82rem;margin:0">VeteranTransition · veterantransition.app</p>
+  </div>
+</div>
+
+</body>
+</html>
