@@ -249,12 +249,13 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .footer a:hover{text-decoration:underline}
 
 /* Home Dashboard */
-.home-welcome{font-size:1.45rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem}
-.home-sub{font-size:0.88rem;color:var(--text-light);margin-bottom:1.75rem}
-.home-section-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:0.65rem}
+.home-welcome{font-size:1.6rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem}
+.home-sub{font-size:0.88rem;color:var(--text-light);margin-bottom:1.5rem}
+.home-section-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin-bottom:0.65rem}
 .home-status-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.65rem;margin-bottom:1.75rem}
 @media(max-width:640px){.home-status-grid{grid-template-columns:repeat(3,1fr)}}
-.home-status-card{border:1.5px solid var(--border);border-radius:8px;padding:0.85rem 0.5rem;text-align:center;background:white;transition:all 0.2s}
+.home-status-card{border:1.5px solid var(--border);border-radius:8px;padding:0.85rem 0.5rem;text-align:center;background:white;transition:all 0.2s;cursor:pointer}
+.home-status-card:hover{border-color:var(--navy-light);transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,0.07)}
 .home-status-card.done{border-color:#22c55e;background:#f0fdf4}
 .home-status-icon{font-size:1.2rem;margin-bottom:0.25rem}
 .home-status-label{font-size:0.72rem;font-weight:600;color:var(--text-light);line-height:1.3}
@@ -268,6 +269,49 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .home-action-icon{font-size:1.4rem;margin-bottom:0.4rem}
 .home-action-title{font-weight:700;color:var(--navy);font-size:0.95rem;margin-bottom:0.2rem}
 .home-action-desc{font-size:0.8rem;color:var(--text-light);line-height:1.5}
+
+/* Mission Brief — How It Works */
+.mission-brief{background:var(--navy-dark);border-radius:var(--radius);padding:2rem;margin-bottom:1.5rem;border:1px solid rgba(201,168,76,0.25);position:relative;overflow:hidden}
+.mission-brief::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(201,168,76,0.06);pointer-events:none}
+.mission-brief-eyebrow{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--gold);margin-bottom:0.3rem}
+.mission-brief-title{font-size:1.1rem;font-weight:800;color:white;margin-bottom:0.25rem}
+.mission-brief-sub{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:1.75rem}
+.mission-steps{display:grid;grid-template-columns:1fr 28px 1fr 28px 1fr;align-items:start;gap:0}
+@media(max-width:560px){.mission-steps{grid-template-columns:1fr;gap:1.25rem}}
+.mission-step{text-align:center;padding:0 0.25rem}
+.mission-step-circle{width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;position:relative;background:rgba(201,168,76,0.1)}
+.mission-step-num{font-size:1.1rem;font-weight:800;color:var(--gold)}
+.mission-step-icon{font-size:1.8rem;margin-bottom:0.6rem}
+.mission-step-title{font-weight:700;font-size:0.88rem;color:white;margin-bottom:0.35rem;text-transform:uppercase;letter-spacing:0.5px}
+.mission-step-desc{font-size:0.77rem;color:rgba(255,255,255,0.58);line-height:1.55}
+.mission-step-tags{margin-top:0.6rem;display:flex;flex-wrap:wrap;gap:0.3rem;justify-content:center}
+.mission-tag{font-size:0.65rem;font-weight:600;padding:0.15rem 0.45rem;border-radius:3px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1)}
+.mission-arrow{display:flex;align-items:center;justify-content:center;padding-top:14px;color:rgba(201,168,76,0.5);font-size:1.3rem}
+@media(max-width:560px){.mission-arrow{display:none}}
+
+/* Feature Highlights */
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:640px){.feature-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:380px){.feature-grid{grid-template-columns:1fr}}
+.feature-card{background:white;border:1.5px solid var(--border);border-radius:var(--radius);padding:1.2rem;transition:all 0.2s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);opacity:0.5}
+.feature-card:hover{border-color:var(--gold);box-shadow:0 5px 18px rgba(0,0,0,0.09);transform:translateY(-2px)}
+.feature-card:hover::before{opacity:1}
+.feature-card-icon{font-size:1.6rem;margin-bottom:0.5rem}
+.feature-card-title{font-weight:700;color:var(--navy);font-size:0.88rem;margin-bottom:0.3rem}
+.feature-card-desc{font-size:0.77rem;color:var(--text-light);line-height:1.55}
+.feature-badge{display:inline-block;margin-top:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;padding:0.2rem 0.5rem;border-radius:4px;background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+
+/* Demo Video */
+.demo-wrap{border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem;position:relative;border:1.5px solid rgba(201,168,76,0.3)}
+.demo-thumb{background:linear-gradient(135deg,var(--navy-dark) 0%,#1e4976 100%);aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.demo-thumb::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.012) 20px,rgba(255,255,255,0.012) 40px)}
+.demo-play{width:72px;height:72px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.6rem;color:var(--navy-dark);transition:transform 0.2s;box-shadow:0 0 0 8px rgba(201,168,76,0.2)}
+.demo-thumb:hover .demo-play{transform:scale(1.1)}
+.demo-text{text-align:center;color:white;position:relative;z-index:1}
+.demo-text-title{font-size:1.05rem;font-weight:800;margin-bottom:0.25rem}
+.demo-text-sub{font-size:0.82rem;color:rgba(255,255,255,0.55)}
+.demo-iframe{display:none;width:100%;aspect-ratio:16/9;border:none}
 
 /* ============================================================
    MOBILE (≤640px)
@@ -330,7 +374,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   .header,.progress-nav,.btn-row,.resume-type-btns,.loading-row,.settings-btn,
   .drawer,.drawer-overlay,.toast-wrap,.footer,.job-ann-toggle,#jobAnnBody,
   #validationWarnings,#profileCard,.card-eyebrow,.card-title,.card-sub,
-  .job-section,#insightsSection{display:none!important}
+  .job-section,#insightsSection,.mission-brief,.feature-grid,.demo-wrap,
+  #homeScreen{display:none!important}
   .card{box-shadow:none!important;padding:0!important;border:none!important;margin:0!important}
   .resume-output{border:none!important;padding:0!important;min-height:unset!important;
     font-size:10.5pt!important;line-height:1.35!important;color:#000!important;
@@ -597,21 +642,125 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
 <!-- HOME SCREEN -->
 <div id="homeScreen" class="hidden">
-  <div class="card">
-    <div id="homeWelcome" class="home-welcome">Welcome back!</div>
-    <div id="homeSub" class="home-sub">Ready to build your next resume.</div>
+
+  <!-- Status + Actions card -->
+  <div class="card" style="border-top:3px solid var(--gold)">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem">
+      <div>
+        <div id="homeWelcome" class="home-welcome">Welcome back!</div>
+        <div id="homeSub" class="home-sub" style="margin-bottom:0">Ready to build your next resume.</div>
+      </div>
+      <div style="display:flex;gap:0.5rem;flex-shrink:0;margin-top:0.25rem">
+        <button class="btn btn-outline" onclick="openFeedback()" style="border-color:var(--text-light);color:var(--text-light);font-size:0.78rem;padding:0.35rem 0.75rem">Feedback</button>
+        <button class="btn btn-outline" onclick="openReviewPrompt()" style="border-color:var(--gold);color:var(--navy);font-size:0.78rem;padding:0.35rem 0.75rem">⭐ Rate App</button>
+      </div>
+    </div>
 
     <div class="home-section-label">Resume Status</div>
     <div class="home-status-grid" id="homeStatusGrid"></div>
 
     <div class="home-section-label">What would you like to do?</div>
     <div class="home-action-grid" id="homeActionGrid"></div>
+  </div>
 
-    <div style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
-      <button class="btn btn-outline" onclick="openFeedback()" style="border-color:var(--text-light);color:var(--text-light);font-size:0.8rem">Give Feedback</button>
-      <button class="btn btn-outline" onclick="openReviewPrompt()" style="border-color:var(--gold);color:var(--navy);font-size:0.8rem">⭐ Rate This App</button>
+  <!-- Mission Brief: How It Works -->
+  <div class="mission-brief">
+    <div class="mission-brief-eyebrow">Mission Brief</div>
+    <div class="mission-brief-title">How VeteranTransition Works</div>
+    <div class="mission-brief-sub">Three steps. From service records to civilian career — in minutes.</div>
+    <div class="mission-steps">
+      <div class="mission-step">
+        <div class="mission-step-icon">📁</div>
+        <div class="mission-step-circle"><span class="mission-step-num">1</span></div>
+        <div class="mission-step-title">Upload</div>
+        <div class="mission-step-desc">Drop your service documents. DD-214, evaluation reports, Talent Profile, award citations — any format.</div>
+        <div class="mission-step-tags">
+          <span class="mission-tag">DD-214</span>
+          <span class="mission-tag">OER/NCOER</span>
+          <span class="mission-tag">FITREP</span>
+          <span class="mission-tag">PDF · DOCX · TXT</span>
+        </div>
+      </div>
+      <div class="mission-arrow">›</div>
+      <div class="mission-step">
+        <div class="mission-step-icon">🧠</div>
+        <div class="mission-step-circle"><span class="mission-step-num">2</span></div>
+        <div class="mission-step-title">Extract</div>
+        <div class="mission-step-desc">AI reads every rating period, pulls key metrics, quantified achievements, and builds your structured career profile.</div>
+        <div class="mission-step-tags">
+          <span class="mission-tag">AI-Powered</span>
+          <span class="mission-tag">Scanned PDF Vision</span>
+          <span class="mission-tag">All Branches</span>
+        </div>
+      </div>
+      <div class="mission-arrow">›</div>
+      <div class="mission-step">
+        <div class="mission-step-icon">🎯</div>
+        <div class="mission-step-circle"><span class="mission-step-num">3</span></div>
+        <div class="mission-step-title">Deliver</div>
+        <div class="mission-step-desc">Get a federal resume, private sector resume, LinkedIn profile, cover letter, and career track intelligence.</div>
+        <div class="mission-step-tags">
+          <span class="mission-tag">5 Resume Types</span>
+          <span class="mission-tag">O*NET Tracks</span>
+          <span class="mission-tag">Live USAJOBS</span>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Feature Highlights -->
+  <div class="home-section-label" style="padding:0 0.1rem">Platform Capabilities</div>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-icon">🏛️</div>
+      <div class="feature-card-title">Federal Resume</div>
+      <div class="feature-card-desc">USAJOBS-format, OPM-compliant. Includes hrs/week, supervisor names, salary — everything a federal HR reviewer needs.</div>
+      <div class="feature-badge">USAJOBS Ready</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon">💼</div>
+      <div class="feature-card-title">Private Sector Resume</div>
+      <div class="feature-card-desc">ATS-optimized, metrics-first, jargon-free. Translates military accomplishments into civilian business language.</div>
+      <div class="feature-badge">ATS Optimized</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon">📚</div>
+      <div class="feature-card-title">Master Career Inventory</div>
+      <div class="feature-card-desc">Every assignment, every award, every skill — no length limit. Your complete record for tailoring future applications.</div>
+      <div class="feature-badge">Full Record</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon">🔗</div>
+      <div class="feature-card-title">LinkedIn + Cover Letter</div>
+      <div class="feature-card-desc">Recruiter-optimized headline, About section, and experience bullets. Cover letter tailored to any job announcement.</div>
+      <div class="feature-badge">Job Tailored</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon">🗺️</div>
+      <div class="feature-card-title">Career Track Intelligence</div>
+      <div class="feature-card-desc">O*NET crosswalk maps your MOS/AFSC/Rating to federal GS series and civilian roles. Skill gaps and salary ranges included.</div>
+      <div class="feature-badge">O*NET Powered</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-icon">📋</div>
+      <div class="feature-card-title">Live USAJOBS Listings</div>
+      <div class="feature-card-desc">Real job postings matched to your career track — pulled live from USAJOBS so you can apply directly from the platform.</div>
+      <div class="feature-badge">Live Data</div>
+    </div>
+  </div>
+
+  <!-- Demo Video -->
+  <div class="demo-wrap" id="demoWrap">
+    <div class="demo-thumb" id="demoThumb" onclick="playDemo()">
+      <div class="demo-text">
+        <div class="demo-play">▶</div>
+        <div class="demo-text-title">See It In Action</div>
+        <div class="demo-text-sub">Watch a 2-minute walkthrough — from DD-214 upload to finished resume</div>
+      </div>
+    </div>
+    <iframe class="demo-iframe" id="demoIframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
 </div>
 
 <!-- STEP 1: UPLOAD (hero) -->
@@ -1317,7 +1466,9 @@ function showHome() {
   const grid = document.getElementById('homeStatusGrid');
   grid.innerHTML = Object.entries(statusLabels).map(([type, label]) => {
     const done = !!state.resumes[type];
-    return `<div class="home-status-card${done ? ' done' : ''}">
+    const click = done ? `onclick="goStep(3);handleResumeTab('${type}')"` : `onclick="goStep(3)"`;
+    const tip = done ? `title="View ${label}"` : `title="Generate ${label}"`;
+    return `<div class="home-status-card${done ? ' done' : ''}" ${click} ${tip}>
       <div class="home-status-icon">${done ? '✅' : statusIcons[type]}</div>
       <div class="home-status-label">${label}</div>
     </div>`;
@@ -1341,6 +1492,20 @@ function showHome() {
     <div class="home-action-desc">Upload service documents and build a new resume from scratch.</div>
   </div>`);
   actions.innerHTML = cards.join('');
+}
+
+// Demo video — set DEMO_VIDEO_ID to a YouTube ID when you have one
+const DEMO_VIDEO_ID = '';
+function playDemo() {
+  if (!DEMO_VIDEO_ID) {
+    toast('Demo video coming soon!', '');
+    return;
+  }
+  const thumb = document.getElementById('demoThumb');
+  const iframe = document.getElementById('demoIframe');
+  thumb.style.display = 'none';
+  iframe.src = `https://www.youtube.com/embed/${DEMO_VIDEO_ID}?autoplay=1`;
+  iframe.style.display = 'block';
 }
 
 // ============================================================
