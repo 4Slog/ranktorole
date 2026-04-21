@@ -2722,8 +2722,6 @@ function validateResume(type, text) {
   if (type === 'federal') {
     if (/supervisor:\s*\[/i.test(text)) items.push({ label: 'Unfilled supervisor name', find: 'Supervisor:' });
     if (/salary:\s*\[|\$\s*\[/i.test(text)) items.push({ label: 'Unfilled salary', find: 'Salary' });
-    if (!/(40 hrs|40 hours|hours per week)/i.test(text))
-      items.push({ label: 'Missing "hours per week" on experience entries (OPM requirement)', find: null });
   }
 
   if (items.length === 0) { container.classList.add('hidden'); return; }
@@ -3027,7 +3025,11 @@ async function saveReview(rating, text, display_name) {
     toast('Review submitted — thank you!', 'success');
     loadReviews();
   } catch(e) {
-    toast('Could not save review: ' + (e.message || e), 'error');
+    const msg = e.message || '';
+    if (msg.includes('duplicate') || msg.includes('one_review_per_user'))
+      toast('You\'ve already submitted a review — thank you!', 'success');
+    else
+      toast('Could not save review: ' + msg, 'error');
   }
 }
 
