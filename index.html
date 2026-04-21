@@ -1947,6 +1947,74 @@ async function reExtractProfile() {
 
 <script>
 // ============================================================
+// PASS 3 — JOB ANNOUNCEMENT TAILORING
+// ============================================================
+async function tailorResume(type, baseText, jobAnnouncement) {
+  const isLinkedIn  = type === 'linkedin';
+  const isFederal   = type === 'federal';
+
+  const typeLabel = {
+    federal: 'federal USAJOBS resume',
+    private: 'private sector resume',
+    master:  'master career inventory',
+    linkedin: 'LinkedIn profile package',
+  }[type] || 'resume';
+
+  const federalRules = isFederal ? `
+FEDERAL-SPECIFIC RULES:
+- Extract and include the exact job announcement number and title from the announcement
+- Mirror KSA language verbatim — HR scores against exact announcement phrases
+- Reorder experience bullets so announcement keywords appear in the first bullet of each position
+- Add announcement keywords to SKILLS & COMPETENCIES if not already present
+- Do NOT add new experience, dates, employers, or metrics that are not in the base resume` : '';
+
+  const linkedInRules = isLinkedIn ? `
+LINKEDIN-SPECIFIC RULES:
+- Rewrite the top headline option to lead with the target role title from the announcement
+- Update the About section opening 250 chars to reference the specific role/function
+- Add announcement keywords to the Skills section
+- Do NOT invent new accomplishments or experience` : '';
+
+  const prompt = `You are a resume tailoring specialist. You have a completed ${typeLabel} and a job announcement. Your only job is to tailor the resume to the announcement — do not rewrite it from scratch.
+
+TAILORING RULES (strictly enforce):
+- Mirror exact keywords, phrases, and KSAs from the announcement — use the announcement's own language
+- Reorder existing bullets within each position to surface the most relevant ones first
+- Replace generic skill terms with announcement-specific equivalents where meaning is identical
+- Update the PROFILE/SUMMARY section to open with the target role and mirror announcement language
+- Update CORE COMPETENCIES / SKILLS to reflect announcement requirements
+- Do NOT add new employers, positions, dates, metrics, or education that are not in the base resume
+- Do NOT remove any existing positions, dates, or required federal fields (hrs/week, supervisor, salary)
+- Preserve all markdown formatting exactly — the app renders this to HTML
+- Output the complete tailored resume — same structure, same sections, same length target
+${federalRules}${linkedInRules}
+
+JOB ANNOUNCEMENT:
+${jobAnnouncement.slice(0, 3000)}
+
+BASE RESUME TO TAILOR:
+${baseText}
+
+Output the tailored resume now. No preamble — start directly with the resume content.`;
+
+  const resp = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: type === 'master' ? 4000 : type === 'federal' ? 3500 : 3000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `Tailoring API error ${resp.status}`);
+  }
+  const data = await resp.json();
+  return data.content[0].text;
+}
+
+// ============================================================
 // RESUME GENERATION
 // ============================================================
 async function generateResume(type) {
@@ -1989,9 +2057,7 @@ async function generateResume(type) {
     ? `CAREER PROFILE (metadata: dates, titles, locations, metrics — use for structure):\n${profileJSON}\n\nSERVICE DOCUMENTS (full text — use for accomplishment details, evaluator quotes, and narrative content):\n${rawDocSlice}`
     : (rawDocText ? `SERVICE DOCUMENTS:\n${rawDocSlice}` : 'No documents provided.');
 
-  const jobAnnSection = state.jobAnnouncement
-    ? `\nTARGET JOB ANNOUNCEMENT (mirror exact keywords, KSAs, and OPM language — HR scores against this verbatim):\n${state.jobAnnouncement.slice(0, 3000)}`
-    : `\nTarget Career Track: ${track.title} (${track.gs})${track.desc ? ' — ' + track.desc : ''}`;
+  const trackSection = `\nTarget Career Track: ${track.title} (${track.gs})${track.desc ? ' — ' + track.desc : ''}`;
 
   let prompt;
 
@@ -2002,7 +2068,7 @@ CANDIDATE:
 Name: ${contactName} | Phone: ${contactPhone} | Email: ${contactEmail} | Location: ${contactCity}
 Veterans Preference: ${state.veteransPreference || 'None declared'}
 Clearance: ${profile?.clearance?.level || state.clearance || 'Extract from documents'}
-${jobAnnSection}
+${trackSection}
 
 ${sourceContext}
 
@@ -2014,7 +2080,7 @@ ${contactEmail} | ${contactPhone} | ${contactCity}${state.veteransPreference ? `
 ---
 
 ## PROFILE
-[3–4 sentence professional summary. First person. Include years of experience, specialty, clearance level, and 1–2 quantified career highlights. Mirror keywords from the job announcement.]
+[3–4 sentence professional summary. First person. Include years of experience, specialty, clearance level, and 1–2 quantified career highlights.]
 
 ## CORE COMPETENCIES
 - [Hard Skill] • [Hard Skill] • [Hard Skill] • [Hard Skill] • [Hard Skill] • [Hard Skill]
@@ -2038,7 +2104,7 @@ ${contactEmail} | ${contactPhone} | ${contactCity}${state.veteransPreference ? `
 - [Strong action verb] [specific accomplishment] [quantified result — $, %, headcount, or time]
 - [Most impactful achievement — use largest dollar figure or most significant outcome]
 - [Leadership or scope highlight with metric]
-- [OPM-keyword-rich accomplishment mirroring job announcement language]
+- [Additional accomplishment with quantified result]
 
 ---
 
@@ -2062,7 +2128,6 @@ RULES (non-negotiable):
 - Salary unknown → estimate by rank: E-5 ~$42k–$48k, E-6 ~$47k–$54k, E-7 ~$54k–$62k, E-8 ~$62k–$72k
 - ALL CAPS section headers in markdown headings ONLY (## SECTION)
 - EXCLUDE from certifications: PT/fitness test scores, weapons qualification scores, routine annual training events
-- Mirror exact keywords from job announcement in bullets and skills section
 ${state.veteransPreference ? `- Note veterans preference: "${state.veteransPreference} — DD-214 on file"` : ''}
 
 Generate the complete federal resume now. No preamble, no commentary — output starts with # [Name].`;
@@ -2073,7 +2138,7 @@ Generate the complete federal resume now. No preamble, no commentary — output 
 CANDIDATE:
 Name: ${contactName} | Phone: ${contactPhone} | Email: ${contactEmail} | Location: ${contactCity}
 Clearance: ${profile?.clearance?.level || state.clearance || 'Extract from documents'}
-${jobAnnSection}
+${trackSection}
 
 ${sourceContext}
 
@@ -2132,7 +2197,7 @@ Generate the complete private sector resume now. No preamble — output starts w
 CANDIDATE:
 Name: ${contactName} | Phone: ${contactPhone} | Email: ${contactEmail} | Location: ${contactCity}
 Clearance: ${profile?.clearance?.level || state.clearance || 'Extract from documents'}
-${jobAnnSection}
+${trackSection}
 
 ${sourceContext}
 
@@ -2160,7 +2225,7 @@ Pay: [payGrade] ~$[salaryStart]–$[salaryEnd] | 40 hrs/wk | Supervisor: [name],
 No preamble. Generate the master career inventory now.`;
   }
 
-  // Pass 2: Generate resume from structured profile
+  // Pass 2: Generate base resume from structured profile
   state._generating.add(type);
   try {
     const resp = await fetch('/api/chat', {
@@ -2177,12 +2242,21 @@ No preamble. Generate the master career inventory now.`;
       throw new Error(err.error?.message || `API error ${resp.status}`);
     }
     const data = await resp.json();
-    const text = data.content[0].text;
+    let text = data.content[0].text;
+
+    // Pass 3 (conditional): tailor to job announcement if present
+    if (state.jobAnnouncement && state.jobAnnouncement.trim()) {
+      displayResume(type, text);
+      setResumeLoading(true, 'Tailoring to job announcement...');
+      text = await tailorResume(type, text, state.jobAnnouncement);
+    }
+
     state.resumes[type] = text;
     displayResume(type, text);
     saveResumesToStorage();
     const label = isMaster ? 'Master career inventory' : isFederal ? 'Federal resume' : 'Private sector resume';
-    toast(`${label} generated!`, 'success');
+    const tailored = state.jobAnnouncement ? ' (tailored)' : '';
+    toast(`${label} generated${tailored}!`, 'success');
     if (!reviewPromptShown) { reviewPromptShown = true; setTimeout(openReviewPrompt, 2500); }
   } catch(e) {
     toast('Resume generation failed: ' + e.message, 'error');
@@ -2272,9 +2346,7 @@ async function generateLinkedIn() {
   const sourceContext = profileJSON
     ? `CAREER PROFILE (metadata: dates, titles, metrics):\n${profileJSON}\n\nSERVICE DOCUMENTS (accomplishment detail):\n${rawDocText.slice(0, 20000)}`
     : (rawDocText ? `SERVICE DOCUMENTS:\n${rawDocText.slice(0, 20000)}` : '');
-  const jobAnnSection = state.jobAnnouncement
-    ? `\nTARGET ROLE — tailor keywords, headline, and About to this:\n${state.jobAnnouncement.slice(0, 2000)}`
-    : `\nTarget Career Track: ${track.title} (${track.gs})`;
+  const jobAnnSection = `\nTarget Career Track: ${track.title} (${track.gs})`;
 
   const prompt = `You are a LinkedIn optimization expert for military veterans. Generate a complete LinkedIn profile package.
 
@@ -2342,11 +2414,20 @@ No preamble or commentary outside the markdown sections.`;
     });
     if (!resp.ok) throw new Error('API error ' + resp.status);
     const data = await resp.json();
-    const text = data.content[0].text;
+    let text = data.content[0].text;
+
+    // Pass 3 (conditional): tailor to job announcement if present
+    if (state.jobAnnouncement && state.jobAnnouncement.trim()) {
+      displayResume('linkedin', text);
+      setResumeLoading(true, 'Tailoring to job announcement...');
+      text = await tailorResume('linkedin', text, state.jobAnnouncement);
+    }
+
     state.resumes.linkedin = text;
     displayResume('linkedin', text);
     saveResumesToStorage();
-    toast('LinkedIn profile generated!', 'success');
+    const tailored = state.jobAnnouncement ? ' (tailored)' : '';
+    toast(`LinkedIn profile generated${tailored}!`, 'success');
   } catch(e) {
     toast('LinkedIn generation failed: ' + e.message, 'error');
   } finally {
