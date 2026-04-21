@@ -1647,7 +1647,11 @@ function updateProfileCard(status, profile) {
   } else if (status === 'error') {
     card.style.background = '#fff7ed';
     card.style.borderColor = '#fdba74';
-    content.innerHTML = '<span style="color:#c2410c">Document analysis had issues — resumes will generate using raw documents.</span>';
+    const msg = profile || 'Document analysis failed — resumes will generate using raw documents.';
+    content.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem">
+      <span style="color:#c2410c">${msg}</span>
+      <button class="btn btn-outline btn-sm" style="font-size:0.78rem;padding:0.2rem 0.6rem" onclick="reExtractProfile()">Retry</button>
+    </div>`;
   }
 }
 
@@ -1739,7 +1743,17 @@ ${docText.length > 120000
         messages: [{ role: 'user', content: prompt }]
       })
     });
-    if (!resp.ok) throw new Error('API error ' + resp.status);
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      const status = resp.status;
+      let msg;
+      if (status === 401 || status === 403) msg = 'API authentication error — check your API key.';
+      else if (status === 402) msg = 'API credit limit reached — add credits at console.anthropic.com.';
+      else if (status === 429) msg = 'API rate limit hit — wait a moment, then click Retry.';
+      else if (status >= 500) msg = `API server error (${status}) — click Retry.`;
+      else msg = errBody?.error?.message || `API error (${status}) — click Retry.`;
+      throw Object.assign(new Error(msg), { userMsg: msg });
+    }
     const data = await resp.json();
     let text = data.content[0].text.trim();
     if (text.startsWith('```')) text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
@@ -1751,7 +1765,7 @@ ${docText.length > 120000
     return profile;
   } catch(e) {
     console.error('Career profile extraction failed:', e);
-    updateProfileCard('error');
+    updateProfileCard('error', e.userMsg || 'Document analysis failed — resumes will generate using raw documents.');
     return null;
   }
 }
