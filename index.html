@@ -1844,14 +1844,20 @@ PURPOSE: This profile is a METADATA INDEX only — it provides structure (dates,
 EXTRACTION RULES:
 1. One assignment record per RATING PERIOD (per NCOER/OER/FITREP boundary). Three sequential NCOERs at Fort Gordon = three separate assignment objects, NOT one combined record.
 2. ratingPeriodStart/ratingPeriodEnd = dates on the evaluation report, NOT PCS orders.
-3. civilianTitle: map each military duty title to the closest civilian job title.
-4. keyMetrics: extract the 2-3 most impactful quantified results as short strings (e.g. "$3.2B APS-4 accountability", "34 personnel supervised", "99.9% inventory accuracy"). TIERED by era:
+3. dutyTitle: copy the exact military duty title from the document verbatim.
+   civilianTitle: map to the closest conservative civilian equivalent. Do NOT elevate seniority beyond what the source supports (e.g. "Supply Sergeant" → "Inventory Control Specialist", NOT "Supply Chain Director").
+4. keyMetrics: extract ONLY quantified results that are explicitly stated in the source text — do not infer, calculate, or round up. Short strings only (e.g. "$3.2B APS-4 accountability", "34 personnel supervised", "99.9% inventory accuracy"). TIERED by era:
    • Post-2018: up to 3 keyMetrics per assignment
    • 2013–2018: up to 2 keyMetrics per assignment
-   • Pre-2013: NO keyMetrics — omit the field entirely
-5. scopeStatement: ONE short phrase describing scope (e.g. "led 34-person supply section"). Post-2018 and 2013-2018 only.
-6. For missing fields use null. Do NOT generate any text descriptions or accomplishment narratives.
-7. completenessScore 0-100. coverageGaps: flag uncovered date ranges.
+   • Pre-2013: include ONLY if a metric is explicitly stated in the document text; otherwise omit keyMetrics entirely
+5. scopeStatement: ONE short phrase anchored to document language describing scope (e.g. "led 34-person supply section"). Post-2018 and 2013-2018 only.
+6. For missing fields use null. Do NOT generate any text descriptions, accomplishment narratives, or inferred values.
+7. NON-INVENTION RULES (strictly enforce):
+   - civilianTitle must be conservative and anchored to the stated duty title
+   - keyMetrics must be explicitly supported by document text — never calculated or inferred
+   - supervisor name unknown → null (never invent a name)
+   - salary unknown → null (never estimate)
+   - clearance dates unknown → null
 
 Return ONLY valid JSON — no markdown fences, no explanation.
 
@@ -1862,7 +1868,6 @@ SCHEMA (follow exactly — no extra fields):
   "yearsService": null, "separationDate": null, "component": null,
   "clearance": {"level": null, "status": null, "investigationType": null, "polygraph": null},
   "veteransPreference": {"type": null, "points": null, "disabilityRating": null},
-  "careerSummary": null,
   "assignments": [
     {
       "id": "assign_1",
@@ -1878,12 +1883,22 @@ SCHEMA (follow exactly — no extra fields):
   "education": [{"degree": null, "major": null, "institution": null, "city": null, "state": null, "year": null}],
   "awards": [{"name": null, "abbreviation": null, "count": 1}],
   "deployments": [{"operation": null, "theater": null, "startDate": null, "endDate": null, "combatZone": true}],
-  "meta": {"extractedFrom": [], "completenessScore": 0, "coverageGaps": [], "missingCriticalFields": []}
+  "meta": {
+    "extractedFrom": [],
+    "coverageGaps": [],
+    "missingCriticalFields": [],
+    "confidence": {
+      "missingDates": false,
+      "missingAssignments": false,
+      "unreadablePages": 0,
+      "bySection": {"contact": "high", "assignments": "high", "education": "high", "awards": "high", "deployments": "high"}
+    }
+  }
 }
 
 SERVICE DOCUMENTS:
 ${docText.length > 120000
-    ? docText.slice(0, 60000) + '\n\n[... middle content truncated — oldest-to-newest documents may have older NCOERs above and recent NCOERs below ...]\n\n' + docText.slice(-60000)
+    ? docText.slice(-90000) + '\n\n[... earliest career records below — oldest assignments may be partially truncated ...]\n\n' + docText.slice(0, 30000)
     : docText}`;
 
   try {
