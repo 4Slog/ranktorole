@@ -2094,14 +2094,15 @@ No clichés. No "results-driven." No "dynamic." No first-person "I". Present ten
 [Only current, non-expired certifications with a known year. Omit expired. Omit IET/basic training.]
 
 EVIDENCE DISCIPLINE:
-- Every number (%, $, headcount, count) must be verbatim in source for that assignment. No calculation, inference, or estimation.
-- The "30% test": if a rate or percentage isn't written in the NCOER — it does not exist.
-- No metric migration between roles.
-- Superlatives only if evaluator wrote them.
+- Every number (%, $, headcount, count) must appear verbatim in source for that specific assignment. No calculation, inference, or estimation — ever.
+- THE 30% TEST (apply before writing every bullet): Ask yourself — "Can I point to the exact sentence in an NCOER or evaluation report where this percentage or rate is written?" If the answer is no — the number does not exist. Do not write it. This includes: improvement rates, completion rates, efficiency gains, readiness percentages, cost reduction percentages, and turnaround time reductions. If the NCOER says "improved supply metrics" with no number — you write "improved supply metrics" with no number.
+- SPECIFIC EXAMPLE OF WHAT NOT TO DO: "Improved inventory tracking metrics by 30% through bi-weekly supply meetings" — if 30% is not written in the NCOER, this bullet is fabricated and must not appear. Write instead: "Improved inventory tracking accuracy through bi-weekly supply performance reviews across five locations — enabling standardized reporting compliance across Korea and Japan."
+- No metric migration: each role owns only the figures from its own source documents.
+- Superlatives only if the evaluator explicitly wrote them.
 - Translate, never transcribe: full civilian sentences, not NCOER shorthand.
 - Bullet formula: [Action verb] [what] — [result] — [business impact]. All 3 parts required.
 - Expired certs: omit.
-- Thin source: if no sourced metric exists for a bullet — write it qualitatively. Never invent.
+- Thin source: if no sourced metric exists for a bullet — write it qualitatively. A strong qualitative bullet beats a fabricated number every time.
 
 JARGON BLACKLIST — translate or replace:
 NCO → Team Leader/Senior Specialist | NCOIC → Section Supervisor | S4 → Logistics Manager | DODAAC → Supply Account | PLL → Parts Inventory | OPTEMPO → Operational Tempo | SFC/SSG/SGT → [use civilian title only] | battalion/brigade → organization/division | FORSCOM/USARAK → U.S. Army | MOS → specialty/role
@@ -2213,8 +2214,8 @@ No preamble. Generate the complete master career inventory now.`;
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        model: (isFederal || isMaster) ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001',
-        max_tokens: isMaster ? 6000 : isFederal ? 5000 : 3000,
+        model: 'claude-sonnet-4-6',
+        max_tokens: isMaster ? 6000 : isFederal ? 5000 : 4000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -2801,11 +2802,13 @@ function validateResume(type, text) {
   const list = document.getElementById('warningList');
   const items = []; // { label, find }
 
-  // Each unique placeholder becomes its own clickable item
-  const found = [...text.matchAll(/\[([^\]]{2,})\]/g)].map(m => m[1]);
-  if (found.length > 0) {
-    for (const p of [...new Set(found)]) {
-      items.push({ label: `Unfilled: [${p}]`, find: `[${p}]` });
+  // Master uses [brackets] intentionally for gap notes and source flags — skip placeholder check
+  if (type !== 'master') {
+    const found = [...text.matchAll(/\[([^\]]{2,})\]/g)].map(m => m[1]);
+    if (found.length > 0) {
+      for (const p of [...new Set(found)]) {
+        items.push({ label: `Unfilled: [${p}]`, find: `[${p}]` });
+      }
     }
   }
 
