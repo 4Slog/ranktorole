@@ -17,7 +17,12 @@ export default async function handler(req, res) {
   try {
     resp = await fetch(
       `https://services.onetcenter.org/ws/mnm/search?keyword=${encodeURIComponent(keyword)}&client=veterantransition`,
-      { headers: { 'Authorization': 'Basic ' + auth } }
+      {
+        headers: {
+          'Authorization': 'Basic ' + auth,
+          'Accept': 'application/json'
+        }
+      }
     );
   } catch (e) {
     console.error('O*NET fetch error:', e.message);
