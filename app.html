@@ -774,7 +774,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
     <div class="btn-row">
       <button class="btn btn-outline btn-sm" onclick="goStep(1)">← Back</button>
-      <button class="btn btn-primary" onclick="goStep(3)">Continue to Resume Builder →</button>
+      <button class="btn btn-primary" id="step2ContinueBtn" onclick="validateStep2AndContinue()">Continue to Resume Builder →</button>
     </div>
   </div>
 </div>
@@ -2240,7 +2240,7 @@ No preamble. Generate the complete master career inventory now.`;
     const label = isMaster ? 'Master career inventory' : isFederal ? 'Federal resume' : 'Private sector resume';
     const tailored = state.jobAnnouncement ? ' (tailored)' : '';
     toast(`${label} generated${tailored}!`, 'success');
-    if (!reviewPromptShown) { reviewPromptShown = true; setTimeout(openReviewPrompt, 2500); }
+    if (!reviewPromptShown) { scheduleReviewPrompt(); }
   } catch(e) {
     toast('Resume generation failed: ' + e.message, 'error');
     console.error(e);
@@ -2263,21 +2263,14 @@ function setResumeLoading(on, text='') {
 }
 
 function handleResumeTab(type) {
-  // Warn once if no source material
-  const hasDocs = state.documents.length > 0 || (document.getElementById('pasteText')?.value || '').trim().length > 0;
-  if (!hasDocs && !state._noDocsWarned) {
-    state._noDocsWarned = true;
-    showNoDocsWarning();
-  }
   showResumeTab(type);
-  if (state._generating?.has(type)) return; // already in flight
-  if (type === 'linkedin') {
-    if (!state.resumes.linkedin) generateLinkedIn();
-  } else if (type === 'coverletter') {
-    if (!state.resumes.coverletter) generateCoverLetter();
-  } else {
-    if (!state.resumes[type]) generateResume(type);
-  }
+  if (state._generating && state._generating.has(type)) return;
+  if (state.resumes[type]) return;
+  if (!hasMinimumContext()) { showEmptyStateGuard(type); return; }
+  var g = document.getElementById("emptyStateGuard"); if (g) g.remove();
+  if (type === "linkedin") { generateLinkedIn(); }
+  else if (type === "coverletter") { generateCoverLetter(); }
+  else { generateResume(type); }
 }
 
 function showNoDocsWarning() {
@@ -2561,7 +2554,7 @@ Generate the complete cover letter now.`;
     displayResume('coverletter', text);
     saveResumesToStorage();
     toast('Cover letter generated!', 'success');
-    if (!reviewPromptShown) { reviewPromptShown = true; setTimeout(openReviewPrompt, 2500); }
+    if (!reviewPromptShown) { scheduleReviewPrompt(); }
   } catch(e) {
     toast('Cover letter generation failed: ' + e.message, 'error');
   } finally {
@@ -2799,33 +2792,36 @@ Keep the same markdown format as a ${resumeType} resume uses for this section ty
 }
 
 function validateResume(type, text) {
-  const container = document.getElementById('validationWarnings');
-  const list = document.getElementById('warningList');
-  const items = []; // { label, find }
-
-  // Master uses [brackets] intentionally for gap notes and source flags — skip placeholder check
-  if (type !== 'master') {
-    const found = [...text.matchAll(/\[([^\]]{2,})\]/g)].map(m => m[1]);
-    if (found.length > 0) {
-      for (const p of [...new Set(found)]) {
-        items.push({ label: `Unfilled: [${p}]`, find: `[${p}]` });
-      }
+  var container = document.getElementById("validationWarnings");
+  var list = document.getElementById("warningList");
+  var actions = [];
+  if (type !== "master") {
+    var bracketRe = /\[([^\]]{2,})\]/g;
+    var found = Array.from(text.matchAll(bracketRe)).map(function(m){return m[1];});
+    var unique = found.filter(function(v,i,a){return a.indexOf(v)===i;});
+    if (unique.length > 0) {
+      if (!state.contact || !state.contact.name || unique.some(function(p){return /NAME/i.test(p);}))
+        actions.push({label:"Add your full name — open Settings > Contact Info",find:"[YOUR FULL NAME]"});
+      if (!state.contact || !state.contact.phone || unique.some(function(p){return /PHONE/i.test(p);}))
+        actions.push({label:"Add your phone number — open Settings > Contact Info",find:"[YOUR PHONE]"});
+      if (!state.contact || !state.contact.city || unique.some(function(p){return /CITY/i.test(p);}))
+        actions.push({label:"Add your city and state — open Settings > Contact Info",find:"[YOUR CITY"});
+      var other = unique.filter(function(p){return !/NAME|PHONE|CITY|EMAIL/i.test(p);});
+      if (other.length > 0)
+        actions.push({label:other.length + " field(s) still need your details — click to jump",find:"["+other[0]});
     }
   }
-
-  if (type === 'federal') {
-    if (/supervisor:\s*\[/i.test(text)) items.push({ label: 'Unfilled supervisor name', find: 'Supervisor:' });
-    if (/salary:\s*\[|\$\s*\[/i.test(text)) items.push({ label: 'Unfilled salary', find: 'Salary' });
-  }
-
-  if (items.length === 0) { container.classList.add('hidden'); return; }
-  list.innerHTML = items.map(item => item.find
-    ? `<li style="cursor:pointer" onclick="jumpToGap(${JSON.stringify(item.find)})" title="Click to jump">
-         ${item.label} <span style="opacity:0.6;font-size:0.78rem">↓ jump</span>
-       </li>`
-    : `<li>${item.label}</li>`
-  ).join('');
-  container.classList.remove('hidden');
+  var supRe = /supervisor:\s*\[/i;
+  if (type === "federal" && supRe.test(text))
+    actions.push({label:"Add supervisor names or write: Available upon request",find:"Supervisor:"});
+  if (actions.length === 0) { container.classList.add("hidden"); return; }
+  var html = "";
+  actions.slice(0,5).forEach(function(item){
+    var esc = JSON.stringify(item.find);
+    html += "<li style="cursor:pointer;margin-bottom:0.3rem" onclick="jumpToGap(" + esc + ")" title="jump">→ " + item.label + "</li>";
+  });
+  list.innerHTML = html;
+  container.classList.remove("hidden");
 }
 
 function jumpToGap(term) {
@@ -3254,7 +3250,24 @@ function showApp() {
   document.getElementById('userChip').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
   const stored = JSON.parse(localStorage.getItem('veterantransition_contact') || '{}');
+  // AUTO-POPULATE contact from auth session if not already saved
+  if (!stored.email && currentUser?.email) stored.email = currentUser.email;
+  if (!stored.name && currentUser?.user_metadata) {
+    const meta = currentUser.user_metadata;
+    const fullName = meta.full_name || meta.name || '';
+    if (fullName) stored.name = fullName;
+  }
   state.contact = stored;
+  // Save back so it persists and pre-fills Settings drawer
+  if (!localStorage.getItem('veterantransition_contact') || (!JSON.parse(localStorage.getItem('veterantransition_contact')).email)) {
+    localStorage.setItem('veterantransition_contact', JSON.stringify(stored));
+  }
+  // Show first-login contact prompt if name or phone still missing
+  const isFirstVisit = !localStorage.getItem('veterantransition_welcomed');
+  if (isFirstVisit && (!stored.name || !stored.phone)) {
+    localStorage.setItem('veterantransition_welcomed', '1');
+    setTimeout(showContactPrompt, 800);
+  }
   init();
 }
 
