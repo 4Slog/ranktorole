@@ -2962,7 +2962,7 @@ function validateResume(type, text) {
   var html = "";
   actions.slice(0,5).forEach(function(item){
     var esc = JSON.stringify(item.find);
-    html += "<li style="cursor:pointer;margin-bottom:0.3rem" onclick="jumpToGap(" + esc + ")" title="jump">→ " + item.label + "</li>";
+    html += '<li style="cursor:pointer;margin-bottom:0.3rem" onclick="jumpToGap(' + esc + ')" title="jump">→ ' + item.label + '</li>';
   });
   list.innerHTML = html;
   container.classList.remove("hidden");
