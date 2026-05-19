@@ -399,16 +399,21 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 
 <!-- AUTH LOADING -->
 <div id="authLoading" style="position:fixed;inset:0;background:#f0f4f8;display:flex;align-items:center;justify-content:center;z-index:9999">
-  <div style="text-align:center;font-family:'Inter',sans-serif">
+  <div id="authLoadingSpinner" style="text-align:center;font-family:'Inter',sans-serif">
     <div style="width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#1a3a5c;border-radius:50%;animation:spin 0.75s linear infinite;margin:0 auto 1rem"></div>
     <div style="font-size:0.88rem;color:#64748b">Loading...</div>
+  </div>
+  <div id="authLoadingError" style="display:none;text-align:center;font-family:'Inter',sans-serif;padding:1.5rem">
+    <div style="font-size:1.5rem;margin-bottom:0.75rem">&#9888;</div>
+    <div id="authLoadingErrorMsg" style="font-size:0.95rem;font-weight:600;color:#b91c1c"></div>
+    <button onclick="location.reload()" style="margin-top:1rem;padding:0.5rem 1.25rem;background:#1a3a5c;color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;font-size:0.88rem">Refresh</button>
   </div>
 </div>
 
 <!-- AUTH MODAL -->
-<div class="modal-overlay" id="authGate" onclick="if(event.target===this)closeAuthModal()">
+<div class="modal-overlay" id="authGate" onclick="if(event.target===this)dismissAuthModal()">
   <div class="auth-card">
-    <button class="modal-close" onclick="closeAuthModal()" style="float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-light);line-height:1">✕</button>
+    <button class="modal-close" onclick="dismissAuthModal()" style="float:right;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-light);line-height:1">✕</button>
     <div class="auth-logo">
       <img src="/android-chrome-192x192.png" class="auth-logo-star" alt="" style="width:56px;height:56px;object-fit:contain">
       <div class="auth-logo-text">VeteranTransition</div>
@@ -444,9 +449,10 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
   </div>
   <div class="header-actions">
+    <div id="previewBadge" class="hidden" style="background:#f59e0b;color:#422006;padding:0.25rem 0.75rem;border-radius:5px;font-size:0.75rem;font-weight:700;letter-spacing:0.3px">PREVIEW</div>
     <div class="user-chip hidden" id="userChip">
       <span id="userEmail"></span>
-      <button class="logout-btn" onclick="signOut()">Sign Out</button>
+      <button class="logout-btn" onclick="signOut()" id="signOutBtn">Sign Out</button>
     </div>
     <button class="settings-btn" onclick="openSettings()">⚙ Settings</button>
   </div>
@@ -985,7 +991,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <button class="btn btn-outline" onclick="exportDocx()">Download .docx</button>
       <button class="btn btn-outline" onclick="exportText()">Download .txt</button>
       <button class="btn btn-outline" onclick="copyResume()">Copy to Clipboard</button>
-      <button class="btn btn-outline" onclick="saveResume()" style="border-color:var(--gold);color:var(--navy)">Save Resume</button>
+      <button class="btn btn-outline" id="saveResumeBtn" onclick="saveResume()" style="border-color:var(--gold);color:var(--navy)">Save Resume</button>
       <button class="btn btn-outline" onclick="openFeedback()" style="margin-left:auto;border-color:var(--text-light);color:var(--text-light);font-size:0.8rem">Give Feedback</button>
     </div>
   </div>
@@ -3360,21 +3366,66 @@ function prefillStep2(d) {
 let sbClient = null;
 let currentUser = null;
 let authMode = 'signin';
+let authGateDismissed = false;
+let isPreviewMode = false;
+
+function _showLoadingError(msg) {
+  document.getElementById('authLoadingSpinner').style.display = 'none';
+  document.getElementById('authLoadingErrorMsg').textContent = msg;
+  document.getElementById('authLoadingError').style.display = 'block';
+}
 
 async function initAuth() {
-  const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
-  if (!cfg.supabaseUrl) {
-    showAuthError('Configuration error. Please try again later.');
-    openAuthModal('signin');
+  // ── Preview mode bypass ──────────────────────────────────────
+  if (new URLSearchParams(window.location.search).get('preview') === 'true') {
+    isPreviewMode = true;
+    currentUser = { email: 'demo@veterantransition.app', user_metadata: { full_name: 'Demo Veteran' } };
+    document.getElementById('authLoading').classList.add('hidden');
+    document.getElementById('previewBadge').classList.remove('hidden');
+    const saveBtn = document.getElementById('saveResumeBtn');
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.title = 'Sign in to save resumes'; }
+    showApp();
     return;
   }
+
+  // ── 15-second hard timeout: show auth gate if nothing resolves ─
+  const hardTimeout = setTimeout(() => {
+    if (!document.getElementById('authLoading').classList.contains('hidden')) {
+      document.getElementById('authLoading').classList.add('hidden');
+      showAuthGate();
+    }
+  }, 15000);
+
+  // ── 10-second timeout on /api/config fetch ───────────────────
+  let cfg = {};
+  try {
+    const controller = new AbortController();
+    const configTimeout = setTimeout(() => controller.abort(), 10000);
+    const resp = await fetch('/api/config', { signal: controller.signal });
+    clearTimeout(configTimeout);
+    cfg = await resp.json();
+  } catch(e) {
+    clearTimeout(hardTimeout);
+    _showLoadingError('Unable to connect. Please refresh.');
+    return;
+  }
+
+  if (!cfg.supabaseUrl) {
+    clearTimeout(hardTimeout);
+    _showLoadingError('Unable to connect. Please refresh.');
+    return;
+  }
+
   sbClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   // Init GIS now if loaded, else retry when it fires its own onload
   initGIS();
   window.addEventListener('load', initGIS, { once: true });
+
   const { data: { session } } = await sbClient.auth.getSession();
+  clearTimeout(hardTimeout);
   if (session) { currentUser = session.user; showApp(); }
   else showAuthGate();
+
   sbClient.auth.onAuthStateChange((_event, session) => {
     if (session) { currentUser = session.user; showApp(); }
     else { currentUser = null; showAuthGate(); }
@@ -3387,6 +3438,10 @@ function showApp() {
   document.getElementById('appWrapper').classList.remove('hidden');
   document.getElementById('userChip').classList.remove('hidden');
   document.getElementById('userEmail').textContent = currentUser.email;
+  if (isPreviewMode) {
+    const signOutBtn = document.getElementById('signOutBtn');
+    if (signOutBtn) signOutBtn.style.display = 'none';
+  }
   const stored = JSON.parse(localStorage.getItem('veterantransition_contact') || '{}');
   // AUTO-POPULATE contact from auth session if not already saved
   if (!stored.email && currentUser?.email) stored.email = currentUser.email;
@@ -3410,6 +3465,8 @@ function showApp() {
 }
 
 function showAuthGate() {
+  if (currentUser) return;
+  if (authGateDismissed) return;
   document.getElementById('authLoading').classList.add('hidden');
   document.getElementById('appWrapper').classList.add('hidden');
   document.getElementById('userChip').classList.add('hidden');
@@ -3429,6 +3486,15 @@ function openAuthModal(mode) {
 
 function closeAuthModal() {
   document.getElementById('authGate').classList.remove('open');
+}
+
+function dismissAuthModal() {
+  authGateDismissed = true;
+  closeAuthModal();
+  // If app content is already loaded, keep it visible; otherwise show home screen
+  if (document.getElementById('appWrapper').classList.contains('hidden')) {
+    document.getElementById('appWrapper').classList.remove('hidden');
+  }
 }
 
 let _gisNonce = null;
