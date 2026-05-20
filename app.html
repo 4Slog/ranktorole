@@ -3360,6 +3360,25 @@ function prefillStep2(d) {
   }
 }
 
+function validateStep2AndContinue() {
+  if (!state.branch) {
+    toast('Please select your branch of service.', 'error');
+    document.querySelector('.branch-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  // Sync form inputs → state before advancing
+  const mosVal = (document.getElementById('mosInput')?.value || '').trim().toUpperCase();
+  if (mosVal) { state.mos = mosVal; detectMOS(mosVal); }
+  state.rank               = document.getElementById('rankInput')?.value || '';
+  state.years              = document.getElementById('yearsInput')?.value || '';
+  state.clearance          = document.getElementById('clearanceInput')?.value || '';
+  state.education          = document.getElementById('educationInput')?.value || '';
+  state.location           = document.getElementById('locationInput')?.value || '';
+  state.additional         = document.getElementById('additionalInput')?.value || '';
+  state.veteransPreference = document.getElementById('veteransPreferenceInput')?.value || '';
+  goStep(3);
+}
+
 // ============================================================
 // AUTH
 // ============================================================
