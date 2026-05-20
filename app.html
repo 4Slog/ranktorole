@@ -1676,7 +1676,7 @@ async function analyzeCareerTracks() {
     try {
       const resp = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: await authHeaders(),
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 800,
@@ -1888,7 +1888,7 @@ ${docText.length > 120000
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: await authHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 8000,
@@ -1993,7 +1993,7 @@ Output the tailored resume now. No preamble — start directly with the resume c
 
   const resp = await fetch('/api/chat', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: await authHeaders(),
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: type === 'master' ? 4000 : type === 'federal' ? 3500 : 3000,
@@ -2357,7 +2357,7 @@ No preamble. Generate the complete master career inventory now.`;
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: await authHeaders(),
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: isMaster ? 6000 : isFederal ? 5000 : 4000,
@@ -2525,7 +2525,7 @@ No preamble or commentary outside the markdown sections.`;
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: await authHeaders(),
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 3000,
@@ -2684,7 +2684,7 @@ Generate the complete cover letter now.`;
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: await authHeaders(),
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 2000,
@@ -2896,7 +2896,7 @@ Keep the same markdown format as a ${resumeType} resume uses for this section ty
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: await authHeaders(),
       body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
     });
     if (!resp.ok) throw new Error('API error');
@@ -3080,7 +3080,7 @@ async function extractText(file) {
       }
       const resp = await fetch('/api/extract-pdf', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: await authHeaders(),
         body: JSON.stringify({ pages: images })
       });
       if (resp.ok) {
@@ -3314,7 +3314,7 @@ async function extractAndGoStep2() {
   try {
     const resp = await fetch('/api/chat', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: await authHeaders(),
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 400,
@@ -3590,6 +3590,16 @@ function showAuthError(msg, isSuccess = false) {
 }
 
 async function signOut() { await sbClient.auth.signOut(); window.location.href = '/'; }
+
+async function authHeaders() {
+  const base = { 'content-type': 'application/json' };
+  if (isPreviewMode || !sbClient) return base;
+  try {
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session?.access_token) base['Authorization'] = 'Bearer ' + session.access_token;
+  } catch(e) { /* continue without auth */ }
+  return base;
+}
 
 // ============================================================
 // RESUME SAVE / LOAD
